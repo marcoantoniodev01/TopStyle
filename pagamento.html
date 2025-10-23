@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>Pagamento - TopStyle</title>
+</head>
+<body>
+
+    <!-- Carrossel de desconto -->
+    <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+    </div>
+    
+    <header class="header hidden fade-down" id="header">
+        <nav class="nav__container">
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li title="Masculino" class="nav__item" id="nav__item">
+                        <a href="#masculino" class="nav__link">Masculino</a>
+                    </li>
+
+                    <li title="Feminino" class="nav__item">
+                        <a href="#feminino" class="nav__link">Feminino</a>
+                    </li>
+
+                    <li title="Promoções" class="nav__item">
+                        <a href="#off" class="nav__link">Off</a>
+                    </li>
+
+                    <li title="Sobre Nós" class="nav__item">
+                        <a href="#sobre" class="nav__link">Sobre</a>
+                    </li>
+                </ul>
+
+                <div class="nav__close" id="nav-close" aria-label="Fechar Menu">
+                    <i class="ri-close-fill"></i>
+                </div>
+            </div>
+
+            <div class="nav__actions">
+                <div class="nav__toggle" id="nav-toggle" aria-label="Abrir Menu">
+                    <i class="ri-align-justify"></i>
+                </div>
+            </div>
+
+            <div class="logo-text-container">
+                <h1><a class="logo-text" href="inicial.html">TopStyle Pagamento</a></h1>
+            </div>
+
+            <div class="social-header">
+                <ul>
+                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i
+                                class="ri-user-line"></i></a></li>
+                    <li class="social__link" title="Carrinho">
+                        <a href="carrinho.html" class="cart-icon">
+                            <i class="ri-shopping-cart-line"></i>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+                <div class="trocar">
+                    <i class="ri-sun-line change-theme" id="theme-button" aria-label="Alterar Tema"></i>
+                </div>
+            </div>
+        </nav>
+        <div class="progress-bar"></div>
+    </header>
+
+    <main>
+        <section class="pagamento">
+            <div class="pagamento-content">
+
+                <div class="pagamento-endereco" id="endereco-section">
+                    <div class="pagamento-endereco-top">
+                        <div class="title-endereco-pagamento">
+                            <i class="ri-map-pin-2-fill"></i>
+                            <h2>Endereço de entrega</h2>
+                        </div>
+                    </div>
+                    <div id="endereco-container">
+                        <p>Carregando seu endereço...</p>
+                    </div>
+                </div>
+                <div class="pagamento-produtos">
+                    <h2>Produtos</h2>
+                    <div id="checkout-products"></div>
+                </div>
+
+                <div class="pagamento-cupom">
+                    <h2>Cupom de Desconto</h2>
+                    <div class="cupom-container">
+                        <div class="cupom">
+                            <input type="text" id="cupom-input" autocomplete="off" placeholder="Digite seu cupom">
+                            <button type="button" id="cupom-btn">ADICIONAR</button>
+                        </div>
+                        <div id="cupom-aplicado" class="cupom-aplicado" style="display: none;">
+                            <span class="badge-cupom">10% OFF</span>
+                            <div><a href="#" id="trocar-cupom">Remover cupom</a></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagamento-total-do-pedido">
+                    <h2>Resumo do Pedido</h2>
+
+                    <div class="frete-container">
+                        <div id="frete-resultado">
+                           <p>Selecione um endereço para calcular o frete.</p>
+                        </div>
+                    </div>
+
+                    <div id="resumo-compra"></div>
+                    <div class="total-final-container">
+                        <p id="checkout-total">Total: R$ 0,00</p>
+                    </div>
+                    <button id="btn-fazer-pedido">FAZER PEDIDO</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-selecionar-endereco" class="modal">
+        <div class="modal-content">
+            <h2>Selecione um Endereço</h2>
+            <div id="lista-enderecos-container">
+                </div>
+            <div class="modal-actions">
+                <button id="btn-adicionar-novo-endereco" class="btn-secundario">Adicionar Novo Endereço</button>
+                <button id="btn-fechar-selecao" class="btn-cancelar">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-adicionar-endereco" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-endereco-titulo">Adicionar Novo Endereço</h2>
+            <form id="form-endereco">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="endereco-label">Identificação (Ex: Casa, Trabalho)</label>
+                        <input type="text" id="endereco-label" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-cep">CEP</label>
+                        <input type="text" id="endereco-cep" maxlength="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-rua">Rua / Avenida</label>
+                        <input type="text" id="endereco-rua" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-numero">Número</label>
+                        <input type="text" id="endereco-numero" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-complemento">Complemento (Bloco, Apto)</label>
+                        <input type="text" id="endereco-complemento">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-cidade">Cidade</label>
+                        <input type="text" id="endereco-cidade" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="endereco-estado">Estado</label>
+                        <input type="text" id="endereco-estado" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="endereco-referencia">Ponto de Referência (Opcional)</label>
+                        <input type="text" id="endereco-referencia">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancelar-adicao" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" id="btn-salvar-endereco" class="btn-principal">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <footer class="footer"> ... </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/checkout.js"></script>
+</body>
+</html>

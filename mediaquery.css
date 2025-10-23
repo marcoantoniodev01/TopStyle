@@ -1,0 +1,275 @@
+@charset "UTF-8";
+
+/* TELAS
+-------------------------------
+Pequenas telas: até 600px
+Celular: 600px - 769px
+Tablet: 769px 922px
+Desktop: 992px - 1200px
+Grandes Telas: Acima de 1200px
+*/
+
+@media screen and (min-width: 500px) and (max-width: 768px) {
+
+    .caixa {
+        width: 500px;
+        height: 700px;
+        position: relative;
+    }
+
+    .overlay_form {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .formulario-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .formulario-login {
+        opacity: 1;
+        z-index: 2;
+        transform: translateY(0%);
+    }
+
+    .formulario-cadastro {
+        opacity: 0;
+        z-index: 1;
+        transform: translateY(100%);
+    }
+
+    .caixa.caixa.ativo-cadastro .formulario-login {
+        transform: translateY(-100%);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    .caixa.caixa.ativo-cadastro .formulario-cadastro {
+        transform: translateY(0%);
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .caixa.caixa.ativo-login .formulario-login {
+        transform: translateY(0%);
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .caixa.caixa.ativo-login .formulario-cadastro {
+        transform: translateY(100%);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    .container-overlay {
+        display: none;
+    }
+
+    .logo_form {
+        display: block;
+        position: absolute;
+        top: 0;
+    }
+
+    .logo_form > img {
+        width: 170px;
+    }
+
+    form h1 {
+        position: absolute;
+        margin-top: 30%;
+    }
+
+    form p {
+        margin-top: 37%;
+    }
+
+    .redes_sociais {
+        margin-top: 50%;
+    }
+
+    .inputs {
+        margin-bottom: 40%;
+    }
+
+    form > a {
+        margin-top: 155%;
+    }
+
+    .input_com_img > input {
+        width: 400px;
+    }
+
+    /* Mostra o botão de troca no modo responsivo */
+    .troca {
+        display: block;
+        position: absolute;
+        bottom: -3%;
+        margin-top: 20px;
+        background-color: transparent;
+        border: 2px solid black;
+        color: black;
+        width: 220px;
+        height: 40px;
+        padding: 0px 0px;
+    }
+
+    .troca:hover {
+        background-color: transparent;
+        border: 2px solid black;
+    }
+
+    .troca:active {
+        background-color: rgba(0, 0, 0, 0.068);
+    }
+
+    .confirmar {
+        position: absolute;
+        margin-bottom: 20%;
+    }
+
+    .confirmar:active {
+        background-color: rgb(66, 64, 64);
+    }
+
+}
+
+@media screen and (min-width: 769px) and (max-width: 921px) {
+
+     .caixa {
+        width: 600px;
+        height: 800px;
+        position: relative;
+    }
+
+    .overlay_form {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .formulario-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    /* Formulário de LOGIN visível por padrão */
+    .formulario-login {
+        z-index: 2;
+        transform: translateY(0%);
+        opacity: 1;
+    }
+
+    /* Formulário de CADASTRO escondido por padrão */
+    .formulario-cadastro {
+        z-index: 1;
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    /* Quando ATIVA cadastro, login sobe e cadastro entra */
+    .caixa.ativo-cadastro .formulario-login {
+        transform: translateY(-100%);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    .caixa.ativo-cadastro .formulario-cadastro {
+        transform: translateY(0%);
+        opacity: 1;
+        z-index: 2;
+    }
+
+    /* Quando volta para login */
+    .caixa.ativo-login .formulario-login {
+        transform: translateY(0%);
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .caixa.ativo-login .formulario-cadastro {
+        transform: translateY(100%);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    /* Esconde o overlay visual */
+    .container-overlay {
+        display: none;
+    }
+
+    .logo_form {
+        display: block;
+        position: absolute;
+        top: 0;
+    }
+
+    .logo_form > img {
+        width: 180px;
+    }
+
+    form h1 {
+        position: absolute;
+        margin-top: 30%;
+    }
+
+    form p {
+        margin-top: 36%;
+    }
+
+    .redes_sociais {
+        margin-top: 45%;
+    }
+
+    .inputs {
+        margin-bottom: 47%;
+    }
+
+    /* Mostra o botão de troca no modo responsivo */
+    .troca {
+        display: block;
+        position: absolute;
+        bottom: -3%;
+        margin-top: 20px;
+        background-color: transparent;
+        border: 2px solid black;
+        color: black;
+        width: 220px;
+        height: 40px;
+        padding: 0px 0px;
+    }
+
+    .troca:hover {
+        background-color: transparent;
+        border: 2px solid black;
+    }
+
+    .troca:active {
+        background-color: rgba(0, 0, 0, 0.068);
+    }
+
+    .confirmar {
+        position: absolute;
+        margin-bottom: 20%;
+    }
+
+    .confirmar:active {
+        background-color: rgb(66, 64, 64);
+    }
+    
+
+
+
+
+}

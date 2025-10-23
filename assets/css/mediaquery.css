@@ -1,0 +1,387 @@
+@charset "UTF-8";
+
+/* ===========================================
+   CORREÇÕES GERAIS DE LAYOUT DE PRODUTO
+=========================================== */
+/* Estas regras se aplicam a todas as telas para consertar a base do layout */
+
+.product-row,
+.product-row-selecao {
+    /* Alinha os produtos à esquerda, para que um único produto não fique no meio */
+    justify-content: flex-start !important;
+    /* Adiciona um pequeno padding para não colar nas bordas */
+    padding: 0 1rem;
+}
+
+.product-slot,
+.product-row-selecao .product-slot {
+    /* Impede que um produto estique para ocupar a linha toda */
+    flex-grow: 0 !important;
+    /* Permite que o produto encolha */
+    flex-shrink: 1 !important;
+    /* Define a base para 4 colunas em telas grandes */
+    flex-basis: calc(25% - 1rem) !important;
+}
+
+.product {
+    /* Garante que o card do produto preencha o espaço do slot e que seus filhos se alinhem verticalmente */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-link {
+    /* Faz com que a área da imagem cresça para preencher o espaço disponível no card */
+    flex-grow: 1;
+}
+
+/* ===========================================
+   LAYOUT RESPONSIVO - MEDIA QUERIES
+=========================================== */
+
+
+/* TABLET (Até 992px) - 2 Colunas */
+@media screen and (max-width: 992px) {
+
+    /* INTRO/PRELOADER */
+    .intro-text,
+    .intro-text-top {
+        font-size: 7rem;
+    }
+
+    /* --- Header Responsivo --- */
+    .nav__container {
+        grid-template-columns: 1fr auto 1fr;
+        padding: 0 1.5rem;
+    }
+
+    .social-header {
+        padding-right: 0rem;
+        justify-self: end;
+    }
+
+    .social-header ul li {
+        font-size: 1.2rem;
+    }
+
+    .logo-text-container {
+        grid-column: 2 / 3;
+        justify-self: center;
+    }
+
+    .nav__actions {
+        justify-self: start;
+        display: flex;
+    }
+
+    .header .nav__list {
+        display: none;
+    }
+
+    .nav__toggle {
+        display: inline-flex;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .nav__toggle i {
+        color: black;
+    }
+
+    .nav__menu {
+        position: fixed;
+        top: -100%;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: top 0.4s ease, opacity 0.4s ease;
+        z-index: 99999999;
+    }
+
+    .nav__menu.show {
+        top: 0;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav__menu .nav__list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav__menu .nav__list a {
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .nav__menu .nav__list li:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: none;
+    }
+
+    .nav__close {
+        display: inline-flex;
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 1.8rem;
+        color: white;
+        cursor: pointer;
+        transition: transform .4s;
+    }
+
+    .nav__close:hover {
+        transform: rotate(90deg);
+    }
+
+    /* --- Layout Geral e Seções --- */
+    .inicio {
+        height: auto;
+        padding: 1rem 0;
+    }
+
+    .inicio-card {
+        height: 85vh;
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .inicio-card-left {
+        width: 45vw;
+        padding-left: 2rem;
+    }
+
+    .card-text h2 {
+        font-size: 2rem;
+    }
+
+    .image-inicio {
+        width: 40vw;
+    }
+
+    .homem-1 {
+        height: 80vh;
+    }
+
+    .logo-card {
+        display: none;
+    }
+
+    .selection-initial {
+        height: auto;
+        padding: 2rem 0;
+    }
+
+    .select-clothing {
+        flex-direction: column;
+        height: auto;
+        gap: 1rem;
+    }
+
+    .clothing {
+        height: 20vh;
+        width: 100%;
+    }
+
+    .promotions-day,
+    .products-inicio {
+        height: auto;
+        padding: 2rem 0;
+    }
+
+    .product-title {
+        font-size: 1.2rem;
+    }
+
+    .product-price {
+        font-size: 1rem;
+    }
+
+    /* --- Páginas de Categoria --- */
+    .after-title-header-selecao {
+        font-size: 1.2rem;
+    }
+
+    .selecao-products {
+        height: auto;
+        min-height: 100vh;
+        padding-top: 2rem;
+    }
+
+    .product-content-selecao {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* --- Footer --- */
+    .footer {
+        height: auto;
+        padding: 4rem 1rem 2rem 1rem;
+    }
+
+    .footer__content {
+        position: static;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2.5rem;
+        width: 100%;
+    }
+
+    .footer__inf,
+    .footer__social {
+        width: 90%;
+    }
+
+    .footer__hr,
+    .footer__copy {
+        position: static;
+        margin: 2rem auto 0 auto;
+    }
+}
+
+/* CELULARES (Até 768px) - 2 Colunas ainda, mas com ajustes */
+@media screen and (max-width: 768px) {
+
+    /* --- Página de Produto Individual --- */
+    .main-selecao {
+        top: 0;
+    }
+
+    .product-informations {
+        flex-direction: column;
+        padding-top: 8rem;
+        gap: 2rem;
+    }
+
+    .product-informations-images {
+        width: 100%;
+        height: 60vh;
+    }
+
+    .previw-imagens-informations {
+        display: none;
+    }
+
+    .product-informations-content {
+        width: 95%;
+        height: auto;
+        gap: 1.5rem;
+    }
+
+    .title-informations {
+        font-size: 2.5rem;
+    }
+
+    .avaliações-sale {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: auto;
+    }
+
+    .product-size,
+    .product-color {
+        height: auto;
+        padding: 1rem 0;
+    }
+
+    .product-size h1,
+    .product-color h1 {
+        font-size: 2rem;
+    }
+
+    /* --- Seção Início --- */
+    .card-text h2 {
+        font-size: 1.5rem;
+    }
+
+    .homem-1 {
+        height: 70vh;
+    }
+
+    .card-button {
+        width: 11rem;
+    }
+
+    .card-button:hover .part-button {
+        transform: translateX(8rem);
+    }
+
+    .card-feedback-recent {
+        width: 10rem;
+        height: 8rem;
+    }
+
+    /* --- Carrinho --- */
+    .cart-page {
+        padding: 1rem;
+    }
+
+    .carrinho-content {
+        padding: 0;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        height: auto;
+        padding: 0.5rem;
+        text-align: center;
+    }
+
+    .cart-item-left,
+    .cart-item-left img {
+        height: 25vh;
+        width: auto;
+    }
+
+    .cart-item-info {
+        width: 100%;
+    }
+
+    .quantity-controls {
+        justify-content: center;
+    }
+
+    .content-continuar {
+        height: auto;
+    }
+
+    .continuar-compra {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .button-cont-littlecar button {
+        width: 100%;
+    }
+}
+
+/* TELAS BEM PEQUENAS (Até 520px) - 1 Coluna */
+@media screen and (max-width: 520px) {
+    
+    .after-title-header,
+    .after-title-header-selecao {
+        font-size: 0.8rem;
+    }
+
+    .logo-text-container h1 {
+        font-size: 1.5rem;
+    }
+}

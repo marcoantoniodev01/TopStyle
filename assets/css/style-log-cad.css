@@ -1,0 +1,567 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: rgb(240, 240, 240);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* --- NOVOS ESTILOS PARA O LOADER --- */
+
+.form-loader {
+  display: none;
+  /* Oculto por padrão */
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  /* Cinza claro */
+  border-left-color: #2F4A62;
+  /* Cor principal do botão */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+.form-loader.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.form-loader.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Classe de controle para mostrar o loader */
+/* Adicionamos .loading ao formulario-container */
+.formulario-container.loading .form-loader {
+  display: block;
+}
+
+/* Desabilitar o botão e diminuir opacidade durante o carregamento */
+.formulario-container.loading .button-log {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Caixa principal que envolve tudo */
+.caixa {
+  background-color: #FFFAFA;
+  border-radius: 2px;
+  box-shadow: 0px 0px 6px black;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+/* --- NOVO CONTAINER DE FORMULÁRIO GERAL --- */
+.overlay_form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  transition: all 0.6s ease-in-out;
+  /* Garante que ele se mova suavemente */
+}
+
+
+/* Containers de formulário */
+.formulario-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  z-index: 2;
+  flex-direction: column;
+  background-color: #FFFAFA;
+  color: black;
+}
+
+.formulario-cadastro {
+  left: 0;
+  opacity: 0;
+  z-index: 1;
+}
+
+.formulario-login {
+  left: 0;
+  z-index: 2;
+}
+
+
+/* --- NOVO: Estilo para o formulário de recuperação --- */
+.formulario-recuperar {
+  left: 0;
+  width: 50%;
+  /* Começa com 50% para não quebrar o layout */
+  z-index: 0;
+  /* Fica bem atrás */
+  opacity: 0;
+  /* Começa invisível */
+}
+
+
+/* --- ALTERAÇÕES AQUI --- */
+/* Aplicar a animação de "deslizar para o lado" apenas em telas grandes (desktop) */
+@media screen and (min-width: 922px) {
+  .caixa.painel-direito-ativo .formulario-cadastro {
+    transform: translateX(43%);
+    opacity: 1;
+    z-index: 5;
+  }
+
+  .caixa.painel-direito-ativo .formulario-login {
+    transform: translateX(43%);
+    opacity: 0;
+    /* Adicionado para garantir a transição suave */
+    z-index: 1;
+  }
+
+  .caixa.painel-direito-ativo .container-overlay {
+    transform: translateX(-100%);
+  }
+
+  .caixa.painel-direito-ativo .overlay {
+    transform: translateX(50%);
+  }
+
+  .caixa.painel-direito-ativo .painel-esquerdo {
+    transform: translateX(0%);
+  }
+
+  .caixa.painel-direito-ativo .painel-direito {
+    transform: translateX(20%);
+  }
+}
+
+/* --- FIM DAS ALTERAÇÕES --- */
+
+/* Quando ativo o painel direito */
+.caixa.painel-direito-ativo .formulario-cadastro {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+}
+
+.caixa.painel-direito-ativo .formulario-login {
+  transform: translateX(100%);
+  opacity: 0;
+  z-index: 1;
+}
+
+/*
+--- NOVA ANIMAÇÃO: ESQUECI A SENHA ---
+*/
+/* Quando a classe 'recuperar-ativo' é adicionada na 'caixa' */
+
+/* 1. Move TODOS os formulários (login/cadastro) para a esquerda, fora da tela */
+.caixa.recuperar-ativo .formulario-login,
+.caixa.recuperar-ativo .formulario-cadastro {
+  transform: translateX(-100%);
+}
+
+/* 2. Move o painel de overlay para a direita, fora da tela */
+.caixa.recuperar-ativo .container-overlay {
+  transform: translateX(100%);
+}
+
+/* 3. Traz o formulário de recuperação para a frente e o torna visível */
+.formulario-recuperar {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.8);
+  /* Garante que fique na frente de tudo durante a transição */
+}
+
+.caixa.recuperar-ativo .formulario-recuperar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.left-center {
+  background-color: white;
+  border: 2px solid black;
+}
+
+.center__form-recuperar {
+  padding: 10px;
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.input__container-recuperar input {
+  width: 50%;
+}
+
+.opt__righte {
+  padding: 10px;
+}
+
+.opt__righte a {
+  text-decoration: none;
+  color: gray;
+  transition: all .3s;
+}
+
+.opt__righte a:hover {
+  color: black;
+}
+
+/* Campos do formulário */
+
+/* left */
+
+.block__left {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.left__top {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  border-radius: 50%;
+  display: flex;
+  place-items: center;
+}
+
+.logo img {
+  width: 10vw;
+  height: auto;
+  border-radius: 30%;
+}
+
+.left__center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+}
+
+.left__center h1 {
+  padding: 10px;
+  font-size: 3rem;
+  font-weight: normal;
+}
+
+.center__form {
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-log-cad {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.input__container {
+  border-bottom: 1px solid rgb(0, 0, 0);
+  padding: 0px 0px 5px 10px;
+  width: 100%;
+  display: flex;
+  transition: all .3s;
+  margin-top: 50px;
+}
+
+
+.input__container input {
+  width: 100%;
+  padding: 0px 10px 0px 15px;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.input__container input:-webkit-autofill {
+  background-color: none;
+}
+
+.input__container>label>img {
+  width: 25px;
+  opacity: 0.5;
+}
+
+.input__opt {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.opt__left {
+  padding: 10px;
+  color: gray;
+}
+
+.opt__left input[type="checkbox"] {
+  width: 10px;
+  /* controla a largura */
+  height: 10px;
+  /* controla a altura */
+  transform: scale(1.5);
+  /* aumenta proporcionalmente */
+  accent-color: #333;
+  /* cor da caixinha no navegador moderno */
+  cursor: pointer;
+}
+
+.opt__right {
+  padding: 10px;
+}
+
+.opt__right a {
+  text-decoration: none;
+  color: gray;
+  transition: all .3s;
+}
+
+.opt__right a:hover {
+  color: black;
+}
+
+.button-log {
+  width: 60%;
+  border: none;
+  background-color: #2F4A62;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 8px 16px 8px;
+  margin-top: 25px;
+  cursor: pointer;
+  transition: all .5s ease;
+}
+
+button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  scale: 1.1;
+}
+
+button:active {
+  transform: scale(0.8);
+  /* só um leve "press" */
+}
+
+.center__form hr {
+  width: 80%;
+  margin-top: 20px;
+}
+
+.left__bottom {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.redes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding-top: 2rem;
+}
+
+.redes__icon {
+  border: 1px solid gray;
+  border-bottom: 1px solid black;
+  background-color: transparent;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.redes__icon:hover {
+  scale: 1.1;
+  border-radius: 14px;
+  border: 1px solid black;
+}
+
+.redes__icon img {
+  width: 35px;
+}
+
+.p_bottom a {
+  text-decoration: none;
+  color: #2F4A62;
+  transition: all .3s;
+}
+
+.p_bottom a:hover {
+  text-decoration: underline;
+}
+
+.text__bottom {
+  position: relative;
+  top: 60%;
+  color: gray;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #e9e9e9 inset !important;
+  /* muda o fundo */
+  -webkit-text-fill-color: black !important;
+  /* cor do texto */
+}
+
+.toggleSenha {
+  cursor: pointer;
+}
+
+/* Overlay */
+.container-overlay {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  z-index: 100;
+}
+
+.caixa.painel-direito-ativo .container-overlay {
+  transform: translateX(-100%);
+}
+
+/* Painel da overlay */
+.overlay {
+  background: url(https://images.pexels.com/photos/833052/pexels-photo-833052.jpeg?cs=srgb&dl=pexels-daniel-adesina-279287-833052.jpg&fm=jpg);
+  background-size: cover;
+  background-position: center;
+  /* Adicionado para melhor enquadramento */
+  color: white;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transition: transform 0.6s ease-in-out;
+  display: flex;
+}
+
+.caixa.painel-direito-ativo .overlay {
+  transform: translateX(50%);
+}
+
+/* Painéis esquerdo e direito */
+.painel-overlay {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+  text-align: center;
+  width: 50%;
+  height: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+.painel-overlay>p {
+  font-size: 13px;
+  text-align: center;
+}
+
+.painel-overlay>img {
+  position: absolute;
+  top: 0;
+  width: 200px;
+}
+
+.painel-esquerdo {
+  transform: translateX(-20%);
+  left: 0;
+}
+
+.painel-direito {
+  right: 0;
+  transform: translateX(0%);
+}
+
+.caixa.painel-direito-ativo .painel-esquerdo {
+  transform: translateX(0%);
+}
+
+.caixa.painel-direito-ativo .painel-direito {
+  transform: translateX(20%);
+}
+
+/* Botão transparente (fantasma) */
+.fantasma {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 35%;
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 35px;
+  font-size: 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fantasma:hover {
+  background: rgba(255, 255, 255, 0.041);
+}
+
+.fantasma:active {
+  background-color: transparent;
+}

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style-p.css">
+    <link rel="stylesheet" href="assets/css/media-query.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>TopStyle</title>
+</head>
+
+<body>
+
+    <!-- Carrossel de desconto -->
+    <!-- <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+    </div> -->
+
+
+
+    <header class="header" id="header">
+        <nav class="nav__container">
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li title="Masculino" class="nav__item dropdown" id="nav__item">
+                        <a href="#masculino" class="nav__link">Masculino</a>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu">
+                            <div class="mega-content">
+                                <div class="column">
+                                    <h3>Vestuário</h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Camisetas</a>
+                                    <a href="#">Camiseta Plus-Size</a>
+                                    <a href="#">Camiseta Manga Longa</a>
+                                    <a href="#">Moletons</a>
+                                    <a href="#">Jaquetas E Casacos</a>
+                                    <a href="#">Camisas</a>
+                                    <a href="#">Calças</a>
+                                    <a href="#">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3>Outros</h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Juvenil</a>
+                                    <a href="#">Feminino</a>
+                                    <a href="#">Packs</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3>Acessórios</h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chaveiros E Adesivos</a>
+                                    <a href="#">Cuecas</a>
+                                    <a href="#">Gorros</a>
+                                    <a href="#">Pochetes</a>
+                                    <a href="#">Mochilas</a>
+                                    <a href="#">Meias</a>
+                                    <a href="#">Bags</a>
+                                    <a href="#">Bonés</a>
+                                    <a href="#">Bucket</a>
+                                    <a href="#">Carteiras</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3>Calçados</h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li title="Feminino" class="nav__item">
+                        <a href="#feminino" class="nav__link">Feminino</a>
+                    </li>
+
+                    <li title="Promoções" class="nav__item">
+                        <a href="#off" class="nav__link">Off</a>
+                    </li>
+
+                    <li title="Sobre Nós" class="nav__item">
+                        <a href="#sobre" class="nav__link">Sobre</a>
+                    </li>
+                </ul>
+
+                <div class="nav__close" id="nav-close" aria-label="Fechar Menu">
+                    <i class="ri-close-fill"></i>
+                </div>
+            </div>
+
+            <div class="nav__actions">
+                <div class="nav__toggle" id="nav-toggle" aria-label="Abrir Menu">
+                    <i class="ri-align-justify"></i>
+                </div>
+            </div>
+
+            <div class="logo-text-container">
+                <h1><a class="logo-text" href="inicial.html">TopStyle</a></h1>
+            </div>
+
+            <div class="social-header">
+                <ul>
+                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i
+                                class="ri-user-line"></i></a>
+                    </li>
+                    <li class="social__link" title="Carrinho">
+                        <a href="carrinho.html" class="cart-icon">
+                            <i class="ri-shopping-cart-line"></i>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="trocar">
+                    <i class="ri-sun-line change-theme" id="theme-button" aria-label="Alterar Tema"></i>
+                </div>
+            </div>
+        </nav>
+        <div class="progress-bar"></div>
+    </header>
+
+    <main class="perfil-main">
+
+        <section class="perfil-cliente">
+            <div class="painel-cliente-nav">
+                <div class="perfil-page-img">
+                    <img id="profilePhoto" src="https://i.ibb.co/r2W7rmtQ/homem-1.png" alt="perfil">
+                </div>
+
+                <hr class="hr-perfil-client">
+                <ul class="list-page-perfil">
+                    <a class="link-page-perfil" href="#dados-pessoais">
+                        <li>Dados Pessoais</li>
+                    </a>
+                    <a class="link-page-perfil" href="#cartoes">
+                        <li>Cartões</li>
+                    </a>
+                    <a class="link-page-perfil" href="#enderecos">
+                        <li>Endereços</li>
+                    </a>
+                    <a class="link-page-perfil" href="#pedidos">
+                        <li>Pedidos</li>
+                    </a>
+                    <a class="link-page-perfil" href="index.html" id="logout">
+                        <li>Sair</li>
+                    </a>
+                </ul>
+            </div>
+            </div>
+
+            <div class="perfil-cliente-content">
+
+                <div id="dados-pessoais" class="window-perfil-cliente">
+                    <h1>Dados Pessoais</h1>
+
+                    <form class="form-perfil-list" id="profile-form" data-editable="false">
+                        <div class="linha-informations-perfil">
+                            <div class="coluna-informations-perfil">
+                                <label>Username</label>
+                                <p id="username">—</p>
+                                <input id="username-input" class="hidden-input" type="text" />
+                            </div>
+
+                            <div class="coluna-informations-perfil">
+                                <label>Email</label>
+                                <p id="email">—</p>
+                                <input id="email-input" class="hidden-input" type="email" />
+                            </div>
+                        </div>
+
+                        <div class="linha-informations-perfil">
+                            <div class="coluna-informations-perfil">
+                                <label>Telefone</label>
+                                <p id="phone">—</p>
+                                <input id="phone-input" class="hidden-input" type="text" />
+                            </div>
+
+                            <div class="coluna-informations-perfil">
+                                <label>CPF</label>
+                                <p id="cpf">—</p>
+                                <input id="cpf-input" class="hidden-input" type="text" />
+                            </div>
+                        </div>
+
+                        <div class="nascimento-editar-perfil">
+                            <div class="nascimento-perfil">
+                                <div class="coluna-informations-perfil">
+                                    <label>Data de Nascimento</label>
+                                    <p id="born_Date">—</p>
+                                    <input id="born_Date-input" class="hidden-input" type="date" />
+                                </div>
+                            </div>
+
+                            <div class="editar-perfil">
+                                <button type="button" id="edit-profile-btn">Editar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <hr class="hr-perfil-client responsive">
+
+                <div id="cartoes" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Cartões</h1>
+
+                        <div id="cards-list" class="cards-list"></div>
+
+                        <div class="editar-perfil">
+                            <button type="button" id="add-card-btn">Adicionar um cartão</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="hr-perfil-client responsive">
+
+                <div id="enderecos" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Endereços</h1>
+
+                        <div id="addresses-list" class="cards-list"></div>
+
+                        <div class="editar-perfil">
+                            <button type="button" id="add-address-btn">Adicionar um endereço</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="hr-perfil-client responsive">
+
+                <div id="pedidos" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Pedidos</h1>
+
+                        <div id="orders-list" class="cards-list"></div>
+                    </div>
+                </div>
+
+                <!-- Modal global para mostrar items do pedido -->
+                <div id="order-modal" class="order-modal hidden">
+                    <div class="order-modal-backdrop" id="order-modal-backdrop"></div>
+                    <div class="order-modal-content" id="order-modal-content">
+                        <button id="order-modal-close" class="modal-close">Fechar</button>
+                        <h2>Itens do pedido</h2>
+                        <div id="order-items-list" class="cards-list"></div>
+                    </div>
+                </div>
+
+        </section>
+    </main>
+
+    <!-- <footer class="footer">
+        <div class="footer__box">
+            <div class="footer__content">
+                <div class="footer__inf">
+                    <h2 class="hidden fade-down">TOP STYLE</h2>
+                    <p class="hidden fade-down">TopStyle — Estilo e conforto juntos.</p>
+                </div>
+
+                <div class="footer__social">
+                    <h2 class="hidden fade-down">Social</h2>
+                    <div class="redes hidden fade-down">
+                        <a href="#"
+                            target="_blank" class="footer__social-link">
+                            <i class="ri-linkedin-fill"></i>
+                        </a>
+                        <a href="#" target="_blank" class="footer__social-link">
+                            <i class="ri-github-fill"></i>
+                        </a>
+                        <a href="#" target="_blank" class="footer__social-link">
+                            <i class="ri-instagram-fill"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="footer__hr hidden zoom-in">
+
+            <span class="footer__copy hidden fade-up">
+                &#169; Copyright 2025. Made by <a href="https://marcoantonio.netlify.app">TopStyle</a>
+            </span>
+        </div>
+    </footer> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/parallax.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/profile-tabs.js"></script>
+    <script src="assets/js/profile.js"></script>
+</body>
+
+</html>
