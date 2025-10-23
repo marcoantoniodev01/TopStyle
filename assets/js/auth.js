@@ -151,13 +151,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Criar o usuário no Supabase Auth
         //    (Você mencionou que desativou a confirmação, se reativar, tudo bem)
-        const {
-          data: authData,
-          error: signUpError
-        } = await supabase.auth.signUp({
-          email: email,
-          password: senha,
-        });
+        // 4. Criar o usuário no Supabase Auth
+const {
+  data: authData,
+  error: signUpError
+} = await supabase.auth.signUp({
+  email: email,
+  password: senha,
+  options: {
+    // Este campo 'data' será armazenado em auth.users.raw_user_meta_data
+    // e estará acessível pelo nosso trigger.
+    data: {
+      full_name: nome,
+      username: username,
+      // O email também é útil aqui para o trigger
+      email: email 
+    }
+  }
+});
 
         if (signUpError) {
           // Trata o erro "User already registered" que você mencionou
@@ -428,4 +439,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // mas os listeners de submit já estão configurados acima.
   }
 });
+
 
