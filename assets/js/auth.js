@@ -212,7 +212,7 @@ const {
 
         // 6. Sucesso!
         // (Se você reativar a confirmação de e-mail, mude esta mensagem)
-        showAppToast('Cadastro concluído com sucesso! Você já pode fazer login.');
+        showAppToast('Cadastro concluído com sucesso! Verifique seu e-mail para a verificação.');
 
         // Limpa o formulário
         formCadastro.reset();
@@ -439,5 +439,6 @@ const {
     // mas os listeners de submit já estão configurados acima.
   }
 });
+
 
 
