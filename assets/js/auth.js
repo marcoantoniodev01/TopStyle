@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        /* 3. Validação: Checar se username ou email já existem
+        // 3. Validação: Checar se username ou email já existem
         //    (Sua RLS de SELECT 'public profiles' permite isso)
         const {
           data: existingProfiles,
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Este erro pode aparecer se o usuário foi criado no Auth mas falhou no Profile
             return showAppToast('Erro: Este email já está cadastrado.');
           }
-        }*/
+        }
 
         // 4. Criar o usuário no Supabase Auth
         //    (Você mencionou que desativou a confirmação, se reativar, tudo bem)
@@ -170,58 +170,45 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
 
-        // **** ADICIONE ESTA NOVA VERIFICAÇÃO DE ERRO ****
         if (signUpError) {
-          // Esta é a nova parte: pegar o erro do trigger
-          if (signUpError.message.includes("USERNAME_EXISTS")) {
-            // Se o erro do SQL contiver nossa flag "USERNAME_EXISTS"
-            throw new Error('Erro: Este nome de usuário já está em uso.');
-          }
+          // Trata o erro "User already registered" que você mencionou
           if (signUpError.message.includes("User already registered")) {
-            // O próprio Supabase já checa o email na tabela auth.users
-            throw new Error('Erro: Este email já está cadastrado.');
+            return showAppToast('Erro: Este email já está cadastrado.');
           }
-          // Se for outro erro, joga ele
           throw signUpError;
         }
 
         if (!authData.user) throw new Error('Falha ao criar usuário, tente novamente.');
 
-        /// -----------------------------------------------------------------
-        // *** AQUI ESTÁ A CORREÇÃO (DEFINITIVA) ***
+        // -----------------------------------------------------------------
+        // *** AQUI ESTÁ A CORREÇÃO ***
         //
-        // O trigger (SQL) foi REMOVIDO pois estava causando o erro.
-        // Agora o JavaScript precisa INSERIR o perfil manualmente.
+        // O trigger padrão do Supabase já criou a linha em 'profiles'.
+        // Em vez de 'insert', usamos 'update' para preencher os dados.
         // -----------------------------------------------------------------
 
         // 5. INSERIR os dados no 'profiles'
+        // (Isso funciona pois o SQL 8 removeu o trigger e
+        // adicionou a RLS de INSERT)
         const {
           error: profileError
         } = await supabase
           .from('profiles')
           .insert({
-            id: authData.user.id, // Pega o ID do usuário recém-criado
+            id: authData.user.id, // O ID do usuário autenticado
             full_name: nome,
             username: username,
-            email: email, // Grava o email no perfil (bom para login)
-            phone: '' // (SQL 5)
+            email: email, // Armazenar o email aqui
+            phone: '', // (SQL 5)
+            // is_admin: false // (Já é 'false' por padrão)
           });
 
         if (profileError) {
-          // Se o INSERT falhar (ex: RLS de INSERT errada, ou username duplicado)
-          // A RLS "Users can insert their own profile" (SQL Etapa 1) DEVE permitir isso.
-          console.error("Erro ao INSERIR perfil:", profileError);
-
-          // O erro mais provável aqui é '23505: unique_violation' (username duplicado)
-          if (profileError.code === '23505') {
-            // A checagem de duplicidade (Etapa 3 do JS) deveria ter pego isso,
-            // mas se não pegou, o banco pegou.
-            throw new Error('Erro: Este nome de usuário já está em uso.');
-          }
-
-          // Se for outro erro, precisamos ser claros.
-          // (Idealmente, deveríamos deletar o usuário do 'auth' aqui,
-          // mas isso é complexo. Vamos focar em fazer o INSERT funcionar.)
+          // Se o UPDATE falhar, pode ser um problema de RLS
+          // Sua RLS de UPDATE "Users can update their own profile." está correta
+          // e deve permitir isso, já que o usuário logado (auth.uid()) é o dono do perfil.
+          console.error("Erro ao ATUALIZAR perfil:", profileError);
+          // Mensagem de erro que você criou
           throw new Error('Erro ao finalizar cadastro do perfil: ' + profileError.message);
         }
 
@@ -238,11 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
       } catch (error) {
-        // Este 'catch' agora vai pegar as mensagens customizadas (ex: "Este nome de usuário já está em uso")
         console.error('Erro no cadastro:', error);
         showAppToast(error.message || 'Ocorreu um erro. Tente novamente.');
       } finally {
-        formCadastroContainer.classList.remove('loading');
+        formCadastroContainer.classList.remove('loading'); // <-- ESCONDE O LOADER (no sucesso ou erro)
       }
     });
   }
