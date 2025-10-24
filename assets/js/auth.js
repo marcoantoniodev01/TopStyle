@@ -187,26 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Em vez de 'insert', usamos 'update' para preencher os dados.
         // -----------------------------------------------------------------
 
-        // 5. ATUALIZAR os dados no 'profiles'
-        // (full_name, username e email já foram inseridos pelo trigger SQL #9)
-        const {
-          error: profileError
-        } = await supabase
-          .from('profiles')
-          .update({
-            phone: '', // O trigger não insere o 'phone', então este update é útil
-          })
-          .eq('id', authData.user.id);
-        
-        if (profileError) {
-          // Se o UPDATE falhar, pode ser um problema de RLS
-          // Sua RLS de UPDATE "Users can update their own profile." está correta
-          // e deve permitir isso, já que o usuário logado (auth.uid()) é o dono do perfil.
-          console.error("Erro ao ATUALIZAR perfil:", profileError);
-          // Mensagem de erro que você criou
-          throw new Error('Erro ao finalizar cadastro do perfil: ' + profileError.message);
-        }
-
         // 6. Sucesso!
         // (Se você reativar a confirmação de e-mail, mude esta mensagem)
         showAppToast('Cadastro concluído com sucesso! Verifique seu e-mail para a verificação.');
@@ -445,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // mas os listeners de submit já estão configurados acima.
   }
 });
+
 
 
 
