@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        // 3. Validação: Checar se username ou email já existem
+        /* 3. Validação: Checar se username ou email já existem
         //    (Sua RLS de SELECT 'public profiles' permite isso)
         const {
           data: existingProfiles,
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Este erro pode aparecer se o usuário foi criado no Auth mas falhou no Profile
             return showAppToast('Erro: Este email já está cadastrado.');
           }
-        }
+        }*/
 
         // 4. Criar o usuário no Supabase Auth
         //    (Você mencionou que desativou a confirmação, se reativar, tudo bem)
@@ -170,11 +170,18 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
 
+        // **** ADICIONE ESTA NOVA VERIFICAÇÃO DE ERRO ****
         if (signUpError) {
-          // Trata o erro "User already registered" que você mencionou
-          if (signUpError.message.includes("User already registered")) {
-            return showAppToast('Erro: Este email já está cadastrado.');
+          // Esta é a nova parte: pegar o erro do trigger
+          if (signUpError.message.includes("USERNAME_EXISTS")) {
+            // Se o erro do SQL contiver nossa flag "USERNAME_EXISTS"
+            throw new Error('Erro: Este nome de usuário já está em uso.');
           }
+          if (signUpError.message.includes("User already registered")) {
+            // O próprio Supabase já checa o email na tabela auth.users
+            throw new Error('Erro: Este email já está cadastrado.');
+          }
+          // Se for outro erro, joga ele
           throw signUpError;
         }
 
@@ -200,10 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
       } catch (error) {
+        // Este 'catch' agora vai pegar as mensagens customizadas (ex: "Este nome de usuário já está em uso")
         console.error('Erro no cadastro:', error);
         showAppToast(error.message || 'Ocorreu um erro. Tente novamente.');
       } finally {
-        formCadastroContainer.classList.remove('loading'); // <-- ESCONDE O LOADER (no sucesso ou erro)
+        formCadastroContainer.classList.remove('loading');
       }
     });
   }
@@ -425,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // mas os listeners de submit já estão configurados acima.
   }
 });
+
 
 
 
