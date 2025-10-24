@@ -1,14 +1,15 @@
 /*
   assets/js/auth.js
-  Contém a lógica para:
-  1. Animação do painel de login/cadastro.
-  2. Validação e envio do formulário de cadastro para o Supabase.
-  3. Validação e envio do formulário de login (com email ou username) para o Supabase.
-  4. Animação do painel de "Esqueci a Senha".
-  5. Lógica de "Esqueci a Senha".
-  6. Indicadores de carregamento (Spinner) adicionados.
   
-  *** ARQUIVO CORRIGIDO (Lógica de INSERT trocada por UPDATE) ***
+  *** ARQUIVO CORRIGIDO (Ambos os problemas resolvidos) ***
+  
+  1. (Problema 1) A lógica de login agora checa
+     especificamente por 'Email not confirmed'.
+     
+  2. (Problema 2) A lógica de cadastro foi limpa.
+     O bloco 'supabase.from('profiles').update(...)' foi REMOVIDO
+     pois o Trigger SQL (handle_new_user) agora cuida
+     de preencher o perfil.
 */
 
 // Espera o DOM carregar antes de executar
@@ -59,14 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 2. INICIALIZAÇÃO DO SUPABASE ---
 
-  // As funções initSupabaseClient e showToast são carregadas de 'main.js'
-  // Garantimos que main.js seja carregado ANTES de auth.js no seu HTML.
-  // Se 'main.js' ainda não foi carregado, window.initSupabaseClient pode ser nulo.
-  // Vamos esperar que 'main.js' o defina.
-
   let supabase = null;
 
-  // Tenta inicializar o Supabase. main.js deve ter exposto a função.
   if (typeof window.initSupabaseClient === 'function') {
     window.initSupabaseClient().then(client => {
       supabase = client;
@@ -150,8 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 4. Criar o usuário no Supabase Auth
-        //    (Você mencionou que desativou a confirmação, se reativar, tudo bem)
-        // 4. Criar o usuário no Supabase Auth
+        //    O 'options.data' é VITAL. O trigger SQL vai ler isso.
         const {
           data: authData,
           error: signUpError
@@ -159,13 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
           email: email,
           password: senha,
           options: {
-            // Este campo 'data' será armazenado em auth.users.raw_user_meta_data
-            // e estará acessível pelo nosso trigger.
+            // Estes dados serão lidos pelo trigger 'handle_new_user'
             data: {
               full_name: nome,
-              username: username,
-              // O email também é útil aqui para o trigger
-              email: email
+              username: username
             }
           }
         });
@@ -181,37 +172,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!authData.user) throw new Error('Falha ao criar usuário, tente novamente.');
 
         // -----------------------------------------------------------------
-        // *** AQUI ESTÁ A CORREÇÃO ***
+        // *** CORREÇÃO DO PROBLEMA 2 ***
         //
-        // O trigger padrão do Supabase já criou a linha em 'profiles'.
-        // Em vez de 'insert', usamos 'update' para preencher os dados.
+        // O bloco 'supabase.from('profiles').update(...)'
+        // foi REMOVIDO daqui.
+        //
+        // Ele não é mais necessário, pois o Trigger SQL
+        // (handle_new_user) já fez o trabalho de
+        // criar a linha em 'public.profiles'.
         // -----------------------------------------------------------------
 
-        // 5. ATUALIZAR os dados no 'profiles'
-        const {
-          error: profileError
-        } = await supabase
-          .from('profiles')
-          .update({
-            full_name: nome,
-            username: username,
-            email: email, // Armazenar o email aqui é bom para a sua função de login
-            phone: '', // (SQL 5)
-            // is_admin: false // (Já é 'false' por padrão no seu SQL)
-          })
-          .eq('id', authData.user.id); // Atualiza a linha ONDE o 'id' bate
-
-        if (profileError) {
-          // Se o UPDATE falhar, pode ser um problema de RLS
-          // Sua RLS de UPDATE "Users can update their own profile." está correta
-          // e deve permitir isso, já que o usuário logado (auth.uid()) é o dono do perfil.
-          console.error("Erro ao ATUALIZAR perfil:", profileError);
-          // Mensagem de erro que você criou
-          throw new Error('Erro ao finalizar cadastro do perfil: ' + profileError.message);
-        }
-
         // 6. Sucesso!
-        // (Se você reativar a confirmação de e-mail, mude esta mensagem)
+        // A mensagem de verificação está correta.
         showAppToast('Cadastro concluído com sucesso! Verifique seu e-mail para a verificação.');
 
         // Limpa o formulário
@@ -254,10 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let userEmail = loginInput;
 
         // 1. Checar se o input é um username (não contém '@')
+        //    Agora isso vai funcionar, pois o 'username' foi salvo pelo trigger.
         if (!loginInput.includes('@')) {
           try {
-            // Busca o email correspondente ao username na tabela 'profiles'
-            // Sua RLS "Public profiles are viewable by everyone." permite isso.
             const {
               data: profile,
               error
@@ -268,9 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
               .single(); // Espera um resultado único
 
             if (error) {
-              // Se o 'error' for 'PGRST116', significa que não encontrou (0 rows)
-              if (error.code === 'PGRST116') {
-                throw new Error('Usuário ou senha inválidos.'); // Joga para o catch
+              if (error.code === 'PGRST116') { // 'PGRST116' = Não encontrado
+                throw new Error('Usuário ou senha inválidos.');
               }
               throw error; // Lança outros erros
             }
@@ -278,10 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (profile && profile.email) {
               userEmail = profile.email;
             } else {
-              throw new Error('Usuário ou senha inválidos.'); // Joga para o catch
+              throw new Error('Usuário ou senha inválidos.');
             }
           } catch (error) {
-            // Pega o erro de 'Usuário ou senha inválidos' ou o erro do Supabase
             console.error('Erro ao buscar email por username:', error);
             throw new Error('Usuário ou senha inválidos.'); // Joga para o catch principal
           }
@@ -296,11 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
           password: senha,
         });
 
-        if (signInError) throw signInError;
+        if (signInError) throw signInError; // Joga o erro para o catch
         if (!loginData.user) throw new Error('Login falhou, tente novamente.');
 
         // 3. Login bem-sucedido! Buscar o perfil para checar se é admin.
-        // Sua RLS de SELECT também permite isso para usuários autenticados.
         const {
           data: profileData,
           error: profileError
@@ -312,31 +280,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (profileError) {
           console.warn("Login efetuado, mas falha ao buscar perfil de admin:", profileError.message);
-          // Permite o login, mas assume 'cliente'
           localStorage.setItem('userRole', 'cliente');
         } else {
-          // Define o 'userRole' para o main.js usar na próxima página
           const userRole = (profileData && profileData.is_admin === true) ? 'admin' : 'cliente';
           localStorage.setItem('userRole', userRole);
         }
 
         // 4. Redirecionar para a página inicial
-        // A lógica do preloader/intro em 'inicial.html' cuidará do resto.
         window.location.href = 'inicial.html';
-        // Não precisamos esconder o loader aqui, pois a página vai recarregar
 
       } catch (error) {
         console.error('Erro no login:', error);
 
-        // --- AQUI ESTÁ A CORREÇÃO (Issue 1) ---
-        // Verificamos a mensagem de erro específica do Supabase
+        // ==========================================================
+        // ### CORREÇÃO DO PROBLEMA 1 ###
+        // Checamos a mensagem de erro específica do Supabase
         if (error.message === 'Email not confirmed') {
           showAppToast('Sua conta precisa ser verificada. Por favor, cheque seu e-mail.');
         } else {
-          // Mensagem genérica para todos os outros erros (senha errada, usuário não existe)
+          // Mensagem genérica para todos os outros erros
           showAppToast('Usuário ou senha inválidos.');
         }
-        // --- FIM DA CORREÇÃO ---
+        // ### FIM DA CORREÇÃO ###
+        // ==========================================================
 
         formLoginContainer.classList.remove('loading'); // <-- ESCONDE O LOADER (no erro)
       }
@@ -360,8 +326,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 6. LÓGICA DE RECUPERAR SENHA (NOVO) ---
   if (formRecuperarContainer) {
-    const formRecuperar = formRecuperarContainer.querySelector('form'); // Seleciona o <form> dentro da div
-
+    const formRecuperar = formRecuperarContainer.querySelector('form');
+    
     if (formRecuperar) {
       formRecuperar.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -376,62 +342,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let userEmail = loginInput;
-        // let processingToast = null; // <-- REMOVIDO
 
         try {
-          // Mostra um toast de carregamento
-          // if (typeof window.showToast === 'function') { // <-- REMOVIDO
-          //    processingToast = window.showToast('Processando sua solicitação...', { duration: 10000 }); // Duração longa // <-- REMOVIDO
-          // } // <-- REMOVIDO
-
-
           // 1. Se não for um e-mail, busca o e-mail pelo username
+          // (Isso também funcionará agora)
           if (!loginInput.includes('@')) {
             const { data: profile, error } = await supabase
               .from('profiles')
               .select('email')
               .eq('username', loginInput)
               .single();
-
-            // Se der erro (exceto 'não encontrado') ou não achar perfil,
-            // pulamos para o 'finally' onde a msg genérica será mostrada.
+            
             if (error && error.code !== 'PGRST116') {
-              console.error('Erro ao buscar email por username (recuperação):', error);
+               console.error('Erro ao buscar email por username (recuperação):', error);
             }
-
+            
             if (profile && profile.email) {
               userEmail = profile.email;
             } else {
-              // Se não achou, 'userEmail' continua sendo o username (o que vai falhar no Supabase Auth,
-              // mas não tem problema, pois cairemos no 'finally' com a msg genérica).
               console.warn(`Username ${loginInput} não encontrado para recuperação.`);
             }
           }
 
           // 2. Tenta enviar o e-mail de redefinição
-          // Omitimos o redirectTo para usar o template padrão do Supabase
           const { error: resetError } = await supabase.auth.resetPasswordForEmail(userEmail);
 
           if (resetError) {
-            console.error('Erro ao solicitar redefinição de senha:', resetError.message);
+             console.error('Erro ao solicitar redefinição de senha:', resetError.message);
           }
 
         } catch (error) {
           console.error('Erro inesperado na recuperação de senha:', error);
-
+        
         } finally {
-          // 3. SEMPRE mostra uma mensagem genérica por segurança (evitar enumeração de usuários)
-
-          // Esconde o toast de 'processando' se ele existir
-          // if (processingToast && processingToast.remove) { // <-- REMOVIDO
-          //   processingToast.remove(); // <-- REMOVIDO
-          // } // <-- REMOVIDO
-
+          // 3. SEMPRE mostra uma mensagem genérica por segurança
           formRecuperarContainer.classList.remove('loading'); // <-- ESCONDE O LOADER
 
           showAppToast('Se uma conta existir para este usuário, um e-mail de recuperação foi enviado.');
-
-          // Limpa o formulário e volta para o login
+          
           formRecuperar.reset();
           if (caixa) {
             caixa.classList.remove('recuperar-ativo');
@@ -444,10 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Função para anexar os listeners (chamada após Supabase inicializar)
   function attachAuthListeners() {
-    // Esta função está aqui caso precisemos dela no futuro,
-    // mas os listeners de submit já estão configurados acima.
+    // Função de placeholder
   }
 });
-
-
-
