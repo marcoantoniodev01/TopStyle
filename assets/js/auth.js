@@ -152,23 +152,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // 4. Criar o usuário no Supabase Auth
         //    (Você mencionou que desativou a confirmação, se reativar, tudo bem)
         // 4. Criar o usuário no Supabase Auth
-const {
-  data: authData,
-  error: signUpError
-} = await supabase.auth.signUp({
-  email: email,
-  password: senha,
-  options: {
-    // Este campo 'data' será armazenado em auth.users.raw_user_meta_data
-    // e estará acessível pelo nosso trigger.
-    data: {
-      full_name: nome,
-      username: username,
-      // O email também é útil aqui para o trigger
-      email: email 
-    }
-  }
-});
+        const {
+          data: authData,
+          error: signUpError
+        } = await supabase.auth.signUp({
+          email: email,
+          password: senha,
+          options: {
+            // Este campo 'data' será armazenado em auth.users.raw_user_meta_data
+            // e estará acessível pelo nosso trigger.
+            data: {
+              full_name: nome,
+              username: username,
+              // O email também é útil aqui para o trigger
+              email: email
+            }
+          }
+        });
 
         if (signUpError) {
           // Trata o erro "User already registered" que você mencionou
@@ -327,8 +327,17 @@ const {
 
       } catch (error) {
         console.error('Erro no login:', error);
-        // Mensagem genérica para segurança (não dizer se foi o usuário ou a senha)
-        showAppToast('Usuário ou senha inválidos.');
+
+        // --- AQUI ESTÁ A CORREÇÃO (Issue 1) ---
+        // Verificamos a mensagem de erro específica do Supabase
+        if (error.message === 'Email not confirmed') {
+          showAppToast('Sua conta precisa ser verificada. Por favor, cheque seu e-mail.');
+        } else {
+          // Mensagem genérica para todos os outros erros (senha errada, usuário não existe)
+          showAppToast('Usuário ou senha inválidos.');
+        }
+        // --- FIM DA CORREÇÃO ---
+
         formLoginContainer.classList.remove('loading'); // <-- ESCONDE O LOADER (no erro)
       }
     });
@@ -352,7 +361,7 @@ const {
   // --- 6. LÓGICA DE RECUPERAR SENHA (NOVO) ---
   if (formRecuperarContainer) {
     const formRecuperar = formRecuperarContainer.querySelector('form'); // Seleciona o <form> dentro da div
-    
+
     if (formRecuperar) {
       formRecuperar.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -383,13 +392,13 @@ const {
               .select('email')
               .eq('username', loginInput)
               .single();
-            
+
             // Se der erro (exceto 'não encontrado') ou não achar perfil,
             // pulamos para o 'finally' onde a msg genérica será mostrada.
             if (error && error.code !== 'PGRST116') {
-               console.error('Erro ao buscar email por username (recuperação):', error);
+              console.error('Erro ao buscar email por username (recuperação):', error);
             }
-            
+
             if (profile && profile.email) {
               userEmail = profile.email;
             } else {
@@ -404,15 +413,15 @@ const {
           const { error: resetError } = await supabase.auth.resetPasswordForEmail(userEmail);
 
           if (resetError) {
-             console.error('Erro ao solicitar redefinição de senha:', resetError.message);
+            console.error('Erro ao solicitar redefinição de senha:', resetError.message);
           }
 
         } catch (error) {
           console.error('Erro inesperado na recuperação de senha:', error);
-        
+
         } finally {
           // 3. SEMPRE mostra uma mensagem genérica por segurança (evitar enumeração de usuários)
-          
+
           // Esconde o toast de 'processando' se ele existir
           // if (processingToast && processingToast.remove) { // <-- REMOVIDO
           //   processingToast.remove(); // <-- REMOVIDO
@@ -421,7 +430,7 @@ const {
           formRecuperarContainer.classList.remove('loading'); // <-- ESCONDE O LOADER
 
           showAppToast('Se uma conta existir para este usuário, um e-mail de recuperação foi enviado.');
-          
+
           // Limpa o formulário e volta para o login
           formRecuperar.reset();
           if (caixa) {
