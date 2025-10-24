@@ -188,19 +188,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // -----------------------------------------------------------------
 
         // 5. ATUALIZAR os dados no 'profiles'
+        // (full_name, username e email já foram inseridos pelo trigger SQL #9)
         const {
           error: profileError
         } = await supabase
           .from('profiles')
           .update({
-            full_name: nome,
-            username: username,
-            email: email, // Armazenar o email aqui é bom para a sua função de login
-            phone: '', // (SQL 5)
-            // is_admin: false // (Já é 'false' por padrão no seu SQL)
+            phone: '', // O trigger não insere o 'phone', então este update é útil
           })
-          .eq('id', authData.user.id); // Atualiza a linha ONDE o 'id' bate
-
+          .eq('id', authData.user.id);
+        
         if (profileError) {
           // Se o UPDATE falhar, pode ser um problema de RLS
           // Sua RLS de UPDATE "Users can update their own profile." está correta
@@ -448,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // mas os listeners de submit já estão configurados acima.
   }
 });
+
 
 
 
