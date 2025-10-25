@@ -164,8 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
               full_name: nome,
               username: username,
-              // O email também é útil aqui para o trigger
-              email: email
             }
           }
         });
