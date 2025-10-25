@@ -180,44 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!authData.user) throw new Error('Falha ao criar usuário, tente novamente.');
 
-        // -----------------------------------------------------------------
-// *** AQUI ESTÁ A CORREÇÃO (DEFINITIVA) ***
-//
-// O trigger (SQL) foi REMOVIDO pois estava causando o erro.
-// Agora o JavaScript precisa INSERIR o perfil manualmente.
-// -----------------------------------------------------------------
-
-// 5. INSERIR os dados no 'profiles'
-const {
-  error: profileError
-} = await supabase
-  .from('profiles')
-  .insert({
-    id: authData.user.id, // Pega o ID do usuário recém-criado
-    full_name: nome,
-    username: username,
-    email: email, // Grava o email no perfil (bom para login)
-    phone: '' // (SQL 5)
-  });
-
-if (profileError) {
-  // Se o INSERT falhar (ex: RLS de INSERT errada, ou username duplicado)
-  // A RLS "Users can insert their own profile" (SQL Etapa 1) DEVE permitir isso.
-  console.error("Erro ao INSERIR perfil:", profileError);
-
-  // O erro mais provável aqui é '23505: unique_violation' (username duplicado)
-  if (profileError.code === '23505') {
-      // A checagem de duplicidade (Etapa 3 do JS) deveria ter pego isso,
-      // mas se não pegou, o banco pegou.
-      throw new Error('Erro: Este nome de usuário já está em uso.');
-  }
-
-  // Se for outro erro, precisamos ser claros.
-  // (Idealmente, deveríamos deletar o usuário do 'auth' aqui,
-  // mas isso é complexo. Vamos focar em fazer o INSERT funcionar.)
-  throw new Error('Erro ao finalizar cadastro do perfil: ' + profileError.message);
-}
-
         // 6. Sucesso!
         // (Se você reativar a confirmação de e-mail, mude esta mensagem)
         showAppToast('Cadastro concluído com sucesso! Verifique seu e-mail para a verificação.');
