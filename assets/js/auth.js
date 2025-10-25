@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
 
-  // --- 3. LÓGICA DE CADASTRO ---
+  // --- 3. LÓGICA DE CADASTRO (CORRIGIDA) ---
 
   const formCadastro = document.getElementById('form-cadastro');
   if (formCadastro) {
@@ -128,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         // 3. Validação: Checar se username ou email já existem
-        //    (Sua RLS de SELECT 'public profiles' permite isso)
         const {
           data: existingProfiles,
           error: checkError
@@ -144,32 +143,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return showAppToast('Erro: Este nome de usuário já está em uso.');
           }
           if (existingProfiles.some(p => p.email === email)) {
-            // Este erro pode aparecer se o usuário foi criado no Auth mas falhou no Profile
             return showAppToast('Erro: Este email já está cadastrado.');
           }
         }
 
         // 4. Criar o usuário no Supabase Auth
-        //    (Você mencionou que desativou a confirmação, se reativar, tudo bem)
-        // 4. Criar o usuário no Supabase Auth
+        //    (REMOVEMOS 'options.data' pois não funciona no plano gratuito)
         const {
           data: authData,
           error: signUpError
         } = await supabase.auth.signUp({
           email: email,
-          password: senha,
-          options: {
-            // Este campo 'data' será armazenado em auth.users.raw_user_meta_data
-            // e estará acessível pelo nosso trigger.
-            data: {
-              full_name: nome,
-              username: username,
-            }
-          }
+          password: senha
+          /* options: { data: { ... } } 
+            FOI REMOVIDO DAQUI
+          */
         });
 
         if (signUpError) {
-          // Trata o erro "User already registered" que você mencionou
+          // Trata o erro "User already registered"
           if (signUpError.message.includes("User already registered")) {
             return showAppToast('Erro: Este email já está cadastrado.');
           }
@@ -178,8 +170,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!authData.user) throw new Error('Falha ao criar usuário, tente novamente.');
 
+        /*
+          NOVA ETAPA 5: ATUALIZAR O PERFIL MANUALMENTE
+          Como 'options.data' não funciona, fazemos um 'update'
+          logo após o 'signUp' ser bem-sucedido.
+          O trigger (corrigido na Etapa 1) já criou a linha,
+          então agora só precisamos atualizá-la com os dados corretos.
+        */
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            full_name: nome,      // O nome completo que o usuário digitou
+            username: username    // O username único que o usuário digitou
+          })
+          .eq('id', authData.user.id); // Atualiza a linha do usuário recém-criado
+
+        if (updateError) {
+          // Se o update falhar, o usuário foi criado no Auth, mas o perfil está incompleto
+          console.error('Usuário criado, mas falha ao atualizar perfil:', updateError);
+          // O usuário ainda pode ter que verificar o e-mail, então esta msg é apropriada
+          throw new Error('Falha ao salvar dados do perfil. Tente fazer login.'); 
+        }
+
         // 6. Sucesso!
-        // (Se você reativar a confirmação de e-mail, mude esta mensagem)
         showAppToast('Cadastro concluído com sucesso! Verifique seu e-mail para a verificação.');
 
         // Limpa o formulário
@@ -416,4 +429,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // mas os listeners de submit já estão configurados acima.
   }
 });
+
 
