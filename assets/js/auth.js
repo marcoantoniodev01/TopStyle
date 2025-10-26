@@ -32,6 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn('Elementos da animação de login/cadastro não encontrados.');
   }
 
+  // --- 1.5. LÓGICA DE ANIMAÇÃO (MOBILE) - [ADIÇÃO] ---
+  // (Listeners para os novos botões .troca que adicionei no HTML)
+  const botaoTrocarParaCadastro = document.getElementById('botaoTrocarParaCadastro');
+  const botaoTrocarParaLogin = document.getElementById('botaoTrocarParaLogin');
+
+  if (botaoTrocarParaCadastro && botaoTrocarParaLogin && caixa) {
+    botaoTrocarParaCadastro.addEventListener('click', () => {
+      caixa.classList.add('painel-direito-ativo');
+    });
+
+    botaoTrocarParaLogin.addEventListener('click', () => {
+      caixa.classList.remove('painel-direito-ativo');
+    });
+  } else {
+    console.warn('Botões de troca mobile (troca) não encontrados.');
+  }
+  // --- [FIM DA ADIÇÃO] ---
+
+
   // --- NOVA LÓGICA DA ANIMAÇÃO: ESQUECI A SENHA ---
 
   const botaoEsqueciSenha = document.getElementById('botaoEsqueciSenha');
@@ -429,5 +448,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // mas os listeners de submit já estão configurados acima.
   }
 });
-
-
