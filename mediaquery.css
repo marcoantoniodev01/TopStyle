@@ -145,6 +145,7 @@ Grandes Telas: Acima de 1200px
         max-width: 300px;
         height: 45px;
         padding: 0px 0px;
+        opacity: 1;
 
         /* Estilos do seu .troca original */
         background-color: transparent;
