@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/mediaquery.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+  <title>Seu Carrinho - TopStyle</title>
+</head>
+
+<body>
+  <!-- Carrossel de desconto -->
+  <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+    <div class="carrossel-wrapper">
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+    </div>
+    <div class="carrossel-wrapper">
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header hidden" id="header">
+    <nav class="nav__container">
+      <div class="nav__menu" id="nav-menu">
+        <ul class="nav__list">
+          <li class="nav__item"><a href="inicial.html" class="nav__link">Masculino</a></li>
+          <li class="nav__item"><a href="inicial.html#feminino" class="nav__link">Feminino</a></li>
+          <li class="nav__item"><a href="inicial.html#off" class="nav__link">Off</a></li>
+          <li class="nav__item"><a href="inicial.html#sobre" class="nav__link">Sobre</a></li>
+        </ul>
+        <div class="nav__close" id="nav-close" aria-label="Fechar Menu">
+          <i class="ri-close-fill"></i>
+        </div>
+      </div>
+
+      <div class="nav__actions">
+        <div class="nav__toggle" id="nav-toggle" aria-label="Abrir Menu">
+          <i class="ri-align-justify"></i>
+        </div>
+      </div>
+
+      <div class="logo-text-container">
+        <h1><a class="logo-text" href="inicial.html">TopStyle<span class="after-title-header"> | carrinho de
+              compras</span></a></h1>
+      </div>
+
+      <div class="social-header">
+        <ul>
+          <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+          <li class="social__link" title="Seu Perfil"><a href=""><i class="ri-user-line"></i></a></li>
+          <li class="social__link" title="Carrinho">
+            <a href="carrinho.html" class="cart-icon">
+              <i class="ri-shopping-cart-line"></i>
+              <span id="cart-count" class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+        <div class="trocar">
+          <i class="ri-sun-line change-theme" id="theme-button" aria-label="Alterar Tema"></i>
+        </div>
+      </div>
+    </nav>
+    <div class="progress-bar"></div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <section class="cart-page">
+
+      <section class="carrinho-vazio" style="display: none;">
+        <div class="vazio-info">
+          <img class="hidden fade-down" src="https://i.ibb.co/5h8sXHRS/emoji-triste.png" alt="Vish!">
+          <p class="hidden zoom-in">Você ainda não colocou nenhum produto no carrinho</p>
+          <a class="hidden fade-up" href="inicial.html">Ir as compras!</a>
+        </div>
+
+        <div class="recomendações-carrinho">
+          <h1>Recomendações</h1>
+          <div class="products-content-carrinho">
+
+            <div class="product-row">
+            <!-- Slots serão preenchidos pelo JavaScript -->
+            <div class="product-slot"></div>
+            <div class="product-slot"></div>
+            <div class="product-slot"></div>
+            <div class="product-slot"></div>
+          </div>
+
+          </div>
+        </div>
+      </section>
+
+      <form class="carrinho-content">
+
+        <div class="hidden zoom-in">
+          <div id="cart-items"></div>
+        </div>
+
+        <div class="content-continuar">
+          <div class="cupom">
+            <p class="cupom-invalido-alert">😑 Insira um cupom válido!!</p>
+            <input type="text" id="cupom-input" autocomplete="off" placeholder="Cupom">
+            <button class="hidden fade-right" type="button" id="cupom-btn">ADICIONAR</button>
+          </div>
+
+
+          <div id="cupom-aplicado" class="cupom-aplicado">
+            <span class="badge-cupom hidden fade-down">10% OFF</span>
+            <div id="trocar-div" class="hidden zoom-in"><a href="#" id="trocar-cupom">Remover-cupom</a></div>
+          </div>
+
+          <hr class="hidden zoom-in">
+
+          <div class="continuar-compra">
+            <div class="continuar-info">
+              <h2 class="text-total-litlecar hidden fade-left">Total:</h2>
+              <h2 class="text-price-litlecar hidden fade-right"><span id="cart-total">R$ 0,00</span></h2>
+            </div>
+
+            <div class="button-cont-littlecar hidden zoom-in">
+              <button id="continuar-btn" type="button">Continuar</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <a href="#" class="scrollup" id="scroll-up">
+      <i class="ri-arrow-up-line"></i>
+    </a>
+  </main>
+
+  <footer class="footer">
+        <!-- Newsletter -->
+        <div class="footer-newsletter hidden zoom-in">
+            <h3>Entre no drop e receba novidades exclusivas</h3>
+            <form>
+                <input type="email" placeholder="Digite seu e-mail">
+                <button type="submit">Inscrever</button>
+            </form>
+        </div>
+
+        <div class="footer-main hidden zoom-in">
+            <!-- Logo + Descrição -->
+            <div class="footer-brand">
+                <h2>TopStyle</h2>
+                <p>Mais que moda, é movimento.
+                    Drops exclusivos, feitos para quem cria tendência.</p>
+            </div>
+
+            <!-- Links -->
+            <div class="footer-links">
+                <div>
+                    <h4>Coleções</h4>
+                    <ul>
+                        <li><a href="#">Novidades</a></li>
+                        <li><a href="#">Drops</a></li>
+                        <li><a href="#">Collabs</a></li>
+                        <li><a href="#">Lookbook</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Marca</h4>
+                    <ul>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Carreiras</a></li>
+                        <li><a href="#">Na mídia</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Ajuda</h4>
+                    <ul>
+                        <li><a href="guia-tamanho.html">Guia de tamanhos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                        <li><a href="#">Política de devolução</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="footer-bottom">
+            <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+            <div class="footer-legal">
+                <a href="#">Termos</a>
+                <a href="#">Privacidade</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="assets/js/parallax.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/carrinho.js"></script>
+</body>
+
+</html>

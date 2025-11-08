@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>TopStyle</title>
+</head>
+
+<body>
+    <!-- Carrossel de desconto -->
+    <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+    </div>
+
+
+    <header class="header" id="header">
+        <nav class="nav__container">
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li title="Masculino" class="nav__item" id="nav__item">
+                        <a href="#masculino" class="nav__link">Masculino</a>
+                    </li>
+
+                    <li title="Feminino" class="nav__item">
+                        <a href="#feminino" class="nav__link">Feminino</a>
+                    </li>
+
+                    <li title="Promoções" class="nav__item">
+                        <a href="#off" class="nav__link">Off</a>
+                    </li>
+
+                    <li title="Sobre Nós" class="nav__item">
+                        <a href="#sobre" class="nav__link">Sobre</a>
+                    </li>
+                </ul>
+
+                <div class="nav__close" id="nav-close" aria-label="Fechar Menu">
+                    <i class="ri-close-fill"></i>
+                </div>
+            </div>
+
+            <div class="nav__actions">
+                <div class="nav__toggle" id="nav-toggle" aria-label="Abrir Menu">
+                    <i class="ri-align-justify"></i>
+                </div>
+            </div>
+
+            <div class="logo-text-container">
+                <h1><a class="logo-text" href="inicial.html">TopStyle<span class="after-title-header-selecao"> |
+                            Camisas</span></a></h1>
+            </div>
+
+            <div class="social-header">
+                <ul>
+                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Seu Perfil"><a href=""><i class="ri-user-line"></i></a></li>
+                    <li class="social__link" title="Carrinho">
+                        <a href="carrinho.html" class="cart-icon">
+                            <i class="ri-shopping-cart-line"></i>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="trocar">
+                    <i class="ri-sun-line change-theme" id="theme-button" aria-label="Alterar Tema"></i>
+                </div>
+            </div>
+        </nav>
+        <div class="progress-bar"></div>
+    </header>
+
+    <main>
+        <section class="selecao-products">
+
+            <div class="filtros">
+                <div class="filtros-content">
+                    <h3 class="filtro-titulo">Filtros</h3>
+
+                    <div class="filtro-grupo" id="grupo-preco">
+                        <h4>Faixa de Preço</h4>
+                        <div class="filtro-preco-inputs">
+                            <input type="number" id="filtro-preco-min" placeholder="Min">
+                            <input type="number" id="filtro-preco-max" placeholder="R$ Max">
+                        </div>
+                        <button type="button" id="btn-aplicar-preco">Aplicar Preço</button>
+                    </div>
+
+                    <div class="filtro-grupo" id="grupo-cores">
+                        <h4>Cor</h4>
+                        <div class="filtro-opcoes" id="filtro-cores-container">
+                        </div>
+                    </div>
+
+                    <button id="btn-limpar-filtros">Limpar Filtros</button>
+                </div>
+            </div>
+
+            <div class="product-content product-content-selecao">
+            </div>
+
+        </section>
+
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="ri-arrow-up-line"></i>
+        </a>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-newsletter hidden zoom-in">
+            <h3>Entre no drop e receba novidades exclusivas</h3>
+            <form>
+                <input type="email" placeholder="Digite seu e-mail">
+                <button type="submit">Inscrever</button>
+            </form>
+        </div>
+
+        <div class="footer-main hidden zoom-in">
+            <div class="footer-brand">
+                <h2>TopStyle</h2>
+                <p>Mais que moda, é movimento.
+                    Drops exclusivos, feitos para quem cria tendência.</p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>Coleções</h4>
+                    <ul>
+                        <li><a href="#">Novidades</a></li>
+                        <li><a href="#">Drops</a></li>
+                        <li><a href="#">Collabs</a></li>
+                        <li><a href="#">Lookbook</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Marca</h4>
+                    <ul>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Carreiras</a></li>
+                        <li><a href="#">Na mídia</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Ajuda</h4>
+                    <ul>
+                        <li><a href="guia-tamanho.html">Guia de tamanhos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                        <li><a href="#">Política de devolução</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+            <div class="footer-legal">
+                <a href="#">Termos</a>
+                <a href="#">Privacidade</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/parallax.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <title>TopStyle</title>
+</head>
+
+<body class="com-intro">
+
+    <div id="preloader">
+        <div class="imagem-loader">
+            <img class="logo-loader" src="https://i.ibb.co/842M1qJ4/logo-branca.png" alt="">
+        </div>
+        <div class="text-loader">
+            <h1>
+                <span>T</span><span>o</span><span>p</span><span>S</span><span>t</span><span>y</span><span>l</span><span>e</span>
+            </h1>
+        </div>
+
+        <!-- O BOTÃO FOI MOVIDO DAQUI... -->
+
+    </div>
+
+    <div id="intro">
+        <!-- ...PARA CÁ. AGORA ELE SÓ APARECE COM A ANIMAÇÃO. -->
+        <button type="button" id="skip-intro-btn">Pular Animação</button>
+        
+        <div class="intro-mask top"></div>
+        <div class="intro-mask bottom"></div>
+
+        <div class="intro-texts">
+            <h1 class="intro-text"><span>E</span><span>S</span><span>T</span><span>I</span><span>L</span><span>O</span>
+            </h1>
+            <h1 class="intro-text">OUSADIA</h1>
+            <h1 class="intro-text-top">TopStyle</h1>
+        </div>
+    </div>
+
+    <header class="header header-top hidden fade-down" id="header">
+  <nav class="nav__container">
+    <div class="nav__menu" id="nav-menu">
+      <ul class="nav__list">
+        <li title="Masculino" class="nav__item dropdown" id="nav__item">
+          <a href="categoria.html?genero=M" class="nav__link">Masculino</a>
+
+          <div class="mega-menu">
+            <div class="mega-content">
+              <div class="column">
+                <h3>Vestuário</h3>
+                <a href="categoria.html?genero=M">Ver Todos</a>
+                <a href="categoria.html?tipo=camisa&genero=M">Camisetas</a>
+                <a href="categoria.html?tipo=camisa-plus-size&genero=M">Camiseta Plus-Size</a>
+                <a href="categoria.html?tipo=camisa-manga-longa&genero=M">Camiseta Manga Longa</a>
+                <a href="categoria.html?tipo=moletom&genero=M">Moletons</a>
+                <a href="categoria.html?tipo=jaqueta&genero=M">Jaquetas E Casacos</a>
+                <a href="categoria.html?tipo=camisa-social&genero=M">Camisas</a>
+                <a href="categoria.html?tipo=calca&genero=M">Calças</a>
+                <a href="categoria.html?tipo=short&genero=M">Shorts E Bermudas</a>
+              </div>
+
+              <div class="column">
+                <h3>Outros</h3>
+                <a href="categoria.html">Ver Todos</a> <a href="categoria.html?genero=U">Juvenil</a> <a href="categoria.html?genero=F">Feminino</a>
+                <a href="categoria.html?tipo=pack">Packs</a>
+              </div>
+
+              <div class="column">
+                <h3>Acessórios</h3>
+                <a href="categoria.html?tipo=acessorio&genero=M">Ver Todos</a>
+                <a href="categoria.html?tipo=chaveiro&genero=M">Chaveiros E Adesivos</a>
+                <a href="categoria.html?tipo=cueca&genero=M">Cuecas</a>
+                <a href="categoria.html?tipo=gorro&genero=M">Gorros</a>
+                <a href="categoria.html?tipo=pochete&genero=M">Pochetes</a>
+                <a href="categoria.html?tipo=mochila&genero=M">Mochilas</a>
+                <a href="categoria.html?tipo=meia&genero=M">Meias</a>
+                <a href="categoria.html?tipo=bag&genero=M">Bags</a>
+                <a href="categoria.html?tipo=bone&genero=M">Bonés</a>
+                <a href="categoria.html?tipo=bucket&genero=M">Bucket</a>
+                <a href="categoria.html?tipo=carteira&genero=M">Carteiras</a>
+              </div>
+
+              <div class="column">
+                <h3>Calçados</h3>
+                <a href="categoria.html?tipo=calcado&genero=M">Ver Todos</a>
+                <a href="categoria.html?tipo=chinelo&genero=M">Chinelos</a>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li title="Feminino" class="nav__item">
+          <a href="categoria.html?genero=F" class="nav__link">Feminino</a>
+        </li>
+
+        <li title="Promoções" class="nav__item">
+          <a href="#off" class="nav__link">Off</a>
+        </li>
+
+        <li title="Sobre Nós" class="nav__item">
+          <a href="#sobre" class="nav__link">Sobre</a>
+        </li>
+      </ul>
+
+      <div class="nav__close" id="nav-close" aria-label="Fechar Menu">
+        <i class="ri-close-fill"></i>
+      </div>
+    </div>
+
+    <div class="nav__actions">
+      <div class="nav__toggle" id="nav-toggle" aria-label="Abrir Menu">
+        <i class="ri-align-justify"></i>
+      </div>
+    </div>
+
+    <div class="logo-text-container">
+      <h1><a class="logo-text" href="inicial.html">TopStyle</a></h1>
+    </div>
+
+    <div class="social-header">
+      <ul>
+        <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+        <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i class="ri-user-line"></i></a></li>
+        <li class="social__link" title="Carrinho">
+          <a href="carrinho.html" class="cart-icon">
+            <i class="ri-shopping-cart-line"></i>
+            <span id="cart-count" class="cart-count">0</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="trocar">
+        <i class="ri-sun-line change-theme" id="theme-button" aria-label="Alterar Tema"></i>
+      </div>
+    </div>
+  </nav>
+  <div class="progress-bar"></div>
+</header>
+
+
+    <main class="content">
+
+        <section class="inicio">
+            <div class="inicio__left">
+                <h1 class="creat__cloth">
+                    Crie sua <br>
+                    <span>Coleção</span>
+                </h1>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ea neque ducimus voluptatum aperiam velit!
+                    Accusamus voluptatem, quisquam pariatur quibusdam optio sequi sunt ex nisi minima soluta iure nam
+                    facilis atque.</p>
+                <div class="buttons__inicio">
+                    <a href="" class="link__creat">
+                        Criar Modelo
+                    </a>
+                    <a href="" class="link__creat-opt">
+                        Modelos Prontos
+                    </a>
+                </div>
+            </div>
+            <div class="inicio__right">
+                <div class="inicio__img">
+                    <img src="https://i.ibb.co/tT4Xbpc3/Testeimg2-1.png" alt="">
+                </div>
+            </div>
+        </section>
+
+        <div class="marquee">
+            <div class="marquee-track" id="marquee-track">
+                <span>Não segue tendência, cria</span>
+                <span>Exclusivo na rua, eterno no estilo</span>
+                <span>Use o futuro</span>
+                <span>TopStyle: não é moda, é movimento</span>
+            </div>
+        </div>
+
+        <section class="selection-initial">
+            <div class="select-clothing">
+                <a href="categoria.html?tipo=camisa" class="clothing camisas hidden fade-down">
+                    <h1 class="hidden fade-up">CAMISAS</h1>
+                    <img src="https://i.ibb.co/N29DyY9Z/camisas.png" alt="image">
+                </a>
+
+                <a href="categoria.html?tipo=moletom" class="clothing moletons hidden fade-up">
+                    <h1 class="hidden fade-down">MOLETONS</h1>
+                    <img src="https://i.ibb.co/k25WQ6R5/moletom.png" alt="image">
+                </a>
+
+                <a href="categoria.html?tipo=short" class="clothing shorts hidden fade-down">
+                    <h1 class="hidden fade-up">SHORTS</h1>
+                    <img src="https://i.ibb.co/tWYG23n/shorts.png" alt="image">
+                </a>
+
+                <a href="categoria.html?tipo=calca" class="clothing calças hidden fade-up">
+                    <h1 class="hidden fade-down">CALÇAS</h1>
+                    <img src="https://i.ibb.co/LDtTkcGf/cal-a.png" alt="image">
+                </a>
+
+                <a href="categoria.html?tipo=bone" class="clothing bones hidden fade-down">
+                    <h1 class="hidden fade-up">BONÉS</h1>
+                    <img src="https://i.ibb.co/zVy1jyq5/bone.png" alt="image">
+                </a>
+            </div>
+        </section>
+
+        <section class="promotions-day">
+            <div class="product-content">
+                <div class="two alt-two">
+                    <h1>Drop Exclusivo
+                        <span>Mais que hype, é identidade</span>
+                    </h1>
+                </div>
+                <div class="product-row product-row-res">
+                    <div class="swiper-container">
+                        <div class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <div class="product-slot"></div>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="product-slot"></div>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="product-slot"></div>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="product-slot"></div>
+                                </div>
+                            </div>
+                            <div class="swiper-scrollbar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="products-inicio">
+            <div class="product-content">
+                <h1>Mais Vendidos</h1>
+                <div class="product-row">
+                    <div class="product-slot"></div>
+                    <div class="product-slot"></div>
+                    <div class="product-slot"></div>
+                    <div class="product-slot"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="space">
+
+        </section>
+
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="ri-arrow-up-line"></i>
+        </a>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-newsletter hidden zoom-in">
+            <h3>Entre no drop e receba novidades exclusivas</h3>
+            <form>
+                <input type="email" placeholder="Digite seu e-mail">
+                <button type="submit">Inscrever</button>
+            </form>
+        </div>
+
+        <div class="footer-main hidden zoom-in">
+            <div class="footer-brand">
+                <h2>TopStyle</h2>
+                <p>Mais que moda, é movimento.
+                    Drops exclusivos, feitos para quem cria tendência.</p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>Coleções</h4>
+                    <ul>
+                        <li><a href="#">Novidades</a></li>
+                        <li><a href="#">Drops</a></li>
+                        <li><a href="#">Collabs</a></li>
+                        <li><a href="#">Lookbook</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Marca</h4>
+                    <ul>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Carreiras</a></li>
+                        <li><a href="#">Na mídia</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Ajuda</h4>
+                    <ul>
+                        <li><a href="guia-tamanho.html">Guia de tamanhos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                        <li><a href="#">Política de devolução</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+            <div class="footer-legal">
+                <a href="#">Termos</a>
+                <a href="#">Privacidade</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 3,     // mostra 3 slides
+            spaceBetween: 30,     // espaçamento entre eles
+            scrollbar: {
+                el: ".swiper-scrollbar",
+                hide: false,        // mantém o scrollbar visível
+                draggable: true,    // permite arrastar o scrollbar
+            },
+            mousewheel: true,     // permite rolar com o mouse
+        });
+    </script>
+
+    <script type="module" src="assets/js/supabase-client.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/carrinho.js"></script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>

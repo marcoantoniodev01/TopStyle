@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+</head>
+
+<body>
+  <!-- Carrossel de desconto -->
+  <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto">
+    <div class="carrossel-wrapper">
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+    </div>
+    <div class="carrossel-wrapper">
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
+      <span>FRETE GRÁTIS ACIMA DE R$100</span>
+      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <nav class="nav__container">
+      <div class="nav__menu" id="nav-menu">
+        <ul class="nav__list">
+          <li class="nav__item"><a href="inicial.html" class="nav__link">Masculino</a></li>
+          <li class="nav__item"><a href="inicial.html#feminino" class="nav__link">Feminino</a></li>
+          <li class="nav__item"><a href="inicial.html#off" class="nav__link">Off</a></li>
+          <li class="nav__item"><a href="inicial.html#sobre" class="nav__link">Sobre</a></li>
+        </ul>
+        <div class="nav__close" id="nav-close" aria-label="Fechar Menu">
+          <i class="ri-close-fill"></i>
+        </div>
+      </div>
+
+      <div class="nav__actions">
+        <div class="nav__toggle" id="nav-toggle" aria-label="Abrir Menu">
+          <i class="ri-align-justify"></i>
+        </div>
+      </div>
+
+      <div class="logo-text-container">
+        <h1><a class="logo-text" href="inicial.html">TopStyle<span class="after-title-header"> | carrinho de
+              compras</span></a></h1>
+      </div>
+
+      <div class="social-header">
+        <ul>
+          <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+          <li class="social__link" title="Seu Perfil"><a href=""><i class="ri-user-line"></i></a></li>
+          <li class="social__link" title="Carrinho">
+            <a href="carrinho.html" class="cart-icon">
+              <i class="ri-shopping-cart-line"></i>
+              <span id="cart-count" class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+        <div class="trocar">
+          <i class="ri-sun-line change-theme" id="theme-button" aria-label="Alterar Tema"></i>
+        </div>
+      </div>
+    </nav>
+    <div class="progress-bar"></div>
+  </header>
+
+
+  <main>
+    <div class="model-cloth">
+      <section class="model-cloth-img swiper mySwiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <img src="img/MODELO01F.webp" alt="">
+          </div>
+          <div class="swiper-slide">
+            <img src="img/MODELO01T.webp" alt="">
+          </div>
+          <div class="swiper-slide">
+            <img src="img/MODELO01LONG.webp" alt="">
+          </div>
+          <div class="swiper-slide">
+            <img src="img/MODELO01PER.webp" alt="">
+          </div>
+          <div class="swiper-slide">
+            <img src="img/MODELO01PERS.webp" alt="">
+          </div>
+        </div>
+
+        <!-- Paginação e Botões -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </section>
+
+      <section class="model-cloth-info">
+        <div class="container">
+          <div class="product" data-name="Camiseta Oversized Preta aaaa" data-price="149.90"
+            data-img="img/camiseta-preta.png">
+            <img src="img/Modelo-01.webp" alt="Camiseta Oversized Preta" class="hidden-cart-img">
+            <h2>Camiseta Streetwear Prison Streetwear Club</h2>
+            <div class="price">R$ 139,90 <small>ou 2x de R$ 69,5</small></div>
+
+            <hr>
+
+            <div class="options">
+              <h4>Tamanho</h4>
+              <div class="sizes model-sizes">
+                <div data-size="PP" class="model-size-btn">PP</div>
+                <div data-size="P" class="model-size-btn">P</div>
+                <div data-size="M" class="model-size-btn">M</div>
+                <div data-size="G" class="model-size-btn">G</div>
+                <div data-size="GG" class="model-size-btn">GG</div>
+              </div>
+            </div>
+
+            <div class="options">
+              <h4>Cor</h4>
+              <div class="colors">
+                <!-- <div data-color="Offwhite"><span style="background: #f5f5f5"></span> Offwhite</div>
+              <div data-color="Branco"><span style="background: #fff"></span> Branco</div> -->
+                <div data-color="Preto"><span style="background: #000"></span> Preto</div>
+                <!-- <div data-color="Marrom"><span style="background: #8b4513"></span> Marrom</div>
+              <div data-color="Areia"><span style="background: #d2b48c"></span> Areia</div>
+              <div data-color="Grafite"><span style="background: #4b4b4b"></span> Grafite</div> -->
+              </div>
+            </div>
+
+            <div class="model-qty-add">
+              <div class="model-qty-controls">
+                <button type="button">−</button>
+                <input type="number" value="1" min="1" />
+                <button type="button">+</button>
+              </div>
+              <button class="add-to-cart">Adicionar ao carrinho</button>
+            </div>
+
+            <!-- <div class="model-shipping-section">
+            <input class="model-cep-input" type="text" placeholder="00000-000" maxlength="9" />
+            <button class="model-cep-button">Calcular</button>
+            <div class="model-cep-help"><a href="#">Não sei meu CEP</a></div>
+          </div> -->
+
+            <div class="model-accordion">
+              <div class="model-accordion-item">
+                <div class="model-accordion-header">Detalhes <span>+</span></div>
+                <div class="model-accordion-content">-Modelagem Regular
+                  -100% algodão <br>
+                  -Gola canelada 2,5 Centímetros (cm) 2x1 com Elastano <br>
+                  -Gramatura 182 g/m² <br>
+                  <br>
+                  Importante saber: <br>
+                  -As cores podem ter algumas variações de acordo com o monitor ou dispositivo que está
+                  utilizando. <br>
+                  -Em produtos de algodão pode haver encolhimento de 2,5 a 3%.
+                </div>
+              </div>
+              <div class="model-accordion-item">
+                <div class="model-accordion-header">Medidas <span>+</span></div>
+                <div class="model-accordion-content"><img src="img/Medidas.webp" alt="">
+                </div>
+              </div>
+              <div class="model-accordion-item">
+                <div class="model-accordion-header">Informações Complementares <span>+</span></div>
+                <div class="model-accordion-content">Produto com garantia de 6 meses contra defeitos de
+                  fabricação.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="related-products-section" aria-label="Produtos relacionados">
+      <h2 class="related-section-title">RELATED PRODUCTS</h2>
+      <div class="product-content">
+        <h1>Mais Vendidos</h1>
+        <div class="product-row">
+          <!-- Slots serão preenchidos pelo JavaScript -->
+          <div class="product-slot"></div>
+          <div class="product-slot"></div>
+          <div class="product-slot"></div>
+          <div class="product-slot"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <!-- Newsletter -->
+    <div class="footer-newsletter">
+      <h3>Entre no drop e receba novidades exclusivas</h3>
+      <form>
+        <input type="email" placeholder="Digite seu e-mail">
+        <button type="submit">Inscrever</button>
+      </form>
+    </div>
+
+    <div class="footer-main">
+      <!-- Logo + Descrição -->
+      <div class="footer-brand">
+        <h2>TopStyle</h2>
+        <p>Mais que moda, é movimento.
+          Drops exclusivos, feitos para quem cria tendência.</p>
+      </div>
+
+      <!-- Links -->
+      <div class="footer-links">
+        <div>
+          <h4>Coleções</h4>
+          <ul>
+            <li><a href="#">Novidades</a></li>
+            <li><a href="#">Drops</a></li>
+            <li><a href="#">Collabs</a></li>
+            <li><a href="#">Lookbook</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Marca</h4>
+          <ul>
+            <li><a href="#">Sobre nós</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Carreiras</a></li>
+            <li><a href="#">Na mídia</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ajuda</h4>
+          <ul>
+            <li><a href="guia-tamanho.html">Guia de tamanhos</a></li>
+            <li><a href="#">Suporte</a></li>
+            <li><a href="#">Política de devolução</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="footer-bottom">
+      <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+      <div class="footer-legal">
+        <a href="#">Termos</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/produto-novo.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+
+    let swiper;
+
+    function initSwiper() {
+      if (window.innerWidth <= 768 && !swiper) {
+        swiper = new Swiper(".mySwiper", {
+          slidesPerView: 1,
+          spaceBetween: 20,
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+        });
+      } else if (window.innerWidth > 768 && swiper) {
+        swiper.destroy(true, true);
+        swiper = null;
+      }
+    }
+
+    window.addEventListener("load", initSwiper);
+    window.addEventListener("resize", initSwiper);
+  </script>
+</body>
+
+</html>
