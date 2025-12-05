@@ -1,11 +1,7 @@
 // assets/js/profile.js
-// Lógica completa de perfil com novos modais reutilizados do checkout
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+// VERSÃO CORRIGIDA: Usa a instância global do Supabase iniciada no main.js para evitar conflitos de sessão na Vercel/Netlify.
 
-const SUPABASE_URL = 'https://xhzdyatnfaxnvvrllhvs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase;
 let currentUser = null;
 
 // Helpers
@@ -19,15 +15,31 @@ const cardLogos = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Verifica Auth
+    // 1. CONEXÃO SEGURA: Puxa a instância do main.js
+    try {
+        if (window.initSupabaseClient) {
+            supabase = await window.initSupabaseClient();
+        } else {
+            console.error("ERRO CRÍTICO: main.js não carregou o Supabase.");
+            return;
+        }
+    } catch (err) {
+        console.error("Erro ao conectar Supabase:", err);
+        return;
+    }
+
+    // 2. Verifica Auth na instância correta
     const { data: { session } } = await supabase.auth.getSession();
+    
     if (!session) {
+        // Se não tiver login, manda para a home/login
         window.location.href = 'index.html';
         return;
     }
+    
     currentUser = session.user;
 
-    // Inicializa abas
+    // Inicializa todas as abas
     initProfileData();
     initAddressLogic();
     initCardLogic();
@@ -36,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /* ==========================================================
-   1. DADOS PESSOAIS (Lógica existente mantida e adaptada)
+   1. DADOS PESSOAIS
    ========================================================== */
 async function initProfileData() {
     const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
@@ -124,7 +136,7 @@ function formatDate(dateStr) {
 }
 
 /* ==========================================================
-   2. ENDEREÇOS (Reaproveitando Modais do Checkout)
+   2. ENDEREÇOS
    ========================================================== */
 async function initAddressLogic() {
     const listContainer = document.getElementById('addresses-list');
@@ -249,7 +261,7 @@ async function initAddressLogic() {
 }
 
 /* ==========================================================
-   3. CARTÕES (Reaproveitando Modais do Checkout)
+   3. CARTÕES
    ========================================================== */
 async function initCardLogic() {
     const listContainer = document.getElementById('cards-list');
@@ -379,7 +391,7 @@ async function initCardLogic() {
 }
 
 /* ==========================================================
-   4. TELEFONES (Nova Lógica com Modal de País)
+   4. TELEFONES
    ========================================================== */
 async function initPhoneLogic() {
     const listContainer = document.getElementById('phones-list');
@@ -517,7 +529,7 @@ async function initPhoneLogic() {
 }
 
 /* ==========================================================
-   5. PEDIDOS (Simples Listagem)
+   5. PEDIDOS
    ========================================================== */
 async function initOrdersLogic() {
     const listContainer = document.getElementById('orders-list');
