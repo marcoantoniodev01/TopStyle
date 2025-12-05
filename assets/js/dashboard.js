@@ -263,6 +263,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(atualizarDashboard, 30_000); // fallback: atualiza a cada 30s
 });
 
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Inicia listagem de usuários se estiver na página
+    if (document.getElementById('user-cards-list')) {
+        mostrarProfiles();
+    }
+});
+
 
 /* ===============================
     =================================
@@ -279,65 +290,396 @@ const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-// Função para carregar os dados
+/* =========================================================
+   GESTÃO DE USUÁRIOS (Atualizado)
+   ========================================================= */
+
+// Variáveis globais de controle
+let currentUserId = null;
+let currentIsAdmin = false;
+let currentIsBanned = false; // Novo controle
+
+// --- LISTAGEM DE USUÁRIOS (ATUALIZADA COM FOTO) ---
 async function mostrarProfiles() {
     const termoBusca = document.getElementById('filtroBusca')?.value.trim();
+    const listContainer = document.getElementById('user-cards-list');
 
-    let consulta = supabaseAdmin
-        .from('profiles')
-        .select('id, username, full_name, email, is_admin')
-        // NOVIDADE: Ordena por username em ordem alfabética (A-Z)
-        .order('username', { ascending: true });
+    if (!listContainer) return;
 
-    // NOVIDADE: Adiciona o filtro se houver um termo de busca
-    if (termoBusca) {
-        // Filtra por username OU full_name (ilike faz a busca sem case sensitive)
-        consulta = consulta.or(`username.ilike.%${termoBusca}%,full_name.ilike.%${termoBusca}%`);
-    }
+    listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">Carregando usuários...</div>';
 
-    const { data, error } = await consulta;
+    try {
+        // 1. Inicia a Query (ADICIONADO: avatar_url)
+        let consulta = supabaseAdmin
+            .from('profiles')
+            .select('id, username, full_name, email, is_admin, cpf, created_at, avatar_url')
+            .order('is_admin', { ascending: false })
+            .order('username', { ascending: true });
 
-    if (error) {
-        console.error('Erro ao buscar tabela:', error);
-        alert('Erro ao buscar tabela profiles.');
-        return;
-    }
+        // 2. Lógica de Filtro (Igual ao anterior)
+        if (termoBusca) {
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(termoBusca);
+            if (isUUID) {
+                consulta = consulta.eq('id', termoBusca);
+            } else {
+                consulta = consulta.or(`username.ilike.%${termoBusca}%,full_name.ilike.%${termoBusca}%,email.ilike.%${termoBusca}%`);
+            }
+        }
 
-    if (!data.length) {
-        document.querySelector('#dataRows').innerHTML = '<tr><td colspan="6">Nenhum dado encontrado.</td></tr>';
-        return;
-    }
+        const { data: profiles, error: errorProfiles } = await consulta;
+        if (errorProfiles) throw errorProfiles;
 
-    const tbody = document.getElementById('dataRows');
+        // 3. Buscar Banimentos
+        const { data: bans, error: errorBans } = await supabaseAdmin.from('user_bans').select('user_id');
+        if (errorBans) throw errorBans;
+        const bannedIds = new Set(bans.map(b => b.user_id));
 
-    tbody.innerHTML = data.map(row => {
-        const isAdmin = row.is_admin === true;
-        const buttonText = isAdmin ? 'Revogar Admin' : 'Tornar Admin';
-        const buttonClass = isAdmin ? 'btn-danger' : 'btn-success';
+        if (!profiles || profiles.length === 0) {
+            listContainer.innerHTML = '<p style="text-align:center; padding: 20px;">Nenhum usuário encontrado.</p>';
+            return;
+        }
 
-        return `
-                <tr>
-                    <td>${row.id}</td>
-                    <td>${row.username}</td>
-                    <td>${row.full_name ?? '-'}</td>
-                    <td>${row.email ?? '-'}</td>
-                    <td><strong>${isAdmin ? 'Sim' : 'Não'}</strong></td>
-                    <td>
-                        <button 
-                            class="btn btn-sm ${buttonClass}" 
-                            onclick="toggleAdmin('${row.id}', ${isAdmin})"
-                        >
-                            ${buttonText}
-                        </button>
-                    </td>
-                </tr>
+        // 4. Renderizar Cards
+        listContainer.innerHTML = profiles.map(row => {
+            const isAdmin = row.is_admin === true;
+            const isBanned = bannedIds.has(row.id);
+            const displayUsername = row.username || 'Sem Usuario';
+            const displayName = row.full_name ? row.full_name : displayUsername;
+            const initials = displayUsername.substring(0, 2).toUpperCase();
+
+            // Lógica da Imagem
+            const hasAvatar = row.avatar_url && row.avatar_url.trim() !== '';
+
+            // Classes Visuais
+            let cardClass = 'user-card';
+            let avatarClass = isAdmin ? 'admin' : 'client';
+            let badgeHtml = '';
+
+            if (isBanned) {
+                cardClass += ' banned-border';
+                avatarClass = 'banned';
+                badgeHtml = `<span class="badge-role banned">BANIDO</span>`;
+            } else if (isAdmin) {
+                badgeHtml = `<span class="badge-role admin">ADMIN</span>`;
+            } else {
+                badgeHtml = `<span class="badge-role client">CLIENTE</span>`;
+            }
+
+            // HTML do Avatar (IMG ou Sigla)
+            let avatarHtml;
+            if (hasAvatar) {
+                avatarHtml = `<div class="user-avatar ${avatarClass} has-img"><img src="${row.avatar_url}" alt="${displayUsername}"></div>`;
+            } else {
+                avatarHtml = `<div class="user-avatar ${avatarClass}">${initials}</div>`;
+            }
+
+            // Tratamento de aspas para o onclick
+            const safeUsername = displayUsername.replace(/'/g, "\\'");
+            const safeFullname = displayName.replace(/'/g, "\\'");
+            const safeAvatar = hasAvatar ? row.avatar_url : '';
+
+            // Botão Admin
+            const btnClass = isAdmin ? 'btn-revoke' : 'btn-grant';
+            const btnText = isAdmin ? 'Revogar Admin' : 'Tornar Admin';
+
+            return `
+            <div class="${cardClass}">
+                <div class="user-card-left">
+                    ${avatarHtml}
+                    <div class="user-info-col">
+                        <div class="user-header-row">
+                            <h3 class="user-name">${displayName}</h3>
+                            ${badgeHtml}
+                        </div>
+                        <p class="user-email">${row.email} | ${displayUsername}</p>
+                        <div class="user-id-pill" title="Clique para copiar ID" onclick="copiarIdUsuario('${row.id}')">ID: ${row.id}</div>
+                    </div>
+                </div>
+                <div class="user-card-actions">
+                    <button class="btn-action-user ${btnClass}" onclick="toggleAdmin('${row.id}', ${isAdmin})">${btnText}</button>
+                    
+                    <button class="btn-icon-secondary" title="Ver Perfil Detalhado" 
+                        onclick="openUserModal('${row.id}', '${safeUsername}', '${safeFullname}', '${row.email}', '${row.cpf}', '${row.created_at}', ${isAdmin}, ${isBanned}, '${safeAvatar}')">
+                        <i class="ri-user-settings-line"></i>
+                    </button>
+                </div>
+            </div>
             `;
-    }).join('');
+        }).join('');
+
+    } catch (error) {
+        console.error('Erro na busca:', error);
+        listContainer.innerHTML = `<p style="text-align:center; color:red;">Erro ao carregar dados: ${error.message}</p>`;
+    }
 }
 
-// Função para mudar o status de Admin (permanece a mesma, usando supabaseAdmin)
+// ==========================================
+// LÓGICA DOS MODAIS (VER DETALHES E BANIR)
+// ==========================================
+
+// --- ABRIR MODAL DE DETALHES ---
+// --- ABRIR MODAL DE DETALHES (ATUALIZADO PRO) ---
+function openUserModal(id, username, fullname, email, cpf, createdAt, isAdmin, isBanned, avatarUrl) {
+    currentUserId = id;
+    currentIsAdmin = isAdmin;
+    currentIsBanned = isBanned;
+
+    // Elementos do DOM
+    const initialsEl = document.getElementById('detail-initials');
+    const imgEl = document.getElementById('detail-img');
+    const wrapperEl = document.getElementById('detail-avatar-wrapper');
+
+    // Preencher Textos
+    document.getElementById('detail-username').innerText = '@' + username;
+    document.getElementById('detail-fullname').innerText = (fullname !== 'null' && fullname) ? fullname : username;
+    document.getElementById('detail-email').innerText = email || '---';
+    document.getElementById('detail-cpf').innerText = (cpf && cpf !== 'null' && cpf !== 'undefined') ? cpf : 'Não informado';
+    document.getElementById('detail-id').innerText = id;
+
+    const dateObj = new Date(createdAt);
+    document.getElementById('detail-date').innerText = !isNaN(dateObj) ? dateObj.toLocaleDateString('pt-BR') : '---';
+
+    // Lógica da Foto no Modal
+    // 1. Reseta classes de cor
+    wrapperEl.classList.remove('admin', 'client', 'banned');
+
+    // 2. Aplica cor baseada no status
+    if (isBanned) wrapperEl.classList.add('banned');
+    else if (isAdmin) wrapperEl.classList.add('admin');
+    else wrapperEl.classList.add('client');
+
+    // 3. Mostra Imagem ou Sigla
+    if (avatarUrl && avatarUrl !== 'null' && avatarUrl !== 'undefined' && avatarUrl !== '') {
+        imgEl.src = avatarUrl;
+        imgEl.style.display = 'block';
+        initialsEl.style.display = 'none';
+    } else {
+        initialsEl.innerText = username.substring(0, 2).toUpperCase();
+        initialsEl.style.display = 'block';
+        imgEl.style.display = 'none';
+    }
+
+    // Configura Botões de Ação
+    const btnAdmin = document.getElementById('btn-toggle-admin-modal');
+    btnAdmin.innerText = isAdmin ? 'Revogar Admin' : 'Tornar Admin';
+    btnAdmin.onclick = () => {
+        toggleAdmin(id, isAdmin).then(() => closeUserModal());
+    };
+
+    const btnBanAction = document.getElementById('btn-open-ban');
+
+    // CORREÇÃO AQUI: Removemos estilos manuais e gerenciamos apenas as classes
+    btnBanAction.style.background = ""; // Limpa qualquer cor inline antiga
+
+    if (isBanned) {
+        btnBanAction.innerText = "Remover Banimento";
+        // Troca visual para o botão de desbanir (Azul)
+        btnBanAction.classList.remove('btn-pro-danger');
+        btnBanAction.classList.add('btn-unban');
+
+        btnBanAction.onclick = () => unbanUser(id);
+    } else {
+        btnBanAction.innerText = "Banir Usuário";
+        // Garante que o visual vermelho (pro-danger) está ativo
+        btnBanAction.classList.remove('btn-unban');
+        btnBanAction.classList.add('btn-pro-danger');
+
+        btnBanAction.onclick = openBanModal;
+    }
+
+    // Abre Modal
+    const modal = document.getElementById('modal-user-details');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeUserModal() {
+    const modal = document.getElementById('modal-user-details');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+// ===============================================
+// LÓGICA ATUALIZADA DO MODAL DE BANIMENTO (PRO)
+// ===============================================
+
+// Inicializa os listeners do dropdown assim que o script roda
+document.addEventListener("DOMContentLoaded", () => {
+    setupBanDropdown();
+});
+
+function setupBanDropdown() {
+    const wrapper = document.getElementById('ban-duration-wrapper');
+    if (!wrapper) return;
+
+    const trigger = wrapper.querySelector('.select-trigger');
+    const options = wrapper.querySelectorAll('.select-option');
+    const textSpan = document.getElementById('ban-duration-text');
+    const hiddenInput = document.getElementById('ban-duration-value');
+    const dateContainer = document.getElementById('ban-date-container');
+
+    // Toggle Dropdown
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede fechar imediato
+        wrapper.classList.toggle('open');
+    });
+
+    // Selecionar Opção
+    options.forEach(opt => {
+        opt.addEventListener('click', () => {
+            const value = opt.dataset.value;
+            const textContent = opt.textContent.trim(); // Pega texto limpo
+            const iconHtml = opt.querySelector('i').outerHTML; // Pega o ícone
+
+            // Atualiza UI do Trigger
+            textSpan.innerHTML = `${iconHtml} ${textContent}`;
+            wrapper.classList.remove('open');
+
+            // Remove seleção anterior
+            options.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+
+            // Atualiza Input Oculto
+            hiddenInput.value = value;
+
+            // Lógica de Mostrar/Esconder Data
+            if (value === 'temporary') {
+                dateContainer.classList.remove('hidden');
+            } else {
+                dateContainer.classList.add('hidden');
+            }
+        });
+    });
+
+    // Fechar ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) wrapper.classList.remove('open');
+    });
+}
+
+// --- ABRIR MODAL DE BANIMENTO ---
+function openBanModal() {
+    // REMOVIDA A LINHA: closeUserModal(); <--- Isso mantem o modal de fundo aberto
+
+    const modal = document.getElementById('modal-ban-user');
+    modal.classList.remove('hidden');
+
+    // Reseta form visualmente
+    document.getElementById('ban-duration-text').innerHTML = 'Selecione a duração...';
+    document.getElementById('ban-duration-value').value = '';
+    document.getElementById('ban-reason').value = "";
+    document.getElementById('ban-date-input').value = "";
+    document.getElementById('ban-date-container').classList.add('hidden');
+
+    document.querySelectorAll('#ban-duration-wrapper .select-option').forEach(o => o.classList.remove('selected'));
+
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeBanModal() {
+    const modal = document.getElementById('modal-ban-user');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+function toggleBanDateInput() {
+    const select = document.getElementById('ban-duration-select');
+    const dateContainer = document.getElementById('ban-date-container');
+
+    if (select.value === 'temporary') {
+        dateContainer.classList.remove('hidden');
+    } else {
+        dateContainer.classList.add('hidden');
+    }
+}
+
+// --- AÇÃO: CONFIRMAR BANIMENTO (Atualizado) ---
+async function confirmBanUser() {
+    // Pega valor do input hidden (novo sistema)
+    const duration = document.getElementById('ban-duration-value').value;
+    const reason = document.getElementById('ban-reason').value.trim();
+    const dateInput = document.getElementById('ban-date-input').value;
+
+    if (!currentUserId) return;
+    if (!duration) {
+        if (window.showToast) window.showToast("Selecione a duração do banimento.");
+        else alert("Selecione a duração.");
+        return;
+    }
+    if (!reason) {
+        if (window.showToast) window.showToast("Digite um motivo.");
+        else alert("Digite um motivo.");
+        return;
+    }
+
+    let bannedUntil = null;
+    if (duration === 'temporary') {
+        if (!dateInput) {
+            if (window.showToast) window.showToast("Selecione a data final.");
+            else alert("Selecione a data final.");
+            return;
+        }
+        bannedUntil = new Date(dateInput).toISOString();
+    }
+
+    // Envia para o Supabase
+    const { error } = await supabaseAdmin
+        .from('user_bans')
+        .insert({
+            // ... dados ...
+        });
+
+    if (error) {
+        console.error(error);
+        if (window.showToast) window.showToast("Erro ao banir: " + error.message);
+    } else {
+        if (window.showToast) window.showToast("Usuário banido com sucesso!");
+
+        closeBanModal();  // Fecha o de banimento
+        closeUserModal(); // <--- ADICIONE ISSO: Fecha o de perfil também, pois o status mudou
+
+        mostrarProfiles(); // Atualiza a lista visual
+    }
+}
+
+// --- AÇÃO: DESBANIR USUÁRIO (NOVO) ---
+async function unbanUser(userId) {
+    // Fecha modal de detalhes primeiro
+    closeUserModal();
+
+    // Usa modal global de confirmação
+    const confirmed = await window.showConfirmationModal(
+        "Tem certeza que deseja remover o banimento deste usuário? Ele poderá acessar a loja novamente.",
+        { okText: 'Sim, Desbanir', cancelText: 'Cancelar' }
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabaseAdmin
+        .from('user_bans')
+        .delete()
+        .eq('user_id', userId);
+
+    if (error) {
+        console.error(error);
+        window.showToast("Erro ao desbanir: " + error.message);
+    } else {
+        window.showToast("Banimento removido com sucesso!");
+        mostrarProfiles(); // Atualiza a lista para remover o badge vermelho
+    }
+}
+
+// --- AÇÃO: ALTERAR ADMIN (Atualizado com Modal e Toast) ---
 async function toggleAdmin(userId, currentStatus) {
     const newStatus = !currentStatus;
+    const actionName = newStatus ? "tornar ADMIN" : "remover ADMIN";
+
+    const confirmed = await window.showConfirmationModal(
+        `Tem certeza que deseja ${actionName} este usuário?`,
+        { okText: 'Confirmar', cancelText: 'Cancelar' }
+    );
+
+    if (!confirmed) return;
 
     const { error } = await supabaseAdmin
         .from('profiles')
@@ -346,12 +688,29 @@ async function toggleAdmin(userId, currentStatus) {
 
     if (error) {
         console.error('Erro ao atualizar admin:', error);
-        alert('Falha ao atualizar o status do usuário.');
+        window.showToast('Falha ao atualizar status: ' + error.message);
     } else {
-        // Recarrega a tabela (mantendo o filtro atual, se houver)
         mostrarProfiles();
+        window.showToast(`Status atualizado com sucesso!`);
     }
 }
+
+// --- AUXILIAR: COPIAR ID ---
+function copiarIdUsuario(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        window.showToast(`ID copiado: ${text}`);
+    }).catch(err => {
+        console.error('Erro ao copiar', err);
+    });
+}
+
+// Inicializa a lista
+document.addEventListener("DOMContentLoaded", () => {
+    // Se estivermos na aba ou se a função for chamada
+    if (document.getElementById('user-cards-list')) {
+        mostrarProfiles();
+    }
+});
 
 // Roda a função quando a página carregar
 mostrarProfiles();
@@ -441,15 +800,27 @@ function openLink(link) {
 }
 
 async function deleteProduct(id) {
-    if (!confirm('Excluir produto?')) return;
+    // Substituindo confirm() nativo pelo modal customizado
+    const confirmed = await window.showConfirmationModal(
+        'Tem certeza que deseja excluir este produto permanentemente?',
+        { okText: 'Excluir', cancelText: 'Cancelar' }
+    );
 
-    await client.from('products').delete().eq('id', id);
-    loadProducts();
+    if (!confirmed) return;
+
+    const { error } = await client.from('products').delete().eq('id', id);
+
+    if (error) {
+        window.showToast("Erro ao excluir: " + error.message);
+    } else {
+        window.showToast("Produto excluído!");
+        loadProducts();
+    }
 }
 
 function copyId(id) {
     navigator.clipboard.writeText(id);
-    alert("ID copiado: " + id);
+    window.showToast("ID do produto copiado!");
 }
 
 // NOVO
