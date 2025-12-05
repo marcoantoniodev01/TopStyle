@@ -18,7 +18,7 @@
 
 <body>
 
-  <header class="header hidden fade-down" id="header">
+  <header class="header " id="header">
     <nav class="nav__container">
       <div class="nav__menu" id="nav-menu">
         <ul class="nav__list">
@@ -246,7 +246,7 @@
                 <span class="arrow">▶</span>
               </li>
               <ul class="submenu">
-                <li data-content="usuarios-cadastro">Lista de usuários cadastrados</li>
+                <li data-content="usuarios-cadastro">Gestão de administradores</li>
               </ul>
 
               <li class="menu-item">
@@ -435,27 +435,23 @@
         </div>
 
         <div class="page" id="usuarios-cadastro">
-          <div class="table-container">
-            <h2>Tabela de Cadastro</h2>
+          <div class="admin-container admin-container-header">
 
-            <div class="mb-4">
-              <input type="text" id="filtroBusca" class="form-control"
-                placeholder="Filtrar por nome de usuário ou nome completo..." onkeyup="mostrarProfiles()">
+            <div class="page-header" style="margin-bottom: 25px;">
+              <h1>Gestão de Usuários</h1>
+              <p class="cat-subtitle">Controle os clientes e administradores da loja</p>
             </div>
-            <table id="profilesTable" class="table table-striped table-hover text-center align-middle">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Username</th>
-                  <th>Nome Completo</th>
-                  <th>Email</th>
-                  <th>É Admin?</th>
-                  <th>Ação</th>
-                </tr>
-              </thead>
-              <tbody id="dataRows">
-              </tbody>
-            </table>
+
+            <div class="search-bar-container">
+              <i class="ri-search-line search-icon"></i>
+              <input type="text" id="filtroBusca" placeholder="Pesquisar por nome, email ou ID..."
+                onkeyup="mostrarProfiles()" class="user-search-bar" />
+
+            </div>
+
+            <div id="user-cards-list" class="user-cards-list">
+            </div>
+
           </div>
         </div>
 
@@ -484,186 +480,6 @@
             <button id="btn-open-create" class="big-add-btn">
               Adicionar Cupom <span>+</span>
             </button>
-          </div>
-
-          <div id="modal-coupon" class="modal">
-            <div class="modal-content modal-lg">
-              <h2 id="modal-title">Novo Cupom</h2>
-
-              <div class="coupon-modal-grid">
-
-                <div class="coupon-form-side">
-                  <input type="hidden" id="coupon-id">
-
-                  <div class="form-group">
-                    <label>Código de Acesso</label>
-                    <div class="input-icon-wrapper">
-                      <i class="ri-key-2-line"></i>
-                      <input type="text" id="coupon-code" placeholder="Ex: PRIMEIRACOMPRA" maxlength="20"
-                        style="text-transform: uppercase;">
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Tipo de Cupom</label>
-                    <input type="hidden" id="coupon-main-type">
-
-                    <div class="admin-custom-select" id="select-type-wrapper">
-                      <div class="select-trigger" tabindex="0">
-                        <span id="select-type-text">Selecione o tipo...</span>
-                        <i class="ri-arrow-down-s-line"></i>
-                      </div>
-                      <div class="select-options">
-                        <div class="select-option" data-value="discount">
-                          <i class="ri-price-tag-3-line"></i> Desconto no Produto
-                        </div>
-                        <div class="select-option" data-value="shipping">
-                          <i class="ri-truck-line"></i> Frete / Entrega
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id="discount-options" class="dynamic-options hidden fade-in">
-                    <label>Porcentagem de Desconto</label>
-                    <div class="percent-grid">
-                      <button type="button" class="percent-btn" data-value="5">5%</button>
-                      <button type="button" class="percent-btn" data-value="10">10%</button>
-                      <button type="button" class="percent-btn" data-value="15">15%</button>
-                      <button type="button" class="percent-btn" data-value="20">20%</button>
-                      <button type="button" class="percent-btn" data-value="25">25%</button>
-                      <button type="button" class="percent-btn" data-value="30">30%</button>
-                      <button type="button" class="percent-btn" data-value="50">50%</button>
-                    </div>
-                  </div>
-
-                  <div id="shipping-options" class="dynamic-options hidden fade-in">
-                    <label style="margin-bottom: 10px; display:block;">Tipo de Benefício no Frete</label>
-
-                    <div class="shipping-cards-row">
-                      <div class="shipping-card-option selected" data-value="free">
-                        <input type="radio" name="shipping_type" value="free" checked style="display:none;">
-                        <div class="card-icon"><i class="ri-gift-line"></i></div>
-                        <div class="card-info">
-                          <span class="card-title">Frete Grátis</span>
-                          <span class="card-desc">O cliente não paga nada</span>
-                        </div>
-                        <div class="check-icon"><i class="ri-check-line"></i></div>
-                      </div>
-
-                      <div class="shipping-card-option" data-value="percent">
-                        <input type="radio" name="shipping_type" value="percent" style="display:none;">
-                        <div class="card-icon"><i class="ri-percent-line"></i></div>
-                        <div class="card-info">
-                          <span class="card-title">Desconto no Frete</span>
-                          <span class="card-desc">Redução parcial do valor</span>
-                        </div>
-                        <div class="check-icon"><i class="ri-check-line"></i></div>
-                      </div>
-                    </div>
-
-                    <div id="shipping-percent-wrapper" class="hidden" style="margin-top: 15px;">
-                      <label>Porcentagem do Frete OFF</label>
-                      <div class="percent-grid" id="shipping-percent-grid">
-                        <button type="button" class="percent-btn" data-value="10">10%</button>
-                        <button type="button" class="percent-btn" data-value="20">20%</button>
-                        <button type="button" class="percent-btn" data-value="50">50%</button>
-                        <button type="button" class="percent-btn" data-value="75">75%</button>
-                      </div>
-                      <input type="hidden" id="shipping-percent-value">
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Descrição (Interna)</label>
-                    <textarea id="coupon-desc" placeholder="Ex: Válido para compras acima de R$100"></textarea>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Expira em (Opcional)</label>
-                    <input type="date" id="coupon-expires">
-                  </div>
-                </div>
-
-                <div class="coupon-preview-side">
-                  <h3>Visualização</h3>
-                  <div class="preview-container">
-                    <div id="preview-ticket" class="coupon-ticket">
-                      <span id="preview-text">CUPOM</span>
-                    </div>
-                  </div>
-
-                  <div class="style-controls">
-                    <div class="style-group">
-                      <label>Cor Principal (Texto/Borda)</label>
-                      <div class="color-picker-row" id="primary-colors">
-                        <div class="color-dot active" style="background:#000;" data-color="#000000"></div>
-                        <div class="color-dot" style="background:#191D28;" data-color="#191D28"></div>
-                        <div class="color-dot" style="background:#003366;" data-color="#003366"></div>
-                        <div class="color-dot" style="background:#00bfa5;" data-color="#00bfa5"></div>
-                        <div class="color-dot custom-wrapper">
-                          <i class="ri-add-line"></i>
-                          <input type="color" id="custom-primary">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="style-group">
-                      <label>Cor de Fundo</label>
-                      <div class="color-picker-row" id="secondary-colors">
-                        <div class="color-dot" style="background:#ffffff;" data-color="#ffffff"></div>
-                        <div class="color-dot active" style="background:#f0f0f0;" data-color="#f0f0f0"></div>
-                        <div class="color-dot" style="background:#e0f7fa;" data-color="#e0f7fa"></div>
-                        <div class="color-dot" style="background:#fff0f5;" data-color="#fff0f5"></div>
-                        <div class="color-dot custom-wrapper">
-                          <i class="ri-add-line"></i>
-                          <input type="color" id="custom-secondary">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="style-group">
-                      <label>Estilo da Borda</label>
-                      <input type="hidden" id="border-style-value">
-
-                      <div class="admin-custom-select" id="select-border-wrapper">
-                        <div class="select-trigger" tabindex="0">
-                          <span id="select-border-text">Tracejada</span>
-                          <i class="ri-arrow-down-s-line"></i>
-                        </div>
-                        <div class="select-options">
-                          <div class="select-option" data-value="dashed">
-                            <span
-                              style="border-bottom: 2px dashed #000; width: 30px; display:inline-block; margin-right:8px;"></span>
-                            Tracejada
-                          </div>
-                          <div class="select-option" data-value="solid">
-                            <span
-                              style="border-bottom: 2px solid #000; width: 30px; display:inline-block; margin-right:8px;"></span>
-                            Sólida
-                          </div>
-                          <div class="select-option" data-value="dotted">
-                            <span
-                              style="border-bottom: 2px dotted #000; width: 30px; display:inline-block; margin-right:8px;"></span>
-                            Pontilhada
-                          </div>
-                          <div class="select-option" data-value="double">
-                            <span
-                              style="border-bottom: 3px double #000; width: 30px; display:inline-block; margin-right:8px;"></span>
-                            Dupla
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal-actions">
-                <button id="btn-cancel-modal" class="btn-cancelar">Cancelar</button>
-                <button id="btn-save-coupon" class="btn-principal">Salvar Cupom</button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -821,8 +637,242 @@
     </section>
   </main>
 
+  <div id="modal-user-details" class="custom-modal-overlay hidden">
+    <div class="custom-modal-content details-modal-pro">
+      
+      <div class="details-header-pro">
+        <h3>Ficha do Usuário</h3>
+        <button class="close-modal-btn-pro" onclick="closeUserModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
 
-  <!-- ===== JAVASCRIPT ===== -->
+      <div class="details-body-pro">
+        
+        <div class="details-avatar-section">
+          <div class="avatar-large-wrapper" id="detail-avatar-wrapper">
+            <span id="detail-initials">US</span>
+            <img id="detail-img" src="" alt="Avatar" style="display:none;">
+          </div>
+          <h2 id="detail-fullname" class="user-fullname-pro">Carregando...</h2>
+          <p id="detail-username" class="user-username-pro">@usuario</p>
+        </div>
+
+        <div class="details-info-grid">
+          <div class="info-item-pro">
+            <span class="info-label">Email</span>
+            <span id="detail-email" class="info-value">email@exemplo.com</span>
+          </div>
+          <div class="info-item-pro">
+            <span class="info-label">CPF</span>
+            <span id="detail-cpf" class="info-value">---</span>
+          </div>
+          <div class="info-item-pro">
+            <span class="info-label">Data de Cadastro</span>
+            <span id="detail-date" class="info-value">00/00/0000</span>
+          </div>
+          <div class="info-item-pro">
+            <span class="info-label">ID do Sistema</span>
+            <span id="detail-id" class="info-value" style="font-size: 0.8rem; font-family:monospace;">UUID</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="details-footer-pro">
+        <button id="btn-open-ban" class="btn-pro-danger">Banir Usuário</button>
+        <button id="btn-toggle-admin-modal" class="btn-pro-black">Tornar Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-ban-user" class="custom-modal-overlay hidden" style="z-index: 10001;">
+    <div class="custom-modal-content ban-modal-pro">
+      <div class="ban-header-pro">
+        <div class="icon-warning-wrapper">
+          <i class="ri-alarm-warning-fill"></i>
+        </div>
+        <h3>Restringir Acesso</h3>
+        <button class="close-modal-btn-pro" onclick="closeBanModal()"><i class="ri-close-line"></i></button>
+      </div>
+
+      <div class="ban-body-pro">
+        <p class="ban-subtitle">Defina o tempo de suspensão e o motivo para o histórico.</p>
+
+        <div class="form-group-pro">
+          <label>Duração da Suspensão</label>
+          <input type="hidden" id="ban-duration-value">
+          <div class="admin-custom-select" id="ban-duration-wrapper">
+            <div class="select-trigger" tabindex="0">
+              <span id="ban-duration-text">Selecione a duração...</span>
+              <i class="ri-arrow-down-s-line"></i>
+            </div>
+            <div class="select-options">
+              <div class="select-option" data-value="permanent">
+                <i class="ri-indeterminate-circle-line"></i> Permanente (Para sempre)
+              </div>
+              <div class="select-option" data-value="temporary">
+                <i class="ri-timer-line"></i> Temporário (Definir data)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="ban-date-container" class="form-group-pro hidden fade-in">
+          <label>Suspenso até:</label>
+          <div class="input-icon-wrapper-pro">
+            <i class="ri-calendar-event-line"></i>
+            <input type="date" id="ban-date-input" class="input-pro">
+          </div>
+        </div>
+
+        <div class="form-group-pro">
+          <label>Motivo da ação</label>
+          <textarea id="ban-reason" class="textarea-pro" placeholder="Ex: Violação dos termos de uso..."></textarea>
+        </div>
+      </div>
+
+      <div class="ban-footer-pro">
+        <button onclick="closeBanModal()" class="btn-pro-secondary">Cancelar</button>
+        <button onclick="confirmBanUser()" class="btn-pro-danger">Confirmar Banimento</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-coupon" class="modal-overlay-coupon" style="display: none;">
+    <div class="modal-content modal-lg">
+      <h2 id="modal-title">Novo Cupom</h2>
+
+      <div class="coupon-modal-grid">
+        <div class="coupon-form-side">
+          <input type="hidden" id="coupon-id">
+          <div class="form-group">
+            <label>Código de Acesso</label>
+            <div class="input-icon-wrapper">
+              <i class="ri-key-2-line"></i>
+              <input type="text" id="coupon-code" placeholder="Ex: PRIMEIRACOMPRA" maxlength="20"
+                style="text-transform: uppercase;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tipo de Cupom</label>
+            <input type="hidden" id="coupon-main-type">
+            <div class="admin-custom-select" id="select-type-wrapper">
+              <div class="select-trigger" tabindex="0">
+                <span id="select-type-text">Selecione o tipo...</span>
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+              <div class="select-options">
+                <div class="select-option" data-value="discount"><i class="ri-price-tag-3-line"></i> Desconto no Produto
+                </div>
+                <div class="select-option" data-value="shipping"><i class="ri-truck-line"></i> Frete / Entrega</div>
+              </div>
+            </div>
+          </div>
+          <div id="discount-options" class="dynamic-options hidden fade-in">
+            <label>Porcentagem de Desconto</label>
+            <div class="percent-grid">
+              <button type="button" class="percent-btn" data-value="5">5%</button>
+              <button type="button" class="percent-btn" data-value="10">10%</button>
+              <button type="button" class="percent-btn" data-value="15">15%</button>
+              <button type="button" class="percent-btn" data-value="20">20%</button>
+              <button type="button" class="percent-btn" data-value="25">25%</button>
+              <button type="button" class="percent-btn" data-value="30">30%</button>
+              <button type="button" class="percent-btn" data-value="50">50%</button>
+            </div>
+          </div>
+          <div id="shipping-options" class="dynamic-options hidden fade-in">
+            <label style="margin-bottom: 10px; display:block;">Tipo de Benefício no Frete</label>
+            <div class="shipping-cards-row">
+              <div class="shipping-card-option selected" data-value="free">
+                <input type="radio" name="shipping_type" value="free" checked style="display:none;">
+                <div class="card-icon"><i class="ri-gift-line"></i></div>
+                <div class="card-info"><span class="card-title">Frete Grátis</span><span class="card-desc">Cliente não
+                    paga nada</span></div>
+                <div class="check-icon"><i class="ri-check-line"></i></div>
+              </div>
+              <div class="shipping-card-option" data-value="percent">
+                <input type="radio" name="shipping_type" value="percent" style="display:none;">
+                <div class="card-icon"><i class="ri-percent-line"></i></div>
+                <div class="card-info"><span class="card-title">Desconto no Frete</span><span class="card-desc">Redução
+                    parcial</span></div>
+                <div class="check-icon"><i class="ri-check-line"></i></div>
+              </div>
+            </div>
+            <div id="shipping-percent-wrapper" class="hidden" style="margin-top: 15px;">
+              <label>Porcentagem OFF</label>
+              <div class="percent-grid" id="shipping-percent-grid">
+                <button type="button" class="percent-btn" data-value="10">10%</button>
+                <button type="button" class="percent-btn" data-value="20">20%</button>
+                <button type="button" class="percent-btn" data-value="50">50%</button>
+                <button type="button" class="percent-btn" data-value="75">75%</button>
+              </div>
+              <input type="hidden" id="shipping-percent-value">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descrição (Interna)</label>
+            <textarea id="coupon-desc" placeholder="Ex: Válido para compras acima de R$100"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Expira em (Opcional)</label>
+            <input type="date" id="coupon-expires">
+          </div>
+        </div>
+
+        <div class="coupon-preview-side">
+          <h3>Visualização</h3>
+          <div class="preview-container">
+            <div id="preview-ticket" class="coupon-ticket"><span id="preview-text">CUPOM</span></div>
+          </div>
+          <div class="style-controls">
+            <div class="style-group">
+              <label>Cor Principal</label>
+              <div class="color-picker-row" id="primary-colors">
+                <div class="color-dot active" style="background:#000;" data-color="#000000"></div>
+                <div class="color-dot" style="background:#191D28;" data-color="#191D28"></div>
+                <div class="color-dot" style="background:#003366;" data-color="#003366"></div>
+                <div class="color-dot" style="background:#00bfa5;" data-color="#00bfa5"></div>
+                <div class="color-dot custom-wrapper"><i class="ri-add-line"></i><input type="color"
+                    id="custom-primary"></div>
+              </div>
+            </div>
+            <div class="style-group">
+              <label>Cor de Fundo</label>
+              <div class="color-picker-row" id="secondary-colors">
+                <div class="color-dot" style="background:#ffffff;" data-color="#ffffff"></div>
+                <div class="color-dot active" style="background:#f0f0f0;" data-color="#f0f0f0"></div>
+                <div class="color-dot" style="background:#e0f7fa;" data-color="#e0f7fa"></div>
+                <div class="color-dot" style="background:#fff0f5;" data-color="#fff0f5"></div>
+                <div class="color-dot custom-wrapper"><i class="ri-add-line"></i><input type="color"
+                    id="custom-secondary"></div>
+              </div>
+            </div>
+            <div class="style-group">
+              <label>Estilo da Borda</label>
+              <input type="hidden" id="border-style-value">
+              <div class="admin-custom-select" id="select-border-wrapper">
+                <div class="select-trigger" tabindex="0"><span id="select-border-text">Tracejada</span><i
+                    class="ri-arrow-down-s-line"></i></div>
+                <div class="select-options">
+                  <div class="select-option" data-value="dashed">Tracejada</div>
+                  <div class="select-option" data-value="solid">Sólida</div>
+                  <div class="select-option" data-value="dotted">Pontilhada</div>
+                  <div class="select-option" data-value="double">Dupla</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-cancel-modal" class="btn-cancelar">Cancelar</button>
+        <button id="btn-save-coupon" class="btn-principal">Salvar Cupom</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script type="module" src="assets/js/supabase-client.js"></script>
   <script src="assets/js/main.js"></script>
@@ -831,6 +881,5 @@
   <script src="assets/js/dashboard.js"></script>
   <script src="assets/js/header-control.js"></script>
 </body>
-
 
 </html>
