@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style-log-cad.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery-log-cad.css">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>Login - TopStyle</title>
+</head>
+
+<body class="body-login">
+
+    <div id="global-loader" class="page-loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Carregando...</p>
+    </div>
+
+    <div class="caixa" id="caixa">
+        <div class="overlay_form">
+
+            <div class="formulario-container formulario-cadastro">
+                <div class="form-loader top-right"></div>
+                <form class="form-log-cad" id="form-cadastro">
+                    <section class="block__left">
+                        <div class="left__top">
+                            <div class="logo">
+                                <img src="https://i.ibb.co/TxNmds8N/logo-preta.png" alt="Logo TopStyle">
+                            </div>
+                        </div>
+
+                        <div class="left__center">
+                            <h1>Cadastrar</h1>
+
+                            <div class="left__bottom">
+                                <div class="redes">
+                                    <button type="button" title="Entrar com Google" class="redes__icon"><img
+                                            src="https://i.ibb.co/4RVcNNJH/Google-Favicon-2025-svg.png"
+                                            alt="Google"></button>
+                                    <button type="button" title="Entrar com Facebook" class="redes__icon"><img
+                                            src="https://i.ibb.co/wrNYQch7/984f500cf9de4519b02b354346eb72e0-midias-sociais-do-icone-do-facebook.webp"
+                                            alt="Facebook"></button>
+                                    <button type="button" title="Entrar com Apple" class="redes__icon"><img
+                                            src="https://i.ibb.co/8gqP9BNC/apple-big-logo.png" alt="Apple"></button>
+                                </div>
+                            </div>
+
+                            <div class="center__form">
+                                <div class="input__container">
+                                    <label for="cadastro-nome"><img src="https://i.ibb.co/bR7qZCBM/usu-rio.png"
+                                            alt=""></label>
+                                    <input type="text" id="cadastro-nome" placeholder="Nome Completo" required>
+                                </div>
+                                <div class="input__container">
+                                    <label for="cadastro-username"><img src="https://i.ibb.co/bR7qZCBM/usu-rio.png"
+                                            alt=""></label>
+                                    <input type="text" id="cadastro-username" placeholder="Nome de Usuário (único)"
+                                        required>
+                                </div>
+                                <div class="input__container">
+                                    <label for="cadastro-email"><img src="https://i.ibb.co/bR7qZCBM/usu-rio.png"
+                                            alt=""></label>
+                                    <input type="email" id="cadastro-email" placeholder="Email" required>
+                                </div>
+                                <div class="input__container">
+                                    <label for="cadastro-senha"><img src="https://i.ibb.co/RkJ8D2Mb/cadeado.png"
+                                            alt=""></label>
+                                    <input type="password" id="cadastro-senha" placeholder="Senha" required>
+                                </div>
+                                <div class="input__container">
+                                    <label for="cadastro-senha-confirm"><img src="https://i.ibb.co/RkJ8D2Mb/cadeado.png"
+                                            alt=""></label>
+                                    <input type="password" id="cadastro-senha-confirm" placeholder="Confirmar Senha"
+                                        required>
+                                </div>
+                                <button type="submit" class="button-log">CADASTRAR</button>
+
+                                <button type="button" class="troca" id="botaoTrocarParaLogin">JÁ TENHO CONTA</button>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+            </div>
+
+            <div class="formulario-container formulario-login">
+                <div class="form-loader top-left"></div>
+                <form class="form-log-cad" id="form-login">
+                    <section class="block__left">
+                        <div class="left__top">
+                            <div class="logo">
+                                <img src="https://i.ibb.co/TxNmds8N/logo-preta.png" alt="Logo TopStyle">
+                            </div>
+                        </div>
+
+                        <div class="left__bottom">
+                            <div class="redes">
+                                <button type="button" title="Entrar com Google" class="redes__icon"><img
+                                        src="https://i.ibb.co/4RVcNNJH/Google-Favicon-2025-svg.png"
+                                        alt="Google"></button>
+                                <button type="button" title="Entrar com Facebook" class="redes__icon"><img
+                                        src="https://i.ibb.co/wrNYQch7/984f500cf9de4519b02b354346eb72e0-midias-sociais-do-icone-do-facebook.webp"
+                                        alt="Facebook"></button>
+                                <button type="button" title="Entrar com Apple" class="redes__icon"><img
+                                        src="https://i.ibb.co/8gqP9BNC/apple-big-logo.png" alt="Apple"></button>
+                            </div>
+                        </div>
+
+                        <div class="left__center">
+                            <h1>Login</h1>
+                            <div class="center__form">
+                                <div class="input__container">
+                                    <label for="email-login"><img src="https://i.ibb.co/bR7qZCBM/usu-rio.png"
+                                            alt=""></label>
+                                    <input type="text" id="email-login" placeholder="Email ou Nome de Usuário" required>
+                                </div>
+                                <div class="input__container">
+                                    <label for="senha-login"><img src="https://i.ibb.co/RkJ8D2Mb/cadeado.png"
+                                            alt=""></label>
+                                    <input type="password" id="senha-login" placeholder="Senha" required>
+                                    <img id="toggleSenha" src="https://i.ibb.co/Nnt75FQh/olho-1.png" width="24"
+                                        height="25px" style="cursor: pointer;" alt="Mostrar/Ocultar Senha">
+                                </div>
+                                <div class="input__opt">
+                                    <div class="opt__left">
+                                        <input type="checkbox" id="remember">
+                                        <label for="remember">Lembrar de mim</label>
+                                    </div>
+                                    <div class="opt__right">
+                                        <a href="#" id="botaoEsqueciSenha">Esqueceu sua senha?</a>
+                                    </div>
+                                </div>
+                                <button type="submit" class="button-log">ENTRAR</button>
+
+                                <button type="button" class="troca" id="botaoTrocarParaCadastro">CRIAR CONTA</button>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+            </div>
+
+
+            <div class="formulario-container formulario-recuperar" id="form-recuperar">
+                <div class="nao-recuperar"></div>
+                <div class="form-loader top-left"></div>
+                <div class="form-log-cad">
+
+                    <section class="block__left step-recovery step-active" id="step-email">
+                        <div class="left__center">
+                            <div class="logo">
+                                <img src="https://i.ibb.co/TxNmds8N/logo-preta.png" alt="Logo TopStyle">
+                            </div>
+                            <h1>Recuperar Senha</h1>
+                            <p class="p-recuperar">Digite o e-mail associado à sua conta e enviaremos um código de 6
+                                dígitos para redefinir sua senha.</p>
+
+                            <form class="center__form-recuperar" id="recuperar-form-email" title="recuperar a senha">
+                                <div class="input__container input__container-recuperar">
+                                    <label for="recuperar-email"><img src="https://i.ibb.co/bR7qZCBM/usu-rio.png"
+                                            alt=""></label>
+                                    <input type="email" id="recuperar-email" placeholder="Seu e-mail" required>
+                                </div>
+                                <button type="submit" class="button-log">ENVIAR CÓDIGO</button>
+                                <div class="opt__righte" style="margin-top: 15px;">
+                                    <a href="#" id="botaoLembreiSenha">Lembrei minha senha! Voltar.</a>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section class="block__left step-recovery" id="step-code" style="display: none;">
+                        <div class="left__center">
+                            <div class="logo">
+                                <img src="https://i.ibb.co/TxNmds8N/logo-preta.png" alt="Logo TopStyle">
+                            </div>
+                            <h1>Verifique seu E-mail</h1>
+                            <p class="p-recuperar">Enviamos um código de 6 dígitos para <b
+                                    id="email-enviado">seu-email@dominio.com</b>. Digite-o abaixo.</p>
+
+                            <form class="center__form-recuperar" id="recuperar-form-code">
+                                <div class="code-inputs-container" id="code-inputs">
+                                    <input type="number" class="code-input" maxlength="1" inputmode="numeric">
+                                    <input type="number" class="code-input" maxlength="1" inputmode="numeric">
+                                    <input type="number" class="code-input" maxlength="1" inputmode="numeric">
+                                    <input type="number" class="code-input" maxlength="1" inputmode="numeric">
+                                    <input type="number" class="code-input" maxlength="1" inputmode="numeric">
+                                    <input type="number" class="code-input" maxlength="1" inputmode="numeric">
+                                </div>
+                                <div class="opt__righte" style="margin-top: 15px;">
+                                    <a href="#" id="botaoLembreiSenhaEtapa2">Lembrei minha senha! Voltar.</a>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section class="block__left step-recovery" id="step-password" style="display: none;">
+                        <div class="left__center">
+                            <div class="logo">
+                                <img src="https://i.ibb.co/TxNmds8N/logo-preta.png" alt="Logo TopStyle">
+                            </div>
+                            <h1>Crie sua Nova Senha</h1>
+                            <p class="p-recuperar">Código verificado! Agora, defina uma nova senha forte para sua conta.
+                            </p>
+
+                            <form class="center__form-recuperar" id="recuperar-form-password">
+                                <div class="input__container input__container-recuperar">
+                                    <label for="recuperar-nova-senha"><img src="https://i.ibb.co/RkJ8D2Mb/cadeado.png"
+                                            alt=""></label>
+                                    <input type="password" id="recuperar-nova-senha"
+                                        placeholder="Nova Senha (mín. 6 caracteres)" required>
+                                </div>
+                                <div class="input__container input__container-recuperar" style="margin-top: 25px;">
+                                    <label for="recuperar-confirm-senha"><img
+                                            src="https://i.ibb.co/RkJ8D2Mb/cadeado.png" alt=""></label>
+                                    <input type="password" id="recuperar-confirm-senha"
+                                        placeholder="Confirmar Nova Senha" required>
+                                </div>
+                                <button type="submit" class="button-log">SALVAR NOVA SENHA</button>
+                                <div class="opt__righte" style="margin-top: 15px;">
+                                    <a href="#" id="botaoLembreiSenhaEtapa3">Lembrei minha senha! Voltar.</a>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="container-overlay">
+            <div class="overlay">
+                <div class="painel-overlay painel-esquerdo">
+                    <img src="https://i.ibb.co/842M1qJ4/logo-branca.png" alt="Logo">
+                    <h1>Bem-vindo de volta!</h1>
+                    <p>Acesse sua conta agora mesmo!</p>
+                    <button class="fantasma" id="botaoEntrar"><b>ENTRAR</b></button>
+                </div>
+                <div class="painel-overlay painel-direito">
+                    <img src="https://i.ibb.co/842M1qJ4/logo-branca.png" alt="Logo">
+                    <h1>Ainda não tem conta?</h1>
+                    <p>Crie sua conta agora mesmo!</p>
+                    <button class="fantasma" id="botaoCadastrar"><b>CRIAR</b></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/main.js"></script>   
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/header-control.js"></script>
+</body>
+
+</html>

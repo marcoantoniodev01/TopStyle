@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery.css">
+    <link rel="stylesheet" href="assets/css/mediaquery-header.css">
+    <link rel="stylesheet" href="assets/css/style-header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>Seu Carrinho - TopStyle</title>
+</head>
+
+<body>
+
+    <div id="global-loader" class="page-loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Carregando seu carrinho...</p>
+    </div>
+
+
+    <!-- Carrossel de desconto -->
+    <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header hidden fade-down" id="header">
+        <nav class="nav__container">
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li title="Categorias" class="nav__item dropdown item1" id="nav__item">
+                        <div class="header__link">
+                            <a href="#categorias" class="nav__link">Categorias</a>
+                            <i class="bi bi-caret-down-fill mobile-caret"></i>
+                        </div>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu">
+                            <div class="mega-content">
+                                <div class="column">
+                                    <h3><span class="column__title">Vestuário</span></h3>
+                                    <a href="#" data-link-id="vestuario-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="vestuario-camisetas">Camisetas</a>
+                                    <a href="#" data-link-id="vestuario-plus-size">Camiseta Plus-Size</a>
+                                    <a href="#" data-link-id="vestuario-manga-longa">Camiseta Manga Longa</a>
+                                    <a href="#" data-link-id="vestuario-moletons">Moletons</a>
+                                    <a href="#" data-link-id="vestuario-jaquetas">Jaquetas E Casacos</a>
+                                    <a href="#" data-link-id="vestuario-camisas">Camisas</a>
+                                    <a href="#" data-link-id="vestuario-calcas">Calças</a>
+                                    <a href="#" data-link-id="vestuario-shorts">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Outros</span></h3>
+                                    <a href="#" data-link-id="outros-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="outros-juvenil">Juvenil</a>
+                                    <a href="#" data-link-id="outros-feminino">Feminino</a>
+                                    <a href="#" data-link-id="outros-packs">Packs</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Acessórios</span></h3>
+                                    <a href="#" data-link-id="acessorios-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="acessorios-chaveiros">Chaveiros E Adesivos</a>
+                                    <a href="#" data-link-id="acessorios-cuecas">Cuecas</a>
+                                    <a href="#" data-link-id="acessorios-gorros">Gorros</a>
+                                    <a href="#" data-link-id="acessorios-pochetes">Pochetes</a>
+                                    <a href="#" data-link-id="acessorios-mochilas">Mochilas</a>
+                                    <a href="#" data-link-id="acessorios-meias">Meias</a>
+                                    <a href="#" data-link-id="acessorios-bags">Bags</a>
+                                    <a href="#" data-link-id="acessorios-bones">Bonés</a>
+                                    <a href="#" data-link-id="acessorios-bucket">Bucket</a>
+                                    <a href="#" data-link-id="acessorios-carteiras">Carteiras</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Calçados</span></h3>
+                                    <a href="#" data-link-id="calcados-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="calcados-chinelos">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li title="Drops" class="nav__item dropdown item1">
+                        <div class="header__link">
+                            <a href="#drops" class="nav__link">Drops</a>
+                            <i class="bi bi-caret-down-fill mobile-caret"></i>
+                        </div>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu" id="mega-menu-drops">
+                            <div class="mega-content" id="mega-content-drops">
+                                <div class="mega-imgs">
+                                    <div class="drop-column">
+                                        <a href="#" class="drop__img"><img
+                                                src="https://www.blog.userefuse.com.br/wp-content/uploads/2023/08/3-Raz%C3%B5es-para-Adotar-o-Estilo-Streetwear-em-Suas-Roupas-scaled.jpg"
+                                                alt=""></a>
+                                        <p class="drop-name">########</p>
+                                    </div>
+                                </div>
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Vestuário</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Camisetas</a>
+                                    <a href="#">Camiseta Plus-Size</a>
+                                    <a href="#">Camiseta Manga Longa</a>
+                                    <a href="#">Moletons</a>
+                                    <a href="#">Jaquetas E Casacos</a>
+                                    <a href="#">Camisas</a>
+                                    <a href="#">Calças</a>
+                                    <a href="#">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Outros</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Juvenil</a>
+                                    <a href="#">Feminino</a>
+                                    <a href="#">Packs</a>
+                                </div>
+
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Acessórios</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chaveiros E Adesivos</a>
+                                    <a href="#">Cuecas</a>
+                                    <a href="#">Gorros</a>
+                                    <a href="#">Pochetes</a>
+                                    <a href="#">Mochilas</a>
+                                    <a href="#">Meias</a>
+                                    <a href="#">Bags</a>
+                                    <a href="#">Bonés</a>
+                                    <a href="#">Bucket</a>
+                                    <a href="#">Carteiras</a>
+                                </div>
+
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Calçados</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+
+                    <li title="Promoções" class="nav__item dropdown item2">
+                        <div class="header__link">
+                            <a href="#off" class="nav__link">Off</a>
+                            <i class="bi bi-caret-down-fill mobile-caret"></i>
+                        </div>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu" id="mega-menu-off">
+                            <div class="mega-content">
+                                <div class="column">
+                                    <h3><span class="column__title">Vestuário</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Camisetas</a>
+                                    <a href="#">Camiseta Plus-Size</a>
+                                    <a href="#">Camiseta Manga Longa</a>
+                                    <a href="#">Moletons</a>
+                                    <a href="#">Jaquetas E Casacos</a>
+                                    <a href="#">Camisas</a>
+                                    <a href="#">Calças</a>
+                                    <a href="#">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Outros</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Juvenil</a>
+                                    <a href="#">Feminino</a>
+                                    <a href="#">Packs</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Acessórios</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chaveiros E Adesivos</a>
+                                    <a href="#">Cuecas</a>
+                                    <a href="#">Gorros</a>
+                                    <a href="#">Pochetes</a>
+                                    <a href="#">Mochilas</a>
+                                    <a href="#">Meias</a>
+                                    <a href="#">Bags</a>
+                                    <a href="#">Bonés</a>
+                                    <a href="#">Bucket</a>
+                                    <a href="#">Carteiras</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Calçados</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li title="Sobre Nós" class="nav__item dropdown item2">
+                        <div class="header__link">
+                            <a href="#sobre" class="nav__link">Sobre</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="nav__close" id="nav-close">
+                    <i class="ri-close-fill"></i>
+                </div>
+            </div>
+
+            <div class="logo-text-container">
+                <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Carrinho</span></a></h1>
+            </div>
+
+            <div class="social-header">
+                <ul>
+                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Seu Perfil"><a class="profile-link" href="perfil-cliente.html"><i
+                                class="ri-user-line"></i></a></li>
+                    <li class="social__link" title="Carrinho">
+                        <a href="carrinho.html" class="cart-icon">
+                            <i class="ri-shopping-cart-line"></i>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="social__link">
+                        <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+        <div class="progress-bar"></div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+        <section class="cart-page">
+
+            <section class="carrinho-vazio" style="display: none;">
+                <div class="vazio-info">
+                    <img class="hidden fade-down" src="https://i.ibb.co/5h8sXHRS/emoji-triste.png" alt="Vish!">
+                    <p class="hidden zoom-in">Você ainda não colocou nenhum produto no carrinho</p>
+                    <a class="hidden fade-up" href="inicial.html">Ir as compras!</a>
+                </div>
+
+                <div class="recomendações-carrinho">
+                    <h1>Recomendações</h1>
+                    <div class="products-content-carrinho">
+
+                        <div class="product-row">
+                            <!-- Slots serão preenchidos pelo JavaScript -->
+                            <div class="product-slot"></div>
+                            <div class="product-slot"></div>
+                            <div class="product-slot"></div>
+                            <div class="product-slot"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <form class="carrinho-content">
+
+                <div class="hidden zoom-in">
+                    <div id="cart-items"></div>
+                </div>
+
+                <div class="content-continuar">
+                    <div class="cupom">
+                        <p class="cupom-invalido-alert">😑 Insira um cupom válido!!</p>
+                        <input type="text" id="cupom-input" autocomplete="off" placeholder="Cupom">
+                        <button class="hidden fade-right" type="button" id="cupom-btn">ADICIONAR</button>
+                    </div>
+
+
+                    <div id="cupom-aplicado" class="cupom-aplicado-car">
+                        <span class="badge-cupom hidden fade-down">10% OFF</span>
+                        <div id="trocar-div" class="hidden zoom-in"><a href="#" id="trocar-cupom">Remover-cupom</a>
+                        </div>
+                    </div>
+
+                    <hr class="hidden zoom-in">
+
+                    <div class="continuar-compra">
+                        <div class="continuar-info">
+                            <h2 class="text-total-litlecar hidden fade-left">Total:</h2>
+                            <h2 class="text-price-litlecar hidden fade-right"><span id="cart-total">R$ 0,00</span></h2>
+                        </div>
+
+                        <div class="button-cont-littlecar hidden zoom-in">
+                            <button id="continuar-btn" type="button">Continuar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="ri-arrow-up-line"></i>
+        </a>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-newsletter">
+            <h3>Entre no drop e receba novidades exclusivas</h3>
+            <form>
+                <input type="email" placeholder="Digite seu e-mail">
+                <button type="submit">Inscrever</button>
+            </form>
+        </div>
+
+        <div class="footer-main">
+            <div class="footer-brand">
+                <h2>TopStyle</h2>
+                <p>Mais que moda, é movimento.
+                    Drops exclusivos, feitos para quem cria tendência.</p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>Coleções</h4>
+                    <ul>
+                        <li><a href="inicial.html#promotions-day">Novidades</a></li>
+                        <li><a href="#">Drops</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Marca</h4>
+                    <ul>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Na mídia</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Ajuda</h4>
+                    <ul>
+                        <li><a href="medidas.html">Guia de tamanhos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                        <li><a href="devolucao.html">Política de devolução</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+            <div class="footer-legal">
+                <a href="termos.html">Termos / Privacidade / Cookies</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/loader.js"></script>
+    <script src="assets/js/coupon-manager.js"></script>
+    <script src="assets/js/header-cell.js"></script>
+    <script src="assets/js/drops.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/parallax.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/carrinho.js"></script>
+    <script src="assets/js/header-control.js"></script>
+    <script src="assets/js/menu-hamburger.js"></script>
+</body>
+
+
+</html>

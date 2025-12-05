@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Links originais -->
+    <link rel="stylesheet" href="assets/css/style-perfil.css">
+    <link rel="stylesheet" href="assets/css/media-query-perfil.css">
+    <link rel="stylesheet" href="assets/css/style-header.css">
+    <link rel="stylesheet" href="assets/css/mediaquery-header.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- NOVO CSS DOS MODAIS -->
+    <link rel="stylesheet" href="assets/css/profile-modals.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>Perfil</title>
+</head>
+
+<div id="global-loader" class="page-loading-overlay">
+    <div class="spinner"></div>
+    <p class="loading-text">Carregando seu perfil...</p>
+</div>
+
+<style>
+    .header {
+        top: 0;
+    }
+</style>
+
+<body>
+
+    <header class="header " id="header">
+        <nav class="nav__container">
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li title="Categorias" class="nav__item dropdown item1" id="nav__item">
+                        <div class="header__link">
+                            <a href="#categorias" class="nav__link">Categorias</a>
+                            <i class="bi bi-caret-down-fill mobile-caret"></i>
+                        </div>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu">
+                            <div class="mega-content">
+                                <div class="column">
+                                    <h3><span class="column__title">Vestuário</span></h3>
+                                    <a href="#" data-link-id="vestuario-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="vestuario-camisetas">Camisetas</a>
+                                    <a href="#" data-link-id="vestuario-plus-size">Camiseta Plus-Size</a>
+                                    <a href="#" data-link-id="vestuario-manga-longa">Camiseta Manga Longa</a>
+                                    <a href="#" data-link-id="vestuario-moletons">Moletons</a>
+                                    <a href="#" data-link-id="vestuario-jaquetas">Jaquetas E Casacos</a>
+                                    <a href="#" data-link-id="vestuario-camisas">Camisas</a>
+                                    <a href="#" data-link-id="vestuario-calcas">Calças</a>
+                                    <a href="#" data-link-id="vestuario-shorts">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Outros</span></h3>
+                                    <a href="#" data-link-id="outros-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="outros-juvenil">Juvenil</a>
+                                    <a href="#" data-link-id="outros-feminino">Feminino</a>
+                                    <a href="#" data-link-id="outros-packs">Packs</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Acessórios</span></h3>
+                                    <a href="#" data-link-id="acessorios-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="acessorios-chaveiros">Chaveiros E Adesivos</a>
+                                    <a href="#" data-link-id="acessorios-cuecas">Cuecas</a>
+                                    <a href="#" data-link-id="acessorios-gorros">Gorros</a>
+                                    <a href="#" data-link-id="acessorios-pochetes">Pochetes</a>
+                                    <a href="#" data-link-id="acessorios-mochilas">Mochilas</a>
+                                    <a href="#" data-link-id="acessorios-meias">Meias</a>
+                                    <a href="#" data-link-id="acessorios-bags">Bags</a>
+                                    <a href="#" data-link-id="acessorios-bones">Bonés</a>
+                                    <a href="#" data-link-id="acessorios-bucket">Bucket</a>
+                                    <a href="#" data-link-id="acessorios-carteiras">Carteiras</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Calçados</span></h3>
+                                    <a href="#" data-link-id="calcados-ver-todos">Ver Todos</a>
+                                    <a href="#" data-link-id="calcados-chinelos">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li title="Drops" class="nav__item dropdown item1">
+                        <div class="header__link">
+                            <a href="#drops" class="nav__link">Drops</a>
+                            <i class="bi bi-caret-down-fill mobile-caret"></i>
+                        </div>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu" id="mega-menu-drops">
+                            <div class="mega-content" id="mega-content-drops">
+                                <div class="mega-imgs">
+                                    <div class="drop-column">
+                                        <a href="#" class="drop__img"><img
+                                                src="https://www.blog.userefuse.com.br/wp-content/uploads/2023/08/3-Raz%C3%B5es-para-Adotar-o-Estilo-Streetwear-em-Suas-Roupas-scaled.jpg"
+                                                alt=""></a>
+                                        <p class="drop-name">########</p>
+                                    </div>
+                                </div>
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Vestuário</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Camisetas</a>
+                                    <a href="#">Camiseta Plus-Size</a>
+                                    <a href="#">Camiseta Manga Longa</a>
+                                    <a href="#">Moletons</a>
+                                    <a href="#">Jaquetas E Casacos</a>
+                                    <a href="#">Camisas</a>
+                                    <a href="#">Calças</a>
+                                    <a href="#">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Outros</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Juvenil</a>
+                                    <a href="#">Feminino</a>
+                                    <a href="#">Packs</a>
+                                </div>
+
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Acessórios</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chaveiros E Adesivos</a>
+                                    <a href="#">Cuecas</a>
+                                    <a href="#">Gorros</a>
+                                    <a href="#">Pochetes</a>
+                                    <a href="#">Mochilas</a>
+                                    <a href="#">Meias</a>
+                                    <a href="#">Bags</a>
+                                    <a href="#">Bonés</a>
+                                    <a href="#">Bucket</a>
+                                    <a href="#">Carteiras</a>
+                                </div>
+
+                                <div class="column mega-drops">
+                                    <h3><span class="column__title">Calçados</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+
+                    <li title="Promoções" class="nav__item dropdown item2">
+                        <div class="header__link">
+                            <a href="#off" class="nav__link">Off</a>
+                            <i class="bi bi-caret-down-fill mobile-caret"></i>
+                        </div>
+
+                        <!-- MEGA MENU INSERIDO AQUI -->
+                        <div class="mega-menu" id="mega-menu-off">
+                            <div class="mega-content">
+                                <div class="column">
+                                    <h3><span class="column__title">Vestuário</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Camisetas</a>
+                                    <a href="#">Camiseta Plus-Size</a>
+                                    <a href="#">Camiseta Manga Longa</a>
+                                    <a href="#">Moletons</a>
+                                    <a href="#">Jaquetas E Casacos</a>
+                                    <a href="#">Camisas</a>
+                                    <a href="#">Calças</a>
+                                    <a href="#">Shorts E Bermudas</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Outros</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Juvenil</a>
+                                    <a href="#">Feminino</a>
+                                    <a href="#">Packs</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Acessórios</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chaveiros E Adesivos</a>
+                                    <a href="#">Cuecas</a>
+                                    <a href="#">Gorros</a>
+                                    <a href="#">Pochetes</a>
+                                    <a href="#">Mochilas</a>
+                                    <a href="#">Meias</a>
+                                    <a href="#">Bags</a>
+                                    <a href="#">Bonés</a>
+                                    <a href="#">Bucket</a>
+                                    <a href="#">Carteiras</a>
+                                </div>
+
+                                <div class="column">
+                                    <h3><span class="column__title">Calçados</span></h3>
+                                    <a href="#">Ver Todos</a>
+                                    <a href="#">Chinelos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li title="Sobre Nós" class="nav__item dropdown item2">
+                        <div class="header__link">
+                            <a href="#sobre" class="nav__link">Sobre</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="nav__close" id="nav-close">
+                    <i class="ri-close-fill"></i>
+                </div>
+            </div>
+
+            <div class="logo-text-container">
+                <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Perfil</span></a></h1>
+            </div>
+
+            <div class="social-header">
+                <ul>
+                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i
+                                class="ri-user-line"></i></a></li>
+                    <li class="social__link" title="Carrinho">
+                        <a href="carrinho.html" class="cart-icon">
+                            <i class="ri-shopping-cart-line"></i>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="social__link">
+                        <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+        <div class="progress-bar"></div>
+    </header>
+
+    <main class="perfil-main">
+        <section class="perfil-cliente">
+            <div class="painel-cliente-nav">
+                <div class="perfil-page-img">
+                    <img id="profilePhoto" src="" alt="perfil" style="cursor: pointer;"
+                        title="Clique para alterar a foto">
+                    <input type="file" id="profileUpload" accept="image/*" style="display: none;">
+                </div>
+
+                <hr class="hr-perfil-client">
+                <ul class="list-page-perfil">
+                    <a class="link-page-perfil" href="#dados-pessoais">
+                        <li class="words">Dados Pessoais</li>
+                        <li class="responsive"><i class="bi bi-person-fill"></i></li>
+                    </a>
+                    <a class="link-page-perfil" href="#cartoes">
+                        <li class="words">Cartões</li>
+                        <li class="responsive"><i class="bi bi-credit-card"></i></li>
+                    </a>
+                    <a class="link-page-perfil" href="#enderecos">
+                        <li class="words">Endereços</li>
+                        <li class="responsive"><i class="bi bi-house-fill"></i></li>
+                    </a>
+                    <a class="link-page-perfil" href="#telefones">
+                        <li class="words">Telefones</li>
+                        <li class="responsive"><i class="bi bi-phone-fill"></i></li>
+                    </a>
+                    <a class="link-page-perfil" href="#pedidos">
+                        <li class="words">Pedidos</li>
+                        <li class="responsive"><i class="bi bi-receipt"></i></li>
+                    </a>
+                    <a class="link-page-logout" href="index.html" id="logout">
+                        <li class="words">Sair</li>
+                        <li class="responsive"><i class="bi bi-box-arrow-right"></i></li>
+                    </a>
+                </ul>
+            </div>
+
+            <div class="perfil-cliente-content">
+
+                <!-- ABA DADOS PESSOAIS -->
+                <div id="dados-pessoais" class="window-perfil-cliente">
+                    <h1>Dados Pessoais</h1>
+                    <form class="form-perfil-list" id="profile-form" data-editable="false">
+                        <div class="linha-informations-perfil">
+                            <div class="coluna-informations-perfil">
+                                <label>Username</label>
+                                <p id="username">—</p>
+                                <input id="username-input" class="hidden-input" type="text" />
+                            </div>
+                            <div class="coluna-informations-perfil">
+                                <label>Email</label>
+                                <p id="email">—</p>
+                                <input id="email-input" class="hidden-input" type="email" />
+                            </div>
+                        </div>
+
+                        <div class="linha-informations-perfil">
+                            <div class="coluna-informations-perfil">
+                                <label>CPF</label>
+                                <p id="cpf">—</p>
+                                <input id="cpf-input" class="hidden-input" type="text" />
+                            </div>
+                        </div>
+
+                        <div class="nascimento-editar-perfil">
+                            <div class="nascimento-perfil">
+                                <div class="coluna-informations-perfil">
+                                    <label>Data de Nascimento</label>
+                                    <p id="born_Date">—</p>
+                                    <input id="born_Date-input" class="hidden-input" type="date" />
+                                </div>
+                            </div>
+                            <div class="editar-perfil">
+                                <button type="button" id="edit-profile-btn">Editar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ABA CARTÕES -->
+                <div id="cartoes" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Meus Cartões</h1>
+                        <div id="cards-list" class="cards-list"></div>
+                        <div class="editar-perfil">
+                            <button type="button" id="add-card-btn">Adicionar um cartão</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA ENDEREÇOS -->
+                <div id="enderecos" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Meus Endereços</h1>
+                        <div id="addresses-list" class="cards-list"></div>
+                        <div class="editar-perfil">
+                            <button type="button" id="add-address-btn">Adicionar um endereço</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA TELEFONES (NOVA) -->
+                <div id="telefones" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Meus Telefones</h1>
+                        <div id="phones-list" class="cards-list"></div>
+                        <div class="editar-perfil">
+                            <button type="button" id="add-phone-btn">Adicionar um telefone</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA PEDIDOS -->
+                <div id="pedidos" class="window-perfil-cliente">
+                    <div class="window-perfil-content">
+                        <h1>Meus Pedidos</h1>
+                        <div id="orders-list" class="cards-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================================================== -->
+    <!-- MODAIS IMPORTADOS DA PÁGINA DE PAGAMENTO -->
+    <!-- ================================================== -->
+
+    <!-- MODAL DE ADIÇÃO DE ENDEREÇO -->
+    <div id="modal-adicionar-endereco" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-endereco-titulo">Adicionar Novo Endereço</h2>
+            <form id="form-endereco">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="endereco-label">Identificação (Ex: Casa, Trabalho)</label>
+                        <input type="text" id="endereco-label" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-cep">CEP</label>
+                        <input type="text" id="endereco-cep" maxlength="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-rua">Rua / Avenida</label>
+                        <input type="text" id="endereco-rua" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-numero">Número</label>
+                        <input type="text" id="endereco-numero" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-complemento">Complemento (Bloco, Apto)</label>
+                        <input type="text" id="endereco-complemento">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-cidade">Cidade</label>
+                        <input type="text" id="endereco-cidade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-estado">Estado</label>
+                        <input type="text" id="endereco-estado" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="endereco-referencia">Ponto de Referência (Opcional)</label>
+                        <input type="text" id="endereco-referencia">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancelar-adicao" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" id="btn-salvar-endereco" class="btn-principal">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE ADIÇÃO DE CARTÃO -->
+    <div id="modal-adicionar-cartao" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-cartao-titulo">Adicionar Novo Cartão</h2>
+            <form id="form-cartao">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="cartao-nickname">Nome do Cartão (Opcional)</label>
+                        <input type="text" id="cartao-nickname" placeholder="Ex: Meu Nubank, Cartão Inter">
+                    </div>
+                    <div class="form-group">
+                        <label for="cartao-brand-select">Marca do Cartão</label>
+                        <div class="custom-select-wrapper" id="cartao-brand-select">
+                            <div class="custom-select-trigger" tabindex="0">
+                                <span id="cartao-brand-selected-text">Selecione a marca</span>
+                                <i class="ri-arrow-down-s-line"></i>
+                            </div>
+                            <div class="custom-select-options">
+                                <div class="custom-option" data-value="visa">
+                                    <img src="https://i.ibb.co/zVNMbqgp/visa.webp" alt="Visa"> Visa
+                                </div>
+                                <div class="custom-option" data-value="mastercard">
+                                    <img src="https://i.ibb.co/nsJz9M59/mastercard.webp" alt="Mastercard"> Mastercard
+                                </div>
+                                <div class="custom-option" data-value="elo">
+                                    <img src="https://i.ibb.co/tPzvwVkJ/elo.webp" alt="Elo"> Elo
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="cartao-brand-value">
+                    </div>
+                    <div class="form-group">
+                        <label for="cartao-numero">Número do Cartão</label>
+                        <input type="text" id="cartao-numero" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cartao-nome-titular">Nome no Cartão</label>
+                        <input type="text" id="cartao-nome-titular" placeholder="COMO ESTÁ NO CARTÃO" required>
+                    </div>
+                    <div class="form-grid" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label for="cartao-validade">Validade (MM/AA)</label>
+                            <input type="text" id="cartao-validade" placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cartao-cvv">CVV</label>
+                            <input type="text" id="cartao-cvv" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+                    <p class="aviso-seguranca">
+                        <i class="ri-lock-2-fill"></i> Seus dados estão seguros.
+                    </p>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancelar-adicao-cartao" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" id="btn-salvar-cartao" class="btn-principal">Salvar Cartão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE ADIÇÃO DE TELEFONE -->
+    <div id="modal-adicionar-telefone" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-telefone-titulo">Adicionar Novo Número</h2>
+            <form id="form-telefone">
+                <div class="form-group">
+                    <label>Número de WhatsApp</label>
+                    <div class="phone-input-group">
+                        <div class="country-select-wrapper" id="country-select-wrapper">
+                            <div class="country-select-trigger" tabindex="0">
+                                <img src="https://flagcdn.com/w40/br.png" alt="BR" id="selected-flag">
+                                <span id="selected-code">+55</span>
+                                <i class="ri-arrow-down-s-fill"></i>
+                            </div>
+                            <div class="country-options">
+                                <div class="country-option" data-code="+55" data-flag="br" data-mask="(00) 00000-0000">
+                                    <img src="https://flagcdn.com/w40/br.png" alt="BR"> <span>Brasil (+55)</span>
+                                </div>
+                                <div class="country-option" data-code="+1" data-flag="us" data-mask="(000) 000-0000">
+                                    <img src="https://flagcdn.com/w40/us.png" alt="US"> <span>EUA (+1)</span>
+                                </div>
+                                <div class="country-option" data-code="+351" data-flag="pt" data-mask="000 000 000">
+                                    <img src="https://flagcdn.com/w40/pt.png" alt="PT"> <span>Portugal (+351)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="tel" id="telefone-input" placeholder="(00) 00000-0000" required>
+                    </div>
+                    <p class="input-hint">Digite apenas os números com DDD.</p>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancelar-adicao-telefone" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" id="btn-salvar-telefone" class="btn-principal">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/loader.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/profile-tabs.js"></script>
+    <script src="assets/js/menu-hamburger.js"></script>
+    <script src="assets/js/profile.js" type="module"></script> <!-- Módulo JS Atualizado -->
+    <script src="assets/js/header-cell.js"></script>
+    <script src="assets/js/photo-upload.js" type="module"></script>
+    <script src="assets/js/drops.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+
+</html>

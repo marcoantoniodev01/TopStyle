@@ -1,0 +1,934 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Poppins, Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: rgb(240, 240, 240);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- NOVOS ESTILOS PARA O LOADER --- */
+
+.form-loader {
+  display: none;
+  /* Oculto por padrão */
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  /* Cinza claro */
+  border-left-color: #2F4A62;
+  /* Cor principal do botão */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+.form-loader.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.form-loader.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Classe de controle para mostrar o loader */
+/* Adicionamos .loading ao formulario-container */
+.formulario-container.loading .form-loader {
+  display: block;
+}
+
+/* Desabilitar o botão e diminuir opacidade durante o carregamento */
+.formulario-container.loading .button-log {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Caixa principal que envolve tudo */
+.caixa {
+  background-color: #FFFAFA;
+  border-radius: 2px;
+  box-shadow: 0px 0px 6px black;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+/* --- NOVO CONTAINER DE FORMULÁRIO GERAL --- */
+.overlay_form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  transition: all 0.6s ease-in-out;
+  /* Garante que ele se mova suavemente */
+}
+
+
+/* Containers de formulário */
+.formulario-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* --- MUDANÇA: Default 100% (Mobile First) --- */
+  z-index: 2;
+  flex-direction: column;
+  background-color: #FFFAFA;
+  color: black;
+}
+
+.formulario-cadastro {
+  left: 0;
+  opacity: 0;
+  z-index: 2;
+  transform: translateY(100%);
+  /* --- MUDANÇA: Começa em baixo (Mobile) --- */
+}
+
+.formulario-login {
+  left: 0;
+  z-index: 3;
+  transform: translateY(0%);
+  /* --- MUDANÇA: Começa visível (Mobile) --- */
+}
+
+
+/* --- NOVO: Estilo para o formulário de recuperação --- */
+.formulario-recuperar {
+  left: 25%;
+  width: 100%;
+  /* --- MUDANÇA: Default 100% (Mobile First) --- */
+  z-index: 0;
+  opacity: 0;
+  transform: translateY(100%);
+  /* --- MUDANÇA: Começa em baixo (Mobile) --- */
+}
+
+
+
+
+/* --- ALTERAÇÕES AQUI --- */
+/* Aplicar a animação de "deslizar para o lado" apenas em telas grandes (desktop) */
+@media screen and (min-width: 922px) {
+
+  /* Restaura o layout de 50% para desktop */
+  .formulario-container {
+    width: 50%;
+  }
+
+  /* Restaura posições desktop */
+  .formulario-cadastro {
+    opacity: 0;
+    z-index: 1;
+    transform: none;
+    /* Reseta o transform mobile */
+  }
+
+  .formulario-login {
+    z-index: 2;
+    transform: none;
+    /* Reseta o transform mobile */
+  }
+
+  .formulario-recuperar {
+    width: 50%;
+    z-index: 0;
+    opacity: 1;
+  }
+
+  .nao-recuperar {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background-color: #FFFAFA;
+    transition: opacity 0.1s ease-in-out 0.6s;
+  }
+
+  /* --- ANIMAÇÃO DESKTOP: PAINEL DIREITO ATIVO (MOVIDO PARA CÁ) --- */
+  /* (Estas regras estavam no seu CSS original soltas) */
+  .caixa.painel-direito-ativo .formulario-cadastro {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+  }
+
+  .caixa.painel-direito-ativo .formulario-login {
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 1;
+  }
+
+  /* (Fim das regras que estavam no bloco @media antigo) */
+
+
+  .caixa.painel-direito-ativo .container-overlay {
+    transform: translateX(-100%);
+  }
+
+  .caixa.painel-direito-ativo .overlay {
+    transform: translateX(50%);
+  }
+
+  .caixa.painel-direito-ativo .painel-esquerdo {
+    transform: translateX(0%);
+  }
+
+  .caixa.painel-direito-ativo .painel-direito {
+    transform: translateX(20%);
+  }
+
+
+  /* --- ANIMAÇÃO DESKTOP: ESQUECI A SENHA (MOVIDO PARA CÁ) --- */
+
+  /* 1. Move TODOS os formulários (login/cadastro) para a esquerda, fora da tela */
+  .caixa.recuperar-ativo .formulario-login,
+  .caixa.recuperar-ativo .formulario-cadastro {
+    transform: translateX(-100%);
+  }
+
+  /* 2. Move o painel de overlay para a direita, fora da tela */
+  .caixa.recuperar-ativo .container-overlay {
+    transform: translateX(100%);
+  }
+
+  /* 3. Traz o formulário de recuperação para a frente e o torna visível */
+  .caixa.recuperar-ativo .formulario-recuperar {
+    z-index: 1;
+    /* Garante que fique na frente */
+    scale: 1;
+  }
+
+  .caixa.recuperar-ativo .nao-recuperar {
+    opacity: 0;
+    transition: opacity 0s;
+  }
+
+}
+
+/* --- FIM DAS ALTERAÇÕES --- */
+
+/*
+--- ESTAS REGRAS FORAM MOVIDAS para dentro da media query (min-width: 922px) ---
+.caixa.painel-direito-ativo .formulario-cadastro { ... }
+.caixa.painel-direito-ativo .formulario-login { ... }
+.caixa.recuperar-ativo .formulario-login,
+.caixa.recuperar-ativo .formulario-cadastro { ... }
+.caixa.recuperar-ativo .container-overlay { ... }
+...e as regras de .formulario-recuperar...
+*/
+
+
+.left-center {
+  background-color: white;
+  border: 2px solid black;
+}
+
+.center__form-recuperar {
+  padding: 10px;
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.input__container-recuperar input {
+  width: 50%;
+}
+
+.opt__righte {
+  padding: 10px;
+}
+
+.opt__righte a {
+  text-decoration: none;
+  color: gray;
+  transition: all .3s;
+}
+
+.opt__righte a:hover {
+  color: black;
+}
+
+/* Campos do formulário */
+
+/* left */
+
+.block__left {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Adicionado para rolagem em telas pequenas */
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.left__top {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  border-radius: 50%;
+  display: flex;
+  place-items: center;
+}
+
+.logo img {
+  width: 10vw;
+  height: auto;
+  border-radius: 30%;
+  min-width: 120px;
+  /* --- MUDANÇA: Adicionado min-width para mobile --- */
+}
+
+.left__center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+  min-width: 300px;
+  /* --- MUDANÇA: Adicionado min-width para mobile --- */
+}
+
+.left__center h1 {
+  padding: 10px;
+  font-size: 3rem;
+  font-weight: normal;
+}
+
+.center__form {
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-log-cad {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.input__container {
+  border-bottom: 1px solid rgb(0, 0, 0);
+  padding: 0px 0px 5px 10px;
+  width: 100%;
+  display: flex;
+  transition: all .3s;
+  margin-top: 50px;
+}
+
+/* Reduz a margem em telas menores */
+@media (max-width: 921px) {
+  .input__container {
+    margin-top: 30px;
+  }
+
+  .left__center h1 {
+    font-size: 2.5rem;
+  }
+}
+
+
+.input__container input {
+  width: 100%;
+  padding: 0px 10px 0px 15px;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.input__container input:-webkit-autofill {
+  background-color: none;
+}
+
+.input__container>label>img {
+  width: 25px;
+  opacity: 0.5;
+}
+
+.input__opt {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.opt__left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  gap: 0.6rem;
+  color: gray;
+}
+
+.opt__left input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0;
+  transition: all 0.2s ease;
+}
+
+.opt__left input[type="checkbox"]:checked {
+  background-color: #2F4A62;
+  border-color: #2F4A62;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+  background-size: 100%;
+  background-position: center;
+}
+
+.opt__right {
+  padding: 10px;
+}
+
+.opt__right a {
+  text-decoration: none;
+  color: gray;
+  transition: all .3s;
+}
+
+.opt__right a:hover {
+  color: black;
+}
+
+.button-log {
+  width: 60%;
+  border: none;
+  background-color: #2F4A62;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 8px 16px 8px;
+  margin-top: 25px;
+  cursor: pointer;
+  transition: all .5s ease;
+}
+
+button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  scale: 1.1;
+}
+
+button:active {
+  transform: scale(0.8);
+}
+
+.center__form hr {
+  width: 80%;
+  margin-top: 20px;
+}
+
+.left__bottom {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.redes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding-top: 2rem;
+}
+
+.redes__icon {
+  border: 1px solid gray;
+  border-bottom: 1px solid black;
+  background-color: transparent;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.redes__icon:hover {
+  scale: 1.1;
+  border-radius: 14px;
+  border: 1px solid black;
+}
+
+.redes__icon img {
+  width: 35px;
+}
+
+.p_bottom a {
+  text-decoration: none;
+  color: #2F4A62;
+  transition: all .3s;
+}
+
+.p_bottom a:hover {
+  text-decoration: underline;
+}
+
+.text__bottom {
+  position: relative;
+  top: 60%;
+  color: gray;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #FFFAFA inset !important;
+  -webkit-text-fill-color: black !important;
+}
+
+.toggleSenha {
+  cursor: pointer;
+}
+
+/* Overlay */
+.container-overlay {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  z-index: 100;
+}
+
+.caixa.painel-direito-ativo .container-overlay {
+  transform: translateX(-100%);
+}
+
+/* Painel da overlay */
+.overlay {
+  background: url(https://images.pexels.com/photos/833052/pexels-photo-833052.jpeg?cs=srgb&dl=pexels-daniel-adesina-279287-833052.jpg&fm=jpg);
+  background-size: cover;
+  background-position: center;
+  color: white;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transition: transform 0.6s ease-in-out;
+  display: flex;
+}
+
+.caixa.painel-direito-ativo .overlay {
+  transform: translateX(50%);
+}
+
+/* Painéis esquerdo e direito */
+.painel-overlay {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+  text-align: center;
+  width: 50%;
+  height: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+.painel-overlay>p {
+  font-size: 13px;
+  text-align: center;
+}
+
+.painel-overlay>img {
+  position: absolute;
+  top: 0;
+  width: 200px;
+}
+
+.painel-esquerdo {
+  transform: translateX(-20%);
+  left: 0;
+}
+
+.painel-direito {
+  right: 0;
+  transform: translateX(0%);
+}
+
+.caixa.painel-direito-ativo .painel-esquerdo {
+  transform: translateX(0%);
+}
+
+.caixa.painel-direito-ativo .painel-direito {
+  transform: translateX(20%);
+}
+
+/* Botão transparente (fantasma) */
+.fantasma {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 35%;
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 35px;
+  font-size: 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fantasma:hover {
+  background: rgba(255, 255, 255, 0.041);
+}
+
+.fantasma:active {
+  background-color: transparent;
+}
+
+/* --- ADICIONADO: Esconde o botão .troca no desktop --- */
+/* (Ele será mostrado no mediaquery.css) */
+.troca {
+  display: none;
+  opacity: 0;
+  border: 2px solid #333;
+  color: #000000;
+}
+
+.troca:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  scale: 1.05;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ======================================================= */
+/* ====== ESTILOS "TOPSTYLE" P/ RECUPPERAR SENHA ====== */
+/* ======================================================= */
+
+/* --- 1. FORÇA O CONTAINER A SER TELA CHEIA --- */
+/* Esta regra corrige o problema do "split-screen" */
+@media screen and (min-width: 922px) {
+  .formulario-recuperar {
+    width: 100%;
+    /* <<< A CORREÇÃO PRINCIPAL! */
+    left: 0;
+    /* Mantém a animação de scale original */
+    transform: scale(1);
+  }
+
+}
+
+/* --- 2. APLICA O TEMA ESCURO E IMERSIVO --- */
+.formulario-recuperar {
+  /* Imagem de fundo consistente com o painel */
+  background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+    url(https://images.pexels.com/photos/833052/pexels-photo-833052.jpeg?cs=srgb&dl=pexels-daniel-adesina-279287-833052.jpg&fm=jpg);
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  /* Texto padrão branco */
+
+  /* Animação sutil de "pan" no background */
+  animation: pan-background 20s ease-in-out infinite alternate;
+}
+
+@keyframes pan-background {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* --- 3. PREENCHE O ESPAÇO VAZIO (Aumenta o conteúdo) --- */
+.formulario-recuperar .left__center {
+  width: 90%;
+  /* Muito mais largo que os 55% originais */
+  max-width: 550px;
+  /* Limite para não ficar gigante em 4K */
+}
+
+.formulario-recuperar .logo img {
+  width: 130px;
+  /* Logo maior */
+  margin-bottom: 10px;
+  filter: invert(1) brightness(2);
+  /* Inverte para branco */
+}
+
+.formulario-recuperar .left__center h1 {
+  color: #fff;
+  font-size: 3.5rem;
+  /* Título bem grande */
+  margin-bottom: 5px;
+  white-space: nowrap;
+  /* ADICIONADO: Previne quebra de linha */
+}
+
+.formulario-recuperar .left__center p {
+  color: #e0e0e0;
+  max-width: 500px;
+  font-size: 1.1rem;
+  /* Texto maior */
+  margin-bottom: 25px;
+}
+
+/* --- 4. AJUSTA O FORMULÁRIO (Inputs e Botão) --- */
+
+/* O seu CSS original tinha o .center__form-recuperar com width: 70% 
+   e o input dentro dele com width: 50%. Vamos fazer tudo 100%. */
+
+.formulario-recuperar .center__form-recuperar {
+  width: 100%;
+  /* Ocupa todo o .left__center */
+  justify-content: center;
+}
+
+.formulario-recuperar .input__container-recuperar {
+  width: 100%;
+  /* O container do input ocupa 100% */
+}
+
+
+
+.formulario-recuperar .button-log {
+  width: 100%;
+  /* Botão ocupa todo o espaço */
+  padding: 18px 8px;
+  /* Botão mais alto */
+  font-size: 1rem;
+  font-weight: 700;
+  background-color: #f0f0f0;
+  /* Botão claro */
+  color: #2F4A62;
+  /* Cor da sua marca */
+}
+
+.formulario-recuperar .button-log:hover {
+  background-color: #fff;
+  scale: 1.05;
+  /* Efeito de hover mais sutil */
+}
+
+.formulario-recuperar .opt__righte {
+  margin-top: 25px;
+  /* Mais espaçamento */
+}
+
+
+/* --- 5. DETALHES DO TEMA ESCURO (Ícones, Links, Autofill) --- */
+
+.formulario-recuperar .input__container {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  margin-top: 30px;
+}
+
+.formulario-recuperar .input__container label img {
+  filter: invert(1);
+  opacity: 0.7;
+}
+
+.formulario-recuperar .input__container input {
+  color: #fff;
+  background: transparent;
+}
+
+.formulario-recuperar .input__container input::placeholder {
+  color: #ccc;
+}
+
+/* Corrige o autofill do Chrome para tema escuro */
+.formulario-recuperar input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #222222 inset !important;
+  /* Fundo escuro */
+  -webkit-text-fill-color: white !important;
+  /* Texto branco */
+}
+
+.formulario-recuperar .opt__righte a {
+  color: #f0f0f0;
+}
+
+.formulario-recuperar .opt__righte a:hover {
+  color: #fff;
+}
+
+/* --- 6. ANIMAÇÃO E MARCA D'ÁGUA (O toque "TopStyle") --- */
+
+/* Marca d'água sutil no fundo */
+.formulario-recuperar::before {
+  content: 'TOPSTYLE';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  font-family: 'Archivo', sans-serif;
+  /* Fonte que você já importou */
+  font-size: 20vw;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.03);
+  /* Quase invisível */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Garante que o formulário fique SOBRE a marca d'água */
+.formulario-recuperar .form-log-cad {
+  z-index: 1;
+  position: relative;
+}
+
+/* Animação de entrada */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplica a animação SÓ quando a tela estiver ativa */
+.caixa.recuperar-ativo .formulario-recuperar .left__center {
+  animation: fade-in-up 0.8s 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* ======================================================= */
+/* ====== ESTILOS "TOPSTYLE" P/ RECUPERAR SENHA (ETAPAS) */
+/* ======================================================= */
+
+/* --- Animação de entrada para as etapas --- */
+@keyframes fadeInStep {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplica a animação em todas as etapas quando elas aparecem */
+.step-recovery {
+  animation: fadeInStep 0.5s ease-out forwards;
+}
+
+/* --- Parágrafo de descrição --- */
+.p-recuperar {
+  margin: 15px 0;
+  color: #e0e0e0;
+  text-align: center;
+  max-width: 450px;
+  line-height: 1.6;
+}
+
+/* --- Mensagem de Erro --- */
+.recuperar-error {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  height: 20px;
+  margin-top: 15px;
+  text-align: center;
+  display: block;
+  font-weight: 500;
+}
+
+/* --- Container dos 6 Inputs (OTP) --- */
+.code-inputs-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0 10px 0;
+}
+
+.code-input {
+  width: 45px;
+  height: 55px;
+  font-size: 1.8rem;
+  text-align: center;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  color: white;
+}
+
+/* Remove as setas de input[type=number] */
+.code-input::-webkit-outer-spin-button,
+.code-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.code-input:focus {
+  outline: none;
+  border-bottom-color: #fff;
+}
+
+/* --- Ajusta o formulário de recuperar (tema escuro) --- */
+.formulario-recuperar .input__container {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.formulario-recuperar .input__container input::placeholder {
+  color: #ccc;
+}
+
+.formulario-recuperar .input__container label img {
+  filter: invert(1);
+  opacity: 0.7;
+}

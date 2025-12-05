@@ -1,0 +1,4009 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Klee+One&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rajdhani:wght@300;400;500;600;700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #fafafa;
+    font-family: Roboto, Arial;
+    color: black;
+    transition: background-color .4s, color .4s;
+    /* Correção para Sticky Footer */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/*CARROSSEL DE DESCONTO*/
+
+.carrossel-desconto {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4vh;
+    overflow: hidden;
+    background-color: #000;
+    z-index: 999;
+}
+
+.carrossel-wrapper {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker 15s linear infinite;
+    color: white;
+}
+
+.carrossel-wrapper span {
+    display: inline-block;
+    margin-right: 10rem;
+    /* <-- esse é o espaçamento */
+    color: white;
+    font-size: 14px;
+    line-height: 4vh;
+    cursor: default;
+}
+
+
+@keyframes ticker {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+
+main {
+    /* Correção para Sticky Footer */
+    flex-grow: 1;
+}
+
+
+.com-intro {
+    overflow: hidden;
+}
+
+/* Tela de carregamento */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(https://i.ibb.co/MWHB71Y/fundo.jpg);
+    background-position: center center;
+    background-size: cover;
+    filter: grayscale(100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    gap: 1rem;
+}
+
+.imagem-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20vw;
+    height: 20vw;
+}
+
+.logo-loader {
+    animation: pulsar 1.8s ease-in-out infinite;
+}
+
+.text-loader h1 {
+    font-size: 3.8rem;
+    color: white;
+}
+
+.text-loader h1 span {
+    display: inline-block;
+    animation: subir 1.5s ease-in-out infinite;
+}
+
+/* Atrasos progressivos */
+.text-loader h1 span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.text-loader h1 span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.text-loader h1 span:nth-child(3) {
+    animation-delay: 0.30s;
+}
+
+.text-loader h1 span:nth-child(4) {
+    animation-delay: 0.45s;
+}
+
+.text-loader h1 span:nth-child(5) {
+    animation-delay: 0.60s;
+}
+
+.text-loader h1 span:nth-child(6) {
+    animation-delay: 0.75s;
+}
+
+.text-loader h1 span:nth-child(7) {
+    animation-delay: 0.90s;
+}
+
+.text-loader h1 span:nth-child(8) {
+    animation-delay: 1.05s;
+}
+
+/* última letra */
+
+/* Keyframes */
+@keyframes subir {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+
+#preloader img {
+    width: 15vw;
+}
+
+
+@keyframes pulsar {
+    0% {
+        width: 15vw;
+    }
+
+    50% {
+        width: 16vw;
+    }
+
+    100% {
+        width: 15vw;
+    }
+}
+
+/* Quando esconder */
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/*INTRO*/
+
+/* ============ BOTÃO DE PULAR ANIMAÇÃO ============ */
+#skip-intro-btn {
+    position: absolute;
+    bottom: 30px;
+    /* Movido de 'right' para 'left' */
+    left: 50%;
+    /* Centraliza horizontalmente */
+    transform: translateX(-50%);
+    /* Ajuste fino da centralização */
+    z-index: 9999999;
+    padding: 10px 24px;
+    /* Padding ajustado */
+    font-size: 14px;
+    font-weight: 600;
+    /* Fonte um pouco mais forte */
+    font-family: 'Roboto', sans-serif;
+    /* Usando fonte do site */
+    color: #000;
+    /* Texto preto */
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Fundo branco levemente transparente */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    /* Borda sutil */
+    border-radius: 8px;
+    /* Bordas menos arredondadas */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+    backdrop-filter: blur(3px);
+    /* Efeito de vidro fosco, igual ao header */
+    -webkit-backdrop-filter: blur(3px);
+}
+
+#skip-intro-btn:hover {
+    background-color: #fff;
+    /* Fica branco sólido no hover */
+    /* Ajusta o transform para manter a centralização ao escalar */
+    transform: translateX(-50%) scale(1.05);
+    opacity: 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    /* Sombra suave */
+}
+
+#intro {
+    position: fixed;
+    inset: 0;
+    background: #fafafa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 99998;
+    /* abaixo do preloader */
+
+    /* MUDANÇA 1: Transição 'linear' para um derretimento constante */
+    transition: transform 2s linear,
+        opacity 2s linear,
+        clip-path 2s linear;
+
+    /* ESTADO INICIAL: Um polígono reto com 23 pontos (IDÊNTICO AO SEU ARQUIVO ORIGINAL) */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 90% 100%, 85% 100%, 80% 100%, 75% 100%,
+            70% 100%, 65% 100%, 60% 100%, 55% 100%, 50% 100%, 45% 100%, 40% 100%,
+            35% 100%, 30% 100%, 25% 100%, 20% 100%, 15% 100%, 10% 100%, 5% 100%, 0 100%);
+}
+
+/* CLASSE DE TRANSIÇÃO: Define o estado final do "derretimento" */
+#intro.is-melting {
+
+    /* MUDANÇA 2: O novo clip-path de "gotas arredondadas" (simuladas) */
+    /* Ele usa os mesmos 23 pontos, mas variando a altura (Y) */
+    clip-path: polygon(0 0, 100% 0,
+            /* Pontos 1, 2 (Topo) */
+            100% 90%,
+            /* Ponto 3 (Vão) */
+            95% 98%,
+            /* Ponto 4 (Curva descendo) */
+            90% 100%,
+            /* Ponto 5 (Ponta da Gota) */
+            85% 98%,
+            /* Ponto 6 (Curva subindo) */
+            80% 90%,
+            /* Ponto 7 (Vão) */
+            75% 96%,
+            /* Ponto 8 (Curva descendo) */
+            70% 100%,
+            /* Ponto 9 (Ponta da Gota) */
+            65% 96%,
+            /* Ponto 10 (Curva subindo) */
+            60% 92%,
+            /* Ponto 11 (Vão) */
+            55% 99%,
+            /* Ponto 12 (Curva descendo) */
+            50% 100%,
+            /* Ponto 13 (Ponta da Gota) */
+            45% 99%,
+            /* Ponto 14 (Curva subindo) */
+            40% 92%,
+            /* Ponto 15 (Vão) */
+            35% 96%,
+            /* Ponto 16 (Curva descendo) */
+            30% 100%,
+            /* Ponto 17 (Ponta da Gota) */
+            25% 96%,
+            /* Ponto 18 (Curva subindo) */
+            20% 90%,
+            /* Ponto 19 (Vão) */
+            15% 98%,
+            /* Ponto 20 (Curva descendo) */
+            10% 100%,
+            /* Ponto 21 (Ponta da Gota) */
+            5% 98%,
+            /* Ponto 22 (Curva subindo) */
+            0% 90%
+            /* Ponto 23 (Vão final) */
+        );
+
+    /* ESTADO FINAL: Mover para cima */
+    transform: translateY(-100%);
+
+    /* MUDANÇA 3: A 'opacity' foi REMOVIDA para não dar fade */
+    /* opacity: 0.5; */
+}
+
+
+.intro-mask {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: #000;
+    z-index: 1;
+}
+
+#intro {
+    position: fixed;
+    inset: 0;
+    background: #fafafa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 99998;
+    /* abaixo do preloader */
+}
+
+.intro-mask {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: #000;
+    z-index: 1;
+}
+
+.intro-mask.top {
+    top: 0;
+    transform: translateY(0);
+    /* cobre de cima */
+}
+
+.intro-mask.bottom {
+    bottom: 0;
+    transform: translateY(0);
+    /* cobre de baixo */
+}
+
+
+.intro-texts {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.intro-text,
+.intro-text-top {
+    font-size: 10rem;
+    font-weight: bold;
+    color: #000;
+    transform: translateY(100%);
+    opacity: 0;
+    position: absolute;
+}
+
+
+/*Animações*/
+
+.hidden {
+    opacity: 0;
+    transition: transform 1s ease, opacity 1s ease, background-color .4s;
+}
+
+/* Animações possíveis */
+.fade-up {
+    transform: translateY(40px);
+}
+
+.fade-down {
+    transform: translateY(-40px);
+}
+
+.fade-left {
+    transform: translateX(-40px);
+}
+
+.fade-right {
+    transform: translateX(40px);
+}
+
+.zoom-in {
+    transform: scale(0.8);
+}
+
+.rotate-in {
+    transform: rotate(-10deg);
+}
+
+
+.fade-opacity {
+    /* Nenhum transform, só invisível */
+    transform: none;
+}
+
+/* Quando visível */
+.show {
+    opacity: 1;
+    transform: none;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+/* Fundo da barra (trilho) */
+::-webkit-scrollbar-track {
+    background: rgba(255, 228, 196, 0);
+}
+
+/* Parte "deslizante" da barra */
+::-webkit-scrollbar-thumb {
+    background: black;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(44, 44, 44);
+}
+
+.scrollup {
+    position: fixed;
+    background-color: black;
+    box-shadow: gray;
+    display: inline-flex;
+    padding: 6px;
+    font-size: 1.25rem;
+    color: white;
+    z-index: 1000;
+    transition: bottom .4s, transform .4s, box-shadow .4s, background-color .4s;
+    bottom: -100px;
+    right: 2%;
+}
+
+.scrollup:hover {
+    transform: translateY(-.5rem);
+}
+
+.show-scroll {
+    bottom: 3rem;
+}
+
+/*MAIN*/
+
+main {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/*INÍCIO*/
+
+.inicio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 85vh;
+    margin-top: 8vh;
+}
+
+.inicio__left {
+    width: 50%;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5%;
+}
+
+.creat__cloth {
+    font-size: 9rem;
+    width: 100%;
+    text-transform: uppercase;
+}
+
+.creat__cloth span {
+    padding-left: 150px;
+}
+
+.inicio__left p {
+    width: 70%;
+    padding: 0px 10px;
+    margin-left: 150px;
+}
+
+.buttons__inicio {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-left: 150px;
+}
+
+.link__creat {
+    font-size: 1.3rem;
+    padding: 10px 22px;
+    width: 12vw;
+    height: 3vw;
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    transition: all .3s;
+}
+
+.link__creat:hover {
+    background-color: transparent;
+    color: black;
+    border: 2px solid black;
+    transform: translateY(-5px);
+}
+
+.link__creat-opt {
+    font-size: 20px;
+    padding: 8px 20px;
+    width: 14vw;
+    height: 3vw;
+    border: 2px solid black;
+    color: rgb(0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    transition: all .3s;
+}
+
+.link__creat-opt:hover {
+    background-color: black;
+    color: rgb(255, 255, 255);
+    border: none;
+    transform: translateY(-5px);
+}
+
+.inicio__right {
+    width: 50%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inicio__img {
+    width: 80%;
+    height: 80%;
+    position: relative;
+    right: 25%;
+}
+
+.inicio__img img {
+    width: 53vw;
+}
+
+/* marquee */
+
+.marquee {
+    width: 110%;
+    overflow: hidden;
+    height: 8vh;
+    background: black;
+    transform: rotate(2deg);
+    display: flex;
+    align-items: center;
+    position: relative;
+    bottom: 40px;
+}
+
+.marquee-track {
+    display: flex;
+    gap: 50px;
+    white-space: nowrap;
+    will-change: transform;
+    animation: scroll 20s linear infinite;
+}
+
+.marquee-track span {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+
+/*SELEÇÃO DE ROUPA*/
+
+.selection-initial {
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-product-cards {
+    width: 80%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.card-opt {
+    height: 300px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.card-opt img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+
+/* estados dinâmicos via JS */
+.card-opt.active {
+    transform: scale(1.1);
+    z-index: 2;
+    filter: grayscale(1);
+}
+
+.card-opt.inactive {
+    transform: scale(.9);
+    opacity: 0.7;
+}
+
+.opt1 {
+    flex: 1 1 400px;
+}
+
+.opt2 {
+    flex: 1 1 500px;
+}
+
+.opt4 {
+    flex: 1 1 250px;
+}
+
+.opt3 {
+    flex: 1 1 500px;
+}
+
+.opt6 {
+    flex: 1 1 250px;
+}
+
+.opt5 {
+    flex: 1 1 250px;
+}
+
+.card-opt {
+    position: relative;
+    overflow: hidden;
+}
+
+
+.card-opt .faixa-diagonal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 60px;
+    /* altura da faixa */
+    background: rgba(0, 0, 0, 0.75);
+    transform: translate(-50%, -50%) rotate(-45deg);
+    transform-origin: center;
+    opacity: 0;
+    z-index: 2;
+    transition: width 0.6s ease-out, opacity 0.3s ease;
+}
+
+.card-opt .faixa-diagonal .texto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-360deg);
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.2s;
+    pointer-events: none;
+}
+
+
+/*PROMOÇÕES DIÁRIAS*/
+
+.swiper-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.swiper {
+    width: 90%;
+    height: 100%;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Cada "product-slot" se ajusta automaticamente */
+.product-slot {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    flex-grow: 1;
+    min-width: 250px;
+    min-height: 60vh;
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+}
+
+/* === Corrige posição da barra de rolagem do Swiper === */
+.swiper-scrollbar {
+    position: relative;
+    /* garante que fique dentro do fluxo */
+    margin-top: 20px;
+    /* aproxima a barra dos slides */
+    width: 90%;
+    /* largura menor, centralizada */
+    margin-inline: auto;
+    /* centraliza horizontalmente */
+    height: 6px;
+    /* altura da barra */
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* === Customiza o “thumb” (parte que se move) === */
+.swiper-scrollbar-drag {
+    background: #0a55e0;
+    /* cor da barra ativa */
+    border-radius: 10px;
+}
+
+/* === Em telas pequenas, diminui o espaço ainda mais === */
+@media (max-width: 767px) {
+    .swiper-scrollbar {
+        margin-top: 5px;
+        /* bem mais próximo no celular */
+        width: 95%;
+        height: 4px;
+    }
+}
+
+
+.promotions-day {
+    height: auto;
+    /* Correção: Altura automática */
+    padding: 4rem 0;
+    /* Espaçamento */
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* Alinhado ao topo */
+    gap: 2rem;
+    /* Espaçamento entre título e produtos */
+}
+
+.title-promotions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.title-promotions h1 {
+    font-size: 2rem;
+}
+
+.title-promotions p {
+    font-size: 1.2rem;
+}
+
+.products-promotions-sale {
+    display: flex;
+    width: 95%;
+    height: 3vh;
+    gap: 2rem;
+}
+
+.sale {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.sale p {
+    font-size: 1.2rem;
+}
+
+.products-promotions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 60vh;
+    background: linear-gradient(to top, #272d3d, #4e5a7e);
+}
+
+.images-of-promotions {
+    display: flex;
+    width: 95%;
+    height: 90%;
+    gap: 2rem;
+}
+
+.image-promotions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+
+/*PRODUTOS INICIAIS*/
+
+.products-inicio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* Alinhado ao topo */
+    width: 100%;
+    height: auto;
+    /* Correção: Altura automática */
+    min-height: 100vh;
+    /* Garante que a seção tenha uma boa altura */
+    padding: 4rem 0;
+    /* Adiciona espaçamento */
+    gap: 2rem;
+    /* Espaço entre título e produtos */
+}
+
+/* === HEADING STYLE #2 === */
+.two h1 {
+    text-transform: capitalize;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    font-family: "Raleway", sans-serif;
+    font-weight: 300;
+    font-size: 40px;
+    color: #080808;
+    -webkit-transition: all 0.4s ease 0s;
+    -o-transition: all 0.4s ease 0s;
+    transition: all 0.4s ease 0s;
+}
+
+.two h1:before {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 2px;
+    content: "";
+    background-color: #0a55e0;
+}
+
+.two h1 span {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    line-height: 3em;
+    padding-left: 0.25em;
+    color: rgba(0, 0, 0, 0.4);
+    padding-bottom: 10px;
+    display: block;
+}
+
+.alt-two h1 {
+    text-align: center;
+}
+
+.alt-two h1:before {
+    left: 50%;
+    margin-left: -30px;
+}
+
+.product-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 2rem;
+}
+
+
+.product-row {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permite que os itens quebrem a linha */
+    align-items: stretch;
+    /* Garante que todos os itens tenham a mesma altura */
+    justify-content: center;
+    width: 95%;
+    height: auto;
+    gap: 1rem;
+    /* Espaçamento entre os produtos */
+}
+
+.product {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    /* Ocupa toda a altura do slot */
+}
+
+.product-link {
+    background-color: #4e5a7e;
+    width: 100%;
+    height: 60vh;
+    max-height: 60vh;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 3 / 4;
+    /* Mantém a proporção da imagem */
+}
+
+.product-link img {
+    width: 100%;
+    height: 100%;
+    /* Correção: Altura automática para manter proporção */
+    object-fit: cover;
+    /* Cobre o espaço sem distorcer */
+}
+
+.product-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    min-height: 7vh;
+    padding: 0.5rem;
+    background-color: #304878;
+    color: #ffffff;
+    transition: all .4s;
+}
+
+/* ALTERAÇÃO AQUI: Adicionando tipografia fluida */
+.product-title {
+    font-weight: bold;
+    /* Tente ter 1.5vw, mas não menor que 1rem nem maior que 1.5rem */
+}
+
+.product-price {
+    /* Tente ter 1.2vw, mas não menor que 0.9rem nem maior que 1.2rem */
+    font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+}
+
+/*hovar produtos*/
+.product-options-container {
+    display: none;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-text.hover-options .product-options-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.product-text .sizes,
+.product-text .colors {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+/* tamanho botão */
+.product-text .sizes .size-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2vw;
+    height: 2vw;
+    border: none;
+    color: white;
+    background-color: transparent;
+    transition: all .4s;
+    border-bottom: 1px solid transparent;
+    font-size: 1rem;
+}
+
+.product-text .sizes .size-btn:hover {
+    background-color: rgba(179, 179, 179, 0.096);
+    border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+.product-text .sizes .size-btn:active {
+    background-color: rgba(179, 179, 179, 0.37);
+}
+
+/* cor botão (bolinha) */
+.product-text .colors .color-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+}
+
+
+/*PRODUTOS INDIVIDUAIS*/
+
+.main-selecao {
+    top: -4vh;
+}
+
+.product-informations {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: auto;
+    padding-top: 12rem;
+}
+
+.product-informations-images {
+    display: flex;
+    overflow: hidden;
+    justify-content: baseline;
+    height: 80vh;
+    width: 55%;
+}
+
+.previw-imagens-informations {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: 20%;
+    height: auto;
+    cursor: pointer;
+    gap: 1rem;
+}
+
+.previw-imagens-informations::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
+
+.thumb-mini {
+    width: 90%;
+    height: auto;
+    display: block;
+    box-sizing: border-box;
+    border: 3px solid rgb(180, 180, 180);
+}
+
+.thumb-mini.active-thumb {
+    border: 3px solid black;
+}
+
+.mini-image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.principal-image-informations {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 70%;
+}
+
+.principal-image-informations img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.product-informations-content {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    align-items: baseline;
+    justify-content: space-between;
+    width: 40vw;
+}
+
+.title-informations {
+    font-size: 4rem;
+}
+
+.product-color-size {
+    width: 100%;
+}
+
+hr {
+    border: none;
+    width: 100%;
+    height: 2px;
+    background-color: gray;
+}
+
+.avaliações-sale {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: center;
+    width: 100%;
+    height: 20vh;
+}
+
+.avaliacoes {
+    display: flex;
+    align-items: center;
+    justify-content: baseline;
+    gap: 1rem;
+    width: 100%;
+}
+
+.estrelas {
+    font-size: 2rem;
+    color: #191D28;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.numeros-avaliados {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-informations-sale p {
+    font-size: 2rem;
+}
+
+.product-size {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: center;
+    width: 100%;
+    height: 20vh;
+    gap: 1rem;
+}
+
+.title-size {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 65%;
+    height: 6vh;
+}
+
+.product-size h1 {
+    font-weight: normal;
+    font-size: 3rem;
+}
+
+.size-escolha {
+    display: flex;
+    align-items: center;
+    justify-content: baseline;
+    gap: 1rem;
+    width: 100%;
+}
+
+.button-size {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border: none;
+    background-color: transparent;
+    transition: all .4s;
+    border-bottom: 1px solid transparent;
+}
+
+.button-size:hover {
+    background-color: rgba(179, 179, 179, 0.096);
+    border-bottom: 1px solid black;
+}
+
+.button-size:active {
+    background-color: rgba(179, 179, 179, 0.37);
+}
+
+.button-size.active {
+    border-bottom: 1px solid black;
+}
+
+.erro {
+    opacity: 1;
+    color: red;
+    font-size: 0.8rem;
+}
+
+.product-color {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    justify-content: center;
+    width: 100%;
+    height: 20vh;
+    gap: 1rem;
+}
+
+.title-color {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 60%;
+    height: 6vh;
+}
+
+.product-color h1 {
+    font-weight: normal;
+    font-size: 3rem;
+}
+
+.cor-escolha {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.cor-content {
+    display: flex;
+    align-items: center;
+    justify-content: baseline;
+    width: 100%;
+    gap: 3rem;
+
+}
+
+.cor-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 7rem;
+    gap: 0.5rem;
+}
+
+.cor {
+    width: 2.5rem;
+    height: 2.5rem;
+    cursor: pointer;
+    transition: transform .4s, border .4s;
+    border: 2px solid transparent;
+}
+
+.cor-preta {
+    background-color: black;
+}
+
+.cor-branca {
+    background-color: white;
+}
+
+.cor-mocha {
+    background-color: #3B2F2F;
+}
+
+.cor:hover {
+    transform: scale(1.05);
+    border: 2px solid rgba(255, 255, 255, 0.411);
+}
+
+.cor:active {
+    transform: none;
+}
+
+.button-color.active {
+    border: 5px solid gray;
+}
+
+.cor-div p {
+    font-size: 1rem;
+}
+
+.adicionar-carrinho {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.adicionar-carrinho-buttom {
+    height: 6vh;
+    width: 100%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: transform .4s, background-color .4s;
+}
+
+.adicionar-carrinho-buttom:hover {
+    transform: scale(1.02);
+    background-color: rgb(26, 26, 26);
+}
+
+.adicionar-carrinho-buttom:active {
+    background-color: black;
+    transform: none;
+}
+
+/*FOOTER*/
+
+.footer {
+    background: #0c0c0c;
+    color: #f5f5f5;
+    padding: 50px 20px 20px;
+    font-family: "Inter", sans-serif;
+    width: 100%;
+}
+
+/* Newsletter */
+.footer-newsletter {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.footer-newsletter h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.footer-newsletter form {
+    display: flex;
+    justify-content: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.footer-newsletter input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #333;
+    border-radius: 30px 0 0 30px;
+    outline: none;
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.footer-newsletter button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 0 30px 30px 0;
+    background: linear-gradient(90deg, #0086f4, #0011ff);
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.footer-newsletter button:hover {
+    opacity: 0.85;
+}
+
+/* Main grid */
+.footer-main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+    padding: 40px 0;
+}
+
+.footer-brand {
+    flex: 1 1 250px;
+    margin-bottom: 20px;
+}
+
+.footer-brand h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #0086f4;
+}
+
+.footer-links {
+    display: flex;
+    flex: 2;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.footer-links h4 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: #ccc;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+/* Bottom */
+.footer-bottom {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.footer-legal a {
+    margin-left: 15px;
+    color: #aaa;
+    text-decoration: none;
+}
+
+.footer-legal a:hover {
+    color: #fff;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .footer-main {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .footer-links div {
+        margin: 10px 20px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}
+
+/* acaba footer */
+
+
+.after-title-header {
+    font-size: 1rem;
+}
+
+
+
+/* Bounce já existe. Agora o Pulse do badge: */
+.cart-pulse {
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+.carrinho-content {
+    min-height: 50vh;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.cart-page {
+    padding: 5rem;
+    height: auto;
+    min-height: 80vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5vh;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #fff;
+    height: 30vh;
+}
+
+.cart-item-left {
+    height: 100%;
+}
+
+.cart-item-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #f2f2f2;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-name {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    cursor: default;
+}
+
+.quantity-controls button {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    border: 1px solid #000;
+    background-color: transparent;
+    color: #000;
+    border-radius: 4px;
+    transition: background-color .4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .4s;
+}
+
+.quantity-controls button:hover {
+    background-color: rgba(128, 128, 128, 0.123);
+}
+
+.quantity-controls button:active {
+    background-color: transparent;
+}
+
+.remove {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: rgb(0, 0, 0);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .4s;
+}
+
+.remove:hover {
+    background: rgb(31, 31, 31);
+    transform: scale(1.1);
+}
+
+.remove:active {
+    background-color: black;
+    transform: none;
+}
+
+.content-continuar {
+    padding: 1rem;
+    width: 100%;
+    height: 20vh;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: end;
+}
+
+.cupom {
+    height: 10vh;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    transition: all .4s;
+}
+
+/* Campo do cupom */
+.cupom {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cupom-invalido-alert {
+    display: none;
+    color: red;
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+
+.cupom input {
+    padding: 0.5rem;
+    height: 2.4rem;
+    width: 12rem;
+    border: 1px solid rgba(199, 199, 199, 0.507);
+    border-bottom: 1px solid black;
+    transition: all .4s;
+}
+
+.cupom input:hover {
+    background-color: rgba(196, 196, 196, 0.151);
+}
+
+.cupom input:focus {
+    border: 1px solid black;
+    outline: none;
+    background-color: transparent;
+}
+
+.cupom input::placeholder {
+    color: gray;
+    transition: color .4s;
+}
+
+.cupom input:focus::placeholder {
+    color: transparent;
+}
+
+.cupom button {
+    border: 1px solid #000;
+    background: #fff;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all .4s;
+    height: 4vh;
+}
+
+.cupom button:hover {
+    background: #000;
+    color: #fff;
+}
+
+.cupom-aplicado-car {
+    display: flex;
+    /* ALTERAÇÃO CRUCIAL AQUI: Layout de COLUNA para empilhar */
+    flex-direction: column; 
+    align-items: flex-end; /* Alinha o conteúdo interno à direita */
+    gap: 5px; /* Espaço menor entre o selo e o botão */
+    height: auto; /* Deixa a altura se ajustar ao conteúdo */
+    align-items: center;
+    padding: 1rem;
+}
+
+.badge-cupom {
+    padding: 0.3rem 0.8rem;
+    border: 2px dashed #00bfa5;
+    color: #00bfa5;
+    font-weight: bold;
+    border-radius: 6px;
+    background: #e6fffa;
+}
+
+#trocar-cupom {
+    color: black;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .4s;
+}
+
+#trocar-cupom:hover {
+    color: black;
+}
+
+#trocar-div {
+    transition: all .4s;
+}
+
+#trocar-div:hover {
+    transform: scale(1.05);
+}
+
+.cart-total {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-weight: bold;
+    text-align: right;
+    color: black;
+}
+
+.continuar-info {
+    display: flex;
+    align-items: center;
+}
+
+.text-total-litlecar {
+    font-size: 1.4rem;
+    color: #001a61;
+}
+
+.text-price-litlecar {
+    font-size: 2rem;
+}
+
+.continuar-compra {
+    display: flex;
+    width: 100%;
+    height: 10vh;
+    align-items: end;
+    justify-content: end;
+    gap: 2rem;
+}
+
+.button-cont-littlecar button {
+    width: 18rem;
+    border: none;
+    background-color: black;
+    height: 2.5rem;
+    color: white;
+    font-size: 1.5rem;
+    transition: all .4s;
+    cursor: pointer;
+}
+
+.button-cont-littlecar button:hover {
+    transform: scale(1.02);
+    background-color: rgb(26, 26, 26);
+}
+
+.button-cont-littlecar button:active {
+    transform: none;
+    background-color: black;
+}
+
+/* carrinho vazio*/
+
+.carrinho-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: baseline;
+    height: auto;
+    /* Correção: Altura automática */
+    width: 100%;
+    gap: 5rem;
+    /* Reduzido o gap */
+    padding: 2rem 0;
+    /* Adicionado espaçamento */
+}
+
+
+.vazio-info {
+    gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50vh;
+}
+
+.vazio-info img {
+    width: 10vw;
+}
+
+.vazio-info p {
+    color: gray;
+    font-weight: bold;
+}
+
+.vazio-info a {
+    height: 5vh;
+    width: 10vw;
+    background-color: #191D28;
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all .4s;
+}
+
+.vazio-info a:hover {
+    background-color: #272d3d;
+    transform: scale(1.02);
+}
+
+.vazio-info a:active {
+    background-color: #191D28;
+    transform: none;
+}
+
+/*recomendações carrinho*/
+
+.recomendações-carrinho {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: baseline;
+    width: 100%;
+    height: auto;
+    /* Correção: Altura automática */
+    padding: 3rem 0;
+    /* Adicionado espaçamento */
+    gap: 2rem;
+}
+
+.products-content-carrinho {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* Ocupa toda a largura */
+    height: auto;
+    /* Altura automática */
+}
+
+
+.products-carrinho-image {
+    display: flex;
+    width: 100%;
+    height: 80%;
+    gap: 1rem;
+}
+
+.products-carrinho-sale {
+    display: flex;
+    width: 98%;
+    height: auto;
+    gap: 1rem;
+}
+
+.text-sale-products {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.title-product-carrinho {
+    font-size: 1rem;
+}
+
+.producy-inicio-preço {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.preço-carrinho {
+    font-size: 1rem;
+}
+
+.parcelas-carrinho {
+    font-size: 0.8rem;
+}
+
+/*CAMISAS*/
+
+.after-title-header-selecao {
+    font-size: 1.5rem;
+}
+
+.selecao-products {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: auto;
+    padding-top: 4rem;
+    /* Maior espaçamento do topo */
+}
+
+.product-content-selecao {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 95%;
+    height: auto;
+    gap: 1rem;
+    min-height: 80vh;
+    /* Altura mínima para mostrar mensagem 'sem produtos' */
+}
+
+/* ALTERAÇÃO AQUI: Trocando Flexbox por CSS Grid para um layout fluido */
+.product-row {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permite que os itens quebrem a linha */
+    align-items: stretch;
+    /* Garante que todos os itens tenham a mesma altura */
+    justify-content: center;
+    width: 95%;
+    height: auto;
+    gap: 1rem;
+    /* Espaçamento entre os produtos */
+}
+
+.product-row-selecao {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* Centraliza os produtos */
+    width: 100%;
+    height: auto;
+    gap: 1rem;
+}
+
+.product-link-selecao {
+    background-color: #4e5a7e;
+    width: 100%;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-link-selecao img {
+    width: 100%;
+    height: auto;
+    /* Correção: Altura automática */
+    aspect-ratio: 3 / 4;
+    /* Mantém proporção */
+    object-fit: cover;
+    /* Cobre o espaço */
+}
+
+/* ADIMINISTRADOR*/
+
+.product-edit-wrapper {
+    display: none;
+    width: 100%;
+    height: 7vh;
+    background-color: #4e5a7e9d;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-edit-wrapper .btn-editar {
+    background: #191D28;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all .4s;
+    height: 20vh;
+    width: 20vh;
+}
+
+.product-edit-wrapper .btn-editar:hover {
+    background: #333;
+}
+
+/* ============================================= */
+/* ===== ESTILIZAÇÃO MODAL ADMIN (NOVO) ===== */
+/* ============================================= */
+
+
+/* style.css (Linha 2017) - SUBSTITUA A REGRA ANTIGA POR ESTA */
+
+.admin-edit-btn {
+    position: absolute;       /* Flutua sobre o conteúdo */
+    inset: 0;               /* Cobre 100% (top, left, right, bottom = 0) */
+    width: 100%;
+    height: 100%;
+    
+    /* Aparência */
+    background-color: transparent; /* Fundo transparente (como pedido) */
+    color: white;
+    border: none;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    
+    /* Centraliza o texto "Editar" */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Efeito de hover (opcional, mas recomendado) */
+    transition: background-color 0.3s ease;
+}
+
+.admin-edit-btn:hover {
+    background-color: rgba(0, 0, 0, 0.2); /* Fica levemente escuro no hover */
+}
+
+/* O fundo escurecido com blur, igual seu header */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Um pouco mais sutil */
+    backdrop-filter: blur(3px);
+    /* Efeito de blur */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: modal-fade-in 0.3s ease;
+    /* Animação no overlay */
+}
+
+.modal-content {
+    background: #fafafa;
+    /* Cor de fundo do seu site */
+    border-radius: 12px;
+    padding: 2rem 2rem 0 2rem;
+    /* Mais espaçamento interno */
+    width: 90%;
+    min-width: 90%;
+    /* Largura máxima */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* Espaçamento entre os campos */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid #eee;
+    max-height: 90vh;
+    overflow-y: auto;
+    /* Animação de entrada do conteúdo */
+    transform: translateY(-20px);
+    opacity: 0;
+    animation: modal-content-slide 0.4s ease 0.1s forwards;
+}
+
+/* Animações */
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modal-content-slide {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Título do Modal */
+.modal-content h2 {
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.8rem;
+    color: #191D28;
+    /* Cor escura da sua marca */
+    border-bottom: 2px solid #191D28;
+    /* Linha igual aos títulos do site */
+    text-align: left;
+}
+
+/* Labels (Rótulos dos campos) */
+.modal-content label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: -0.5rem;
+    /* Puxa para perto do input */
+}
+
+/* Inputs, Selects e Textareas */
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    padding: 12px 14px;
+    border: 2px solid transparent;
+    background-color: #eee;
+    /* Fundo cinza claro, igual da pág. de login */
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    /* Garante que o padding não quebre o layout */
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+    outline: none;
+    border-color: #4e5a7e;
+    /* Cor de acento/hover da sua marca */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(78, 90, 126, 0.2);
+}
+
+.modal-content textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Container de Cores */
+#modal-colors-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f0f0f0;
+    /* Um tom ligeiramente diferente para agrupar */
+}
+
+.color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-row input {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Botão de remover cor (X) */
+.remove-color-btn {
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 10%;
+    background-color: #cc4855;
+    /* Vermelho padrão de exclusão */
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 28px;
+    /* Alinha o '×' */
+    transition: background-color 0.3s ease;
+}
+
+.remove-color-btn:hover {
+    background-color: #c82333;
+}
+
+/* Botão "+ Adicionar Cor" */
+#modal-add-color-btn {
+    padding: 8px 12px;
+    border: 2px solid #191D28;
+    /* Estilo do seu "link__creat-opt" */
+    color: #191D28;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    align-self: flex-start;
+    /* Alinha o botão à esquerda */
+}
+
+#modal-add-color-btn:hover {
+    background: #191D28;
+    color: white;
+}
+
+/* Container dos Botões de Ação (Salvar, Cancelar, etc.) */
+.modal-actions {
+    position: sticky;
+    bottom: 0;
+    background: #fafafa; /* Cor de fundo do seu modal */
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap; 
+    gap: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* Estilo Base dos Botões de Ação */
+.modal-actions button {
+    flex: 0 1 auto;
+    /* Não estica, encolhe se precisar, base automática */
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-actions button:hover {
+    transform: scale(1.02);
+}
+
+/* Botão Salvar (Primário) */
+#btn-salvar,
+#modal-save {
+    background: #191D28;
+    /* Cor primária de ação */
+    color: white;
+}
+
+#btn-salvar:hover,
+#modal-save:hover {
+    background: #304878;
+    /* Cor secundária (product-text) */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(25, 29, 40, 0.2);
+}
+
+/* Botão Cancelar (Secundário) */
+#btn-fechar,
+#modal-cancel {
+    background: #e0e0e0;
+    color: #333;
+}
+
+#btn-fechar:hover,
+#modal-cancel:hover {
+    background: #ccc;
+}
+
+/* Botão Excluir */
+#modal-delete {
+    background: #dc3545;
+    color: white;
+    margin-right: auto;
+    /* Joga este botão para a esquerda */
+}
+
+#modal-delete:hover {
+    background: #c82333;
+}
+
+/* Botão Remover da Página */
+#modal-remove-link {
+    background: #89bcff !important;
+    color: black;
+}
+
+#modal-remove-link:hover {
+    background: rgb(133, 199, 224) !important;
+}
+
+/* ===== MODAL DE CONFIRMAÇÃO CUSTOMIZADO ===== */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    /* Acima do modal de admin */
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.confirm-overlay.visible {
+    opacity: 1;
+}
+
+.confirm-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 380px;
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+.confirm-overlay.visible .confirm-box {
+    transform: scale(1);
+}
+
+.confirm-box p {
+    margin: 0 0 20px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.confirm-buttons button {
+    border: none;
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all .4s;
+}
+
+.confirm-buttons button:hover {
+    transform: scale(1.01);
+}
+
+/* Botão de confirmação (vermelho para ações destrutivas) */
+.confirm-button-ok {
+    background-color: #2F4A62;
+    /* Vermelho */
+    color: white;
+}
+
+.confirm-button-ok:hover {
+    background-color: #496680;
+}
+
+/* Botão de cancelamento */
+.confirm-button-cancel {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.confirm-button-cancel:hover {
+    background-color: #e0e0e0;
+}
+
+
+/*TELA DE PAGAMENTO*/
+
+.pagamento {
+    position: relative;
+    top: 15vh;
+    width: 100%;
+    height: auto;
+    padding: 0rem 0rem 15rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pagamento-content {
+    width: 98%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: baseline;
+    gap: 1rem;
+}
+
+.pagamento-endereco {
+    width: 100%;
+    background-color: white;
+    height: 15vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 4px dashed #191D28;
+}
+
+.pagamento-endereco-top {
+    width: 95%;
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+}
+
+.title-endereco-pagamento {
+    display: flex;
+    align-items: center;
+    justify-content: baseline;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: normal;
+    color: #191D28;
+}
+
+#endereco-container {
+    width: 95%;
+}
+
+.pagamento-endereco-bottom {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* A mágica acontece aqui */
+    height: auto;
+    padding-bottom: 1rem;
+    gap: 1rem;
+}
+
+.text-endereco-pagamanto {
+    width: 30%;
+    display: flex;
+    justify-content: flex-start; /* Nome na esquerda */
+    text-align: left;
+    font-weight: bold;
+}
+
+.pagamento-endereco-data {
+    width: 40%;
+    display: flex;
+    justify-content: center; /* Endereço no centro */
+    text-align: center;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.3;
+}
+
+.pagamento-botao {
+    width: 30%;
+    display: flex;
+    justify-content: flex-end; /* Botões na direita */
+    align-items: center;
+    gap: 10px;
+}
+
+.padrão {
+    color: #272d3d;
+    font-size: 0.8rem;
+    border: 1px solid #272d3d;
+    padding: 0.2rem;
+}
+
+.trocar-endereco {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    
+}
+
+.pagamento-produtos {
+    width: 100%;
+    height: 50vh;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.checkout-product-details {
+    font-size: 0.85rem; /* Um pouco menor que o nome */
+    color: #666;        /* Cinza para hierarquia visual */
+    margin-top: 4px;
+    font-weight: 500;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.checkout-product-details span + span::before {
+    content: "|";
+    margin-right: 8px;
+    color: #ccc;
+}
+
+.pagamento-cpf {
+    width: 100%;
+    height: 15vh;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.pagamento-cupom {
+    width: 100%;
+    min-height: 15vh;
+    background-color: white;
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; /* Título na esquerda, Bloco de ação na direita */
+    padding: 1.5rem 2rem;
+}
+
+.pagamento-cupom h2 {
+    width: 17vw;
+}
+
+.pagamento-forma {
+    width: 100%;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    background-color: white;
+}
+
+.pagamento-total-do-pedido {
+    width: 100%;
+    height: 40vh;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.size-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2vw;
+    height: 2vw;
+    border: none;
+    background-color: transparent;
+    transition: all .4s;
+    border-bottom: 1px solid transparent;
+}
+
+.size-btn:hover {
+    background-color: rgba(179, 179, 179, 0.096);
+    border-bottom: 1px solid black;
+}
+
+.size-btn:active {
+    background-color: rgba(179, 179, 179, 0.37);
+}
+
+.pagamento-produtos,
+.pagamento-cupom,
+.pagamento-total-do-pedido {
+    width: 100%;
+    background-color: white;
+    padding: 1.5rem 2rem;
+    box-sizing: border-box;
+    height: auto;
+}
+
+#checkout-products {
+    max-height: 40vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.checkout-product-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.checkout-product-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f0f0f0;
+}
+
+.checkout-product-item .info {
+    flex-grow: 1;
+}
+
+.checkout-product-item .info .nome {
+    font-size: 1rem;
+}
+
+.checkout-product-item .info .detalhes {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.checkout-product-item .preco {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.cupom-container {
+    display: flex;
+    justify-content: flex-end; /* Garante que o bloco fique na direita */
+    width: auto; 
+}
+
+.pagamento-total-do-pedido {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.frete-container {
+    width: 100%;
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+}
+
+.frete-input-group {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.frete-input-group input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.frete-input-group button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #000;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#frete-resultado {
+    margin-top: 1rem;
+}
+
+.frete-opcao {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    /* Usamos borda transparente no estado normal para ocupar espaço e não "pular" */
+    border: 2px solid transparent; 
+    background-color: #f9f9f9; /* Fundo levemente cinza */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+/* Hover */
+.frete-opcao:hover {
+    background-color: #fff;
+    border-color: #ccc; /* Borda cinza no hover */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Estado SELECIONADO (Adicionado via JS) */
+.frete-opcao.selecionado {
+    background-color: #fff;
+    border-color: #272e41; /* Borda preta quando selecionado */
+}
+
+/* Oculta o input radio visualmente ou deixa ele bonito */
+.frete-opcao input[type="radio"] {
+    accent-color: #272e41;
+    transform: scale(1.2);
+    cursor: pointer;
+    pointer-events: none; /* O clique é controlado pela DIV pai */
+}
+
+.frete-opcao label {
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none; /* O clique é controlado pela DIV pai */
+}
+
+#resumo-compra {
+    width: 100%;
+    padding: 1rem 0;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.resumo-linha {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}
+
+.resumo-linha.desconto span {
+    color: #00bfa5;
+    font-weight: bold;
+}
+
+.total-final-container {
+    width: 100%;
+    text-align: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-top: 2px solid #000;
+    padding-top: 1rem;
+}
+
+#btn-fazer-pedido {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #191D28;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color .3s;
+}
+
+#btn-fazer-pedido:hover {
+    background-color: #272d3d;
+}
+
+/* ==================== ESTILOS PARA MODAIS DE ENDEREÇO ==================== */
+
+/* O modal em si já tem estilo base, vamos ajustar o conteúdo */
+.modal-content {
+    max-width: 600px;
+    width: 90%;
+}
+
+#lista-enderecos-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin: 1rem 0;
+}
+
+.endereco-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.endereco-item.selecionado {
+    border-color: #000;
+    background-color: #f8f8f8;
+}
+
+.endereco-item .info b {
+    font-size: 1.1rem;
+}
+
+.endereco-item .info p {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.default-badge {
+    background-color: #e0e0e0;
+    color: #333;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.endereco-item .actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.endereco-item .actions button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+}
+
+.endereco-item .actions .btn-selecionar {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+/* Formulário de endereço */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+#form-endereco .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#form-endereco .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+#form-endereco label {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+#form-endereco input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* Botões do modal */
+.btn-principal {
+    background-color: #000;
+    color: #fff;
+    border: none;
+}
+
+.btn-secundario {
+    background-color: #f0f0f0;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+.btn-cancelar {
+    background-color: #ccc;
+    color: #000;
+    border: none;
+}
+
+/* product-options appear overlaid, inside product-text */
+.product-options {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    display: none;
+    padding: 6px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row-reverse;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    flex-wrap: wrap;
+}
+
+/* color swatch circular */
+.color-swatch {
+    width: 3vh;
+    height: 3vh;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.336);
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.color-swatch.active {
+    transform: scale(1.10);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.add-product-btn {
+    background: #191D28;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background .3s;
+    height: 20vh;
+    width: 20vh;
+}
+
+.add-product-btn:hover {
+    background: #333;
+}
+
+.product-slot {
+    display: flex;
+    align-items: center;
+    /* Itens esticam para ter a mesma altura */
+    justify-content: center;
+    flex-basis: calc(25% - 1rem);
+    /* 4 por linha, com gap */
+    flex-grow: 1;
+    min-width: 250px;
+    /* Largura mínima para telas menores */
+    min-height: 60vh;
+}
+
+/* Toasts */
+#topstyle-toast {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    pointer-events: none;
+}
+
+.topstyle-toast-item {
+    pointer-events: auto;
+}
+
+/* product-text now will contain options absolutely positioned so it won't move layout */
+.product-text {
+    position: relative;
+    padding-bottom: 8px;
+}
+
+/* ============================================= */
+/* ===== ESTILOS FORMA DE PAGAMENTO (ADICIONADO) ===== */
+/* ============================================= */
+
+.pagamento-forma {
+    width: 100%;
+    background-color: white;
+    padding: 1.5rem 2rem;
+    box-sizing: border-box;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.pagamento-forma-top {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+}
+
+#pagamento-opcoes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+
+}
+
+/* Estilo base para PIX e Cabeçalho do Cartão */
+.pagamento-opcao {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 2px solid transparent; 
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.pagamento-opcao:hover {
+    background-color: #fff;
+    border-color: #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.pagamento-opcao.selecionado {
+    background-color: #fff;
+    border-color: #272e41; /* Borda escura */
+}
+
+.pagamento-opcao input[type="radio"] {
+    accent-color: #272e41;
+    transform: scale(1.2);
+    cursor: pointer;
+    /* Esconde o radio real, o clique é na div */
+    opacity: 0;
+    position: absolute;
+    left: 15px;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    top: 0;
+}
+
+.pagamento-opcao label {
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 30px; /* Espaço para o radio escondido */
+    font-size: 1.1rem;
+    pointer-events: none; /* O clique é na DIV pai */
+}
+
+.pagamento-opcao-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagamento-icone {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.pagamento-detalhe {
+    font-size: 0.9rem;
+    color: #008a00;
+    font-weight: 500;
+}
+
+#cartao-accordion-header label {
+    font-size: 1.1rem;
+}
+
+#cartao-arrow {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+#cartao-accordion.open #cartao-arrow {
+    transform: rotate(180deg);
+}
+
+/* Conteúdo do Accordion de Cartão */
+#cartao-accordion-content {
+    padding: 1rem 1.5rem;
+    border: 2px solid #272e41;
+    border-top: none;
+    margin-top: -8px; /* Puxa para baixo do header */
+    border-radius: 0 0 8px 8px;
+    background: #fff;
+    display: flex; /* Alterado de 'none' para 'flex' no JS */
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Estilo para cartões salvos (similar ao frete) */
+.cartao-salvo-opcao {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border: 2px solid #eee;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative; /* Para o input radio */
+}
+
+.cartao-salvo-opcao.selecionado {
+    border-color: #272e41;
+    background-color: #fff;
+}
+
+.cartao-salvo-opcao input[type="radio"] {
+    accent-color: #272e41;
+    transform: scale(1.2);
+    cursor: pointer;
+    /* Esconde o radio real, o clique é na div */
+    opacity: 0;
+    position: absolute;
+    left: 10px;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    top: 0;
+}
+
+.cartao-salvo-opcao label {
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 30px; /* Espaço para o radio */
+    pointer-events: none; /* O clique é na DIV pai */
+}
+
+.cartao-salvo-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cartao-salvo-info img {
+    width: 32px;
+}
+
+.cartao-salvo-info p {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.3;
+}
+.cartao-salvo-info p b {
+    font-size: 1rem;
+    color: #000;
+}
+
+.btn-adicionar-novo {
+    background: transparent;
+    border: 2px dashed #000;
+    color: #000;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 0.95rem;
+}
+
+.btn-adicionar-novo:hover {
+    background: #f0f0f0;
+    border-style: solid;
+}
+
+/* Modal de Adicionar Cartão */
+#form-cartao {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.aviso-seguranca {
+    font-size: 0.8rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f0f0f0;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+}
+
+/* ============================================= */
+/* ===== TRANSIÇÃO SUAVE ACCORDION (ADICIONADO) ===== */
+/* ============================================= */
+
+#cartao-accordion-content {
+    /* MANTÉM O DISPLAY, MAS ESCONDE COM OUTRAS PROPRIEDADES */
+    display: flex; 
+    overflow: hidden; /* ESSENCIAL para a transição de max-height */
+    
+    /* ESTADO FECHADO (padrão) */
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top: none;
+    border-bottom-width: 0; /* Anima a borda */
+    margin-top: -8px; /* Mantém o alinhamento */
+    
+    /* A TRANSIÇÃO SUAVE */
+    transition: max-height 0.4s ease-in-out, 
+                opacity 0.3s ease-in-out, 
+                padding 0.4s ease-in-out,
+                border-width 0.4s ease-in-out;
+}
+
+/* ESTADO ABERTO (quando .open está no PAI) */
+#cartao-accordion.open #cartao-accordion-content {
+    max-height: 500px; /* Um valor alto para caber o conteúdo */
+    opacity: 1;
+    
+    /* Restaura os valores originais do seu CSS */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: none;
+    border-bottom-width: 2px; /* Restaura a borda */
+}
+
+/* ============================================= */
+/* ===== ESTILOS SELECT DE MARCA (ADICIONADO) ===== */
+/* ============================================= */
+
+.custom-select-wrapper {
+    position: relative;
+}
+
+.custom-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8.5px 14px;
+    border: 2px solid transparent;
+    background-color: #eee;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.custom-select-trigger:hover,
+.custom-select-wrapper.open .custom-select-trigger {
+    border-color: #4e5a7e;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(78, 90, 126, 0.2);
+}
+
+.custom-select-trigger span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-select-trigger span img {
+    width: 32px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.custom-select-trigger i {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.custom-select-wrapper.open .custom-select-trigger i {
+    transform: rotate(180deg);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 10001; /* Acima do modal */
+    overflow: hidden;
+    
+    /* Animação */
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.custom-select-wrapper.open .custom-select-options {
+    max-height: 200px; /* Altura máxima */
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.custom-option:hover {
+    background-color: #f0f0f0;
+}
+
+.custom-option img {
+    width: 32px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* ============================================= */
+/* ===== ESTILO BOTÃO EXCLUIR CARTÃO (ADICIONADO) ===== */
+/* ============================================= */
+
+.btn-delete-card {
+    background: transparent;
+    border: none;
+    color: #999; /* Cor cinza sutil */
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 99;
+}
+
+.btn-delete-card:hover {
+    color: #dc3545; /* Vermelho no hover */
+}
+
+
+/* Ajusta o label para dar espaço ao botão */
+.cartao-salvo-opcao label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /* Remove o pointer-events para o botão funcionar */
+    /* pointer-events: none; */ 
+}
+
+/* ... (todo o seu CSS existente) ... */
+
+/* ============================================= */
+/* ===== ESTILOS MODAL SUCESSO PEDIDO (NOVO) ===== */
+/* ============================================= */
+
+.sucesso-content {
+    text-align: center;
+    position: relative;
+    padding: 2.5rem; /* Espaço para o botão de fechar */
+
+}
+
+.sucesso-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+.sucesso-close-btn:hover {
+    background: #e0e0e0;
+}
+
+.sucesso-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.sucesso-icon-wrapper {
+    width: 10vw;
+    height: 10vw;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sucesso-icon-wrapper.check {
+    background-color: #e6fffa;
+    border: 3px solid #00bfa5;
+}
+.sucesso-icon-wrapper.check i {
+    font-size: 4rem;
+    color: #00bfa5;
+}
+
+.sucesso-icon-wrapper.qr {
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    width: auto;
+    height: auto;
+}
+.sucesso-icon-wrapper.qr img {
+    width: 150px;
+    height: 150px;
+    display: block;
+}
+
+.sucesso-view h2 {
+    font-size: 1.8rem;
+    color: #191D28;
+    margin-top: 1rem;
+}
+
+.sucesso-view p {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.pix-copia-cola {
+    display: flex;
+    width: 90%;
+    margin-top: 0.5rem;
+}
+.pix-copia-cola input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    font-size: 0.9rem;
+    background: #f0f0f0;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pix-copia-cola button {
+    padding: 10px 15px;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 0 6px 6px 0;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
+}
+.pix-copia-cola button:hover {
+    background: #333;
+}
+
+.sucesso-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+}
+.btn-whats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.btn-whats i {
+    font-size: 1.4rem;
+}
+
+/* Reutilizando estilo de .endereco-item para .telefone-item */
+/* (Nenhuma regra nova necessária se você usar as mesmas classes) */
+
+/* Ajuste para o botão de excluir telefone */
+.actions .btn-excluir-telefone {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+.actions .btn-excluir-telefone:hover {
+    color: #dc3545;
+}
+
+/* ============ ESTILOS MODAL SUCESSO & WHATSAPP ============ */
+
+/* Botão WhatsApp Verde */
+.btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background-color: #25D366; /* Verde Oficial WhatsApp */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
+}
+
+.btn-whatsapp:hover {
+    background-color: #1ebc57;
+    transform: translateY(-2px);
+}
+
+.btn-whatsapp i {
+    font-size: 1.4rem;
+}
+
+/* Botão Voltar Home (Estilo clean) */
+.btn-voltar-home {
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #555;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-voltar-home:hover {
+    border-color: #000;
+    color: #000;
+    background-color: #f9f9f9;
+}
+
+/* ============ SELETOR DE PAÍS E INPUT DE TELEFONE ============ */
+
+.phone-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Wrapper do Select Customizado */
+.country-select-wrapper {
+    position: relative;
+    width: 110px; /* Largura fixa para o código */
+    flex-shrink: 0;
+}
+
+.country-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #eee;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    height: 46px; /* Altura para alinhar com input */
+    transition: all 0.3s;
+}
+
+.country-select-trigger:hover {
+    background-color: #e0e0e0;
+}
+
+.country-select-trigger img {
+    width: 24px;
+    height: auto;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
+.country-select-trigger span {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+/* Dropdown de Opções */
+.country-options {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 200px; /* Mais largo para mostrar o nome do país */
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+}
+
+.country-select-wrapper.open .country-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.country-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.country-option:hover {
+    background-color: #f5f5f5;
+}
+
+.country-option img {
+    width: 20px;
+}
+
+.country-option span {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* Input de Telefone */
+#telefone-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 2px solid transparent;
+    background-color: #eee;
+    border-radius: 6px;
+    font-size: 1rem;
+    height: 46px;
+    transition: all 0.3s;
+}
+
+#telefone-input:focus {
+    outline: none;
+    border-color: #4e5a7e;
+    background-color: white;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 5px;
+    margin-left: 2px;
+}
+/* ========================================================= */
+/* ===== ESTILOS DEFINITIVOS DA PÁGINA DE CATEGORIA ===== */
+/* ========================================================= */
+
+/* 1. O container principal da página
+   (Define o alinhamento ao topo, como na sua foto) */
+.selecao-products {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    width: 95%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    gap: 2.5rem;
+    height: auto;
+    /* Alinha os itens no topo */
+    align-items: flex-start;
+}
+
+/* 2. A barra lateral de filtros (coluna da esquerda) */
+.filtros {
+    width: 24%;
+    min-width: 260px;
+    flex-shrink: 0;
+}
+
+/* 3. O conteúdo dentro da barra lateral (VISUAL MODAL)
+   (Note: SEM 'position: sticky' e 'top: 10vh') */
+.filtros-content {
+    position: sticky;
+    /* ATENÇÃO: Este é o valor chave! */
+    /* 10vh é um bom valor para o filtro ficar 'pendurado'
+      abaixo do seu header fixo, alinhando com o conteúdo. 
+      Se o seu header tiver uns 80px, e você quiser 20px de margem, use um valor em 'px' ou 'vh' que funcione para você.
+    */
+    margin-top: 11vh;
+
+    height: 60vh;
+    /* Aumentei um pouco para ocupar mais a tela */
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* 4. Título do Filtro (Estilo H2 do Modal) */
+.filtro-titulo {
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 1.8rem;
+    color: #191D28;
+    border-bottom: 2px solid #191D28;
+    text-align: left;
+}
+
+.filtro-grupo {
+    margin-bottom: 1.5rem;
+}
+
+/* 5. Títulos de Grupo (Estilo Label do Modal) */
+.filtro-grupo h4 {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 6. Inputs de Preço (LADO A LADO) */
+.filtro-preco-inputs {
+    display: flex;
+    flex-direction: row;
+    /* Lado a lado */
+    gap: 0.75rem;
+}
+
+.filtro-preco-inputs input {
+    padding: 12px 14px;
+    border: 2px solid transparent;
+    background-color: #eee;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    transition: all 0.3s ease;
+    width: 100%;
+    /* Ocupa o espaço dividido */
+    box-sizing: border-box;
+}
+
+.filtro-preco-inputs input:focus {
+    outline: none;
+    border-color: #4e5a7e;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(78, 90, 126, 0.2);
+}
+
+/* 7. Opções de Cor (Checkboxes Estilizados) */
+.filtro-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.filtro-opcoes label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.filtro-opcoes label:hover {
+    background-color: #f0f0f0;
+}
+
+.filtro-opcoes input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0;
+    transition: all 0.2s ease;
+}
+
+.filtro-opcoes input[type="checkbox"]:checked {
+    background-color: #2F4A62;
+    border-color: #2F4A62;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 100%;
+    background-position: center;
+}
+
+/* 8. Botões (Estilo Botões do Modal) */
+#btn-aplicar-preco,
+#btn-limpar-filtros {
+    width: 100%;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 0.75rem;
+}
+
+#btn-aplicar-preco {
+    background: #191D28;
+    color: white;
+}
+
+#btn-aplicar-preco:hover {
+    background: #304878;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(25, 29, 40, 0.2);
+}
+
+#btn-limpar-filtros {
+    background: #e0e0e0;
+    color: #333;
+}
+
+#btn-limpar-filtros:hover {
+    background: #ccc;
+}
+
+
+/* 9. Container dos Produtos (GRID) */
+.product-content-selecao {
+    width: 76%;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    height: fit-content;
+    /* Importante! */
+}
+
+.product-slot {
+    /* A transição agora é APENAS na opacidade */
+    transition: opacity 0.25s ease;
+    /* Removemos o 'transform' daqui */
+}
+
+.product-slot.entering {
+    opacity: 0;
+    /* 'transform' removido */
+}
+
+.product-slot.exiting {
+    opacity: 0;
+    /* 'transform' REMOVIDO */
+    /* 'position: absolute' REMOVIDO (Este era o culpado do 'pulo') */
+}
+.construcao{
+    width: 100%;
+    height: 80vh;
+    margin: 100px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.construcao-top img{
+    width: 40vh;
+}
+
+.construcao-text{
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.construcao-text p{
+    font-size: 3vh;
+}
+
+@media (max-width: 500px){
+    .construcao-top img{
+        width: 30vh;
+    }
+}
+
+/* ========================================= */
+/* ===== LOADER GERAL   ===== */
+/* ========================================= */
+.page-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* Fundo branco para cobrir a "bugada" */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999; /* Acima de tudo */
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3; /* Cinza claro */
+    border-top: 5px solid #000; /* Preto girando */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+.loading-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseText {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+
+
+
+

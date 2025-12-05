@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Categorias (Schema Original)</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ========================================================= */
+        /* CSS COMPLETO */
+        /* ========================================================= */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* HEADER & STATS */
+        header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #0f172a;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin: 5px 0 0 0;
+        }
+
+        /* CARDS DE ESTATÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* TABELA */
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 16px 24px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 700;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        /* BOTÕES & AÇÕES */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            color: #94a3b8;
+        }
+
+        .action-btn:hover {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .action-btn.delete:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            border-radius: 16px;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* MODAL EXCLUSÃO ESPECÍFICO */
+        .delete-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 8px 0;
+            text-align: center;
+        }
+
+        .modal-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+
+        /* TOAST (NOTIFICAÇÃO) */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        #toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #toast.error {
+            background: var(--danger);
+        }
+
+        #toast.success {
+            background: var(--success);
+        }
+
+        /* LOADER */
+        .loader {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>Gestão de Categorias</h1>
+                <p class="subtitle">Controle as categorias da sua loja (Tabela Única)</p>
+            </div>
+            <button onclick="openFormModal('add')" class="btn btn-primary">
+                <i data-lucide="plus" width="18"></i> Nova Categoria
+            </button>
+        </header>
+
+        <div id="stats-container" class="stats-grid">
+        </div>
+
+        <div id="loader" class="loader"></div>
+
+        <div id="content" class="hidden">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th style="text-align: center;">Qtd. Produtos</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-list"></tbody>
+                </table>
+            </div>
+
+            <div id="empty-state" class="hidden" style="text-align: center; padding: 40px; color: #64748b;">
+                <i data-lucide="inbox" width="40" style="margin-bottom: 10px;"></i>
+                <p>Nenhuma categoria encontrada.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-form" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 id="form-title" style="margin: 0; font-size: 1.25rem;">Categoria</h2>
+                <button onclick="closeModals()" style="background:none; border:none; cursor:pointer;"><i
+                        data-lucide="x"></i></button>
+            </div>
+            <label style="font-size: 0.9rem; font-weight: 500;">Nome da Categoria</label>
+            <input type="text" id="input-name" class="form-input" placeholder="Ex: Eletrônicos">
+
+            <input type="hidden" id="input-old-name">
+            <input type="hidden" id="input-mode">
+
+            <div class="modal-footer">
+                <button onclick="closeModals()" class="btn btn-secondary">Cancelar</button>
+                <button onclick="handleSave()" id="btn-save" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-delete" class="modal-overlay">
+        <div class="modal-content">
+            <div class="delete-icon-wrapper">
+                <i data-lucide="alert-triangle" width="24"></i>
+            </div>
+
+            <h2 class="modal-title">Excluir Categoria?</h2>
+
+            <p class="modal-desc">
+                Você está prestes a excluir a categoria <strong id="delete-target-name"
+                    style="color: #1e293b;"></strong>.
+                <br><br>
+                <span id="delete-count-warning"></span> produtos deixarão de ter essa categoria.
+            </p>
+
+            <div class="modal-footer">
+                <button onclick="closeModals()" class="btn btn-secondary">Cancelar</button>
+                <button onclick="confirmDelete()" id="btn-confirm-delete" class="btn btn-danger">Sim, excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">
+        <i id="toast-icon" data-lucide="check-circle" width="20"></i>
+        <span id="toast-msg">Mensagem</span>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÃO ---
+        const SUPABASE_URL = 'https://xhzdyatnfaxnvvrllhvs.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.addEventListener('DOMContentLoaded', loadCategories);
+
+        let selectedCategoryID = null;
+        let selectedCategoryName = null;
+
+        // ================================================
+        // 1. LISTAR CATEGORIAS
+        // ================================================
+        async function loadCategories() {
+            const loader = document.getElementById('loader');
+            const content = document.getElementById('content');
+            const list = document.getElementById('category-list');
+            const empty = document.getElementById('empty-state');
+            const statsContainer = document.getElementById('stats-container');
+
+            loader.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            // Puxa categorias reais
+            const { data: categories, error: catErr } = await supabase
+                .from('categories')
+                .select('*')
+                .order('name', { ascending: true });
+
+            if (catErr) {
+                showToast('Erro ao carregar categorias.', true);
+                return;
+            }
+
+            // Puxa produtos para contagem
+            const { data: products, error: prodErr } = await supabase
+                .from('products')
+                .select('id, category');
+
+            if (prodErr) {
+                showToast('Erro ao carregar produtos.', true);
+                return;
+            }
+
+            // Faz mapa: categoria → quantidade
+            const countMap = {};
+            products.forEach(p => {
+                if (!p.category) return;
+                const cat = p.category.trim();
+                countMap[cat] = (countMap[cat] || 0) + 1;
+            });
+
+            // Stats
+            statsContainer.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eff6ff;color:#2563eb;">
+                <i data-lucide="layers"></i>
+            </div>
+            <div class="stat-info">
+                <h3>${categories.length}</h3>
+                <p>Categorias Cadastradas</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f0fdf4;color:#16a34a;">
+                <i data-lucide="package"></i>
+            </div>
+            <div class="stat-info">
+                <h3>${products.length}</h3>
+                <p>Produtos Totais</p>
+            </div>
+        </div>
+    `;
+
+            // Render tabela
+            list.innerHTML = '';
+
+            if (categories.length === 0) {
+                empty.classList.remove('hidden');
+                document.querySelector('.table-wrapper').classList.add('hidden');
+            } else {
+                empty.classList.add('hidden');
+                document.querySelector('.table-wrapper').classList.remove('hidden');
+
+                categories.forEach(cat => {
+                    const count = countMap[cat.name] || 0;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:32px;height:32px;background:#e0e7ff;color:#4338ca;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                            ${cat.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span style="font-weight:500;">${cat.name}</span>
+                    </div>
+                </td>
+                <td style="text-align:center;">
+                    <span style="background:#f1f5f9;padding:4px 10px;border-radius:20px;font-size:.85rem;font-weight:600;color:#64748b;">
+                        ${count} itens
+                    </span>
+                </td>
+                <td style="text-align:right;">
+                    <button onclick="openFormModal('edit','${cat.id}','${cat.name}')" class="action-btn">
+                        <i data-lucide="pencil" width="16"></i>
+                    </button>
+                    <button onclick="openDeleteModal('${cat.id}','${cat.name}',${count})" class="action-btn delete">
+                        <i data-lucide="trash-2" width="16"></i>
+                    </button>
+                </td>
+            `;
+                    list.appendChild(tr);
+                });
+            }
+
+            loader.classList.add('hidden');
+            content.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // ================================================
+        // 2. SALVAR (CRIAR / EDITAR)
+        // ================================================
+        async function handleSave() {
+            const mode = document.getElementById('input-mode').value;
+            const newName = document.getElementById('input-name').value.trim();
+
+            if (!newName) return showToast('Nome obrigatório.', true);
+
+            if (mode === 'add') {
+                // cria categoria sem mexer na tabela products
+                const { error } = await supabase.from('categories').insert([{ name: newName }]);
+                if (error) return showToast(error.message, true);
+                showToast('Categoria criada!');
+            } else {
+                // renomear: atualiza tabela categories
+                const { error: e1 } = await supabase
+                    .from('categories')
+                    .update({ name: newName })
+                    .eq('id', selectedCategoryID);
+
+                if (e1) return showToast(e1.message, true);
+
+                // sincronizar produtos que usam o texto antigo
+                const { error: e2 } = await supabase
+                    .from('products')
+                    .update({ category: newName })
+                    .eq('category', selectedCategoryName);
+
+                if (e2) return showToast(e2.message, true);
+
+                showToast('Categoria renomeada!');
+            }
+
+            closeModals();
+            loadCategories();
+        }
+
+        // ================================================
+        // 3. EXCLUIR
+        // ================================================
+        function openDeleteModal(id, name, count) {
+            selectedCategoryID = id;
+            selectedCategoryName = name;
+
+            document.getElementById('delete-target-name').innerText = name;
+            document.getElementById('delete-count-warning').innerText =
+                count > 0
+                    ? `${count} produto(s) serão desvinculados.`
+                    : `Nenhum produto vinculado.`;
+
+            document.getElementById('modal-delete').classList.add('open');
+        }
+
+        async function confirmDelete() {
+            // 1 — Apaga categoria real
+            await supabase.from('categories').delete().eq('id', selectedCategoryID);
+
+            // 2 — Remove categoria dos produtos
+            await supabase
+                .from('products')
+                .update({ category: null })
+                .eq('category', selectedCategoryName);
+
+            showToast('Categoria excluída!');
+            closeModals();
+            loadCategories();
+        }
+
+        // ================================================
+        // HELPERS
+        // ================================================
+        function openFormModal(mode, id = null, name = '') {
+            selectedCategoryID = id;
+            selectedCategoryName = name;
+
+            document.getElementById('input-mode').value = mode;
+            document.getElementById('input-name').value = name;
+
+            document.getElementById('modal-form').classList.add('open');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toast-msg');
+            const icon = document.getElementById('toast-icon');
+
+            msgSpan.innerText = msg;
+
+            toast.className = isError ? 'error' : 'success';
+            icon.setAttribute('data-lucide', isError ? 'alert-circle' : 'check-circle');
+
+            lucide.createIcons();
+
+            setTimeout(() => toast.classList.add('visible'), 10);
+            setTimeout(() => toast.classList.remove('visible'), 3000);
+        }
+
+    </script>
+</body>
+
+</html>

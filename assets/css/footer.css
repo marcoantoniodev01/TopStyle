@@ -1,0 +1,478 @@
+/* =================================================================== */
+/* === 1. RESET GLOBAL & DEFINIÇÕES DE VARIÁVEIS === */
+/* =================================================================== */
+
+:root {
+    /* Cores do tema escuro (termos.html) */
+    --bg: #0f1724;
+    --card: #0b1220;
+    --accent: #0d4ba7;
+    --muted: #9aa4b2;
+    --glass: rgba(255, 255, 255, 0.03);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Fonte padrão (dos temas escuros) */
+    font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+
+/* =================================================================== */
+/* === 2. TEMA "LIGHT" (Página de Medidas) === */
+/* =================================================================== */
+
+/* Adicione class="page-medidas" ao <body> de medidas.html */
+body.page-medidas {
+    font-family: Arial, sans-serif;
+    /* Sobrescreve a fonte padrão */
+    margin: 0;
+    background: linear-gradient(180deg, #0f1724, #071022 60%);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-medidas h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-size: 2rem;
+    /* Tamanho padrão */
+    text-shadow: none;
+    /* Reset do tema escuro */
+}
+
+.page-medidas .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* Resets de outros temas */
+    display: block;
+    grid-template-columns: none;
+    backdrop-filter: none;
+    margin: 10px 0px;
+    width: 100%;
+}
+
+.page-medidas table {
+    margin-bottom: 20px;
+}
+
+.page-medidas th,
+.page-medidas td {
+    border: 1px solid #dddddd2c;
+    padding: 10px;
+    text-align: center;
+}
+
+.page-medidas th {
+    background: #4a4aff;
+    color: white;
+}
+
+.page-medidas .toggle-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #4a4aff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-weight: normal;
+    /* Reset */
+}
+
+.page-medidas .toggle-btn .icon {
+    margin-right: 6px;
+}
+
+.page-medidas .imagem-exemplo {
+    display: none;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-medidas .imagem-exemplo.visible {
+    display: block;
+}
+
+.page-medidas .imagem-exemplo img {
+    max-width: 220px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin: 0 auto;
+}
+
+.page-medidas .section {
+    margin-bottom: 26px;
+    /* Resets */
+    background: none;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+}
+
+/* Media Queries para Medidas */
+@media (max-width: 900px) {
+    .page-medidas .container {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+    .page-medidas table {
+        font-size: 13px;
+    }
+
+    .page-medidas .toggle-btn {
+        width: 100%;
+    }
+}
+
+
+/* =================================================================== */
+/* === 3. TEMA "SUPPORT" (Páginas FAQ e Devolução) === */
+/* =================================================================== */
+
+/* Adicione class="page-support" ao <body> de faq.html e devolucao.html */
+body.page-support {
+    background: linear-gradient(180deg, #0f1724, #071022 60%);
+    color: #e6eef6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-support .container {
+    max-width: 900px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    padding: 40px;
+    border-radius: 16px;
+    /* Resets de outros temas */
+    display: block;
+    grid-template-columns: none;
+    box-shadow: none;
+    margin: 20px 0px;
+}
+
+.page-support h1 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 8px #1eccf877;
+    text-align: left;
+    /* Reset */
+}
+
+.page-support p {
+    line-height: 1.8;
+    font-size: 17px;
+    margin-bottom: 20px;
+    color: #e6eef6;
+    /* Cor específica (difere de 'termos') */
+}
+
+.page-support ul {
+    margin: 20px 0 20px 20px;
+    line-height: 1.9;
+    font-size: 17px;
+    color: #e6eef6;
+    /* Cor específica */
+}
+
+.page-support li {
+    margin: 6px 0;
+}
+
+/* --- Específico do FAQ --- */
+.page-support .faq-item {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.7);
+}
+
+.page-support .faq-item:hover {
+    transform: translateX(6px);
+    border: 1px solid #1eccf877;
+}
+
+.page-support .faq-item h3 {
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.page-support .faq-item p {
+    line-height: 1.7;
+    font-size: 16px;
+    margin-bottom: 0;
+    /* Sobrescreve o 'p' padrão */
+}
+
+
+/* =================================================================== */
+/* === 4. TEMA "POLICY" (Página de Termos) - NOVO CSS UNIFICADO === */
+/* =================================================================== */
+
+/* Adicione class="page-policy" ao <body> de termos.html para aplicar este tema */
+body.page-policy {
+    background: linear-gradient(180deg, #0f1724, #071022 60%);
+    color: #333;
+    line-height: 1.7;
+    /* Sobrescreve o font-family do reset global para o usado em termos.html */
+    font-family: "Poppins", Arial, sans-serif;
+}
+
+.page-policy .container {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.page-policy .card {
+    background: rgba(255, 255, 255, 0.03);
+    color: white;
+    padding: 40px;
+    border-radius: 18px;
+    margin-bottom: 40px;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.08);
+    /* Garantindo que o card ocupe todo o container */
+    width: 100%;
+}
+
+.page-policy .card h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.page-policy .card h3 {
+    margin-top: 30px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.page-policy .card p {
+    margin-bottom: 15px;
+    /* Ajuste sutil para manter a consistência com a lista */
+    line-height: 1.7;
+}
+
+/* Alterado para usar a classe .policy-list */
+.page-policy .card .policy-list {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+/* Alterado para usar a classe .policy-item */
+.page-policy .card .policy-item {
+    margin-bottom: 8px;
+}
+
+/* RESPONSIVO para o tema Policy */
+@media (max-width: 768px) {
+    .page-policy .card {
+        padding: 25px;
+    }
+}
+
+/* =================================================================== */
+/* === 5. COMPONENTES GLOBAIS (Cookie Banner) === */
+/* =================================================================== */
+
+/* Este componente é 'position: fixed' e deve funcionar em qualquer página,
+  por isso NÃO está dentro de uma classe de escopo.
+*/
+#cookie-banner {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    background: linear-gradient(90deg, rgba(8, 16, 26, 0.95), rgba(10, 14, 20, 0.9));
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 9999;
+    box-shadow: 0 14px 40px rgba(2, 6, 23, 0.6);
+    color: var(--muted);
+}
+
+#cookie-banner p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+#cookie-banner .link {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+#cookie-banner .cb-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Estilos de botão genéricos para o banner de cookies,
+  para que funcionem mesmo na page-medidas (tema claro).
+*/
+#cookie-banner .btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+#cookie-banner .btn.primary {
+    background: linear-gradient(90deg, var(--accent), #82b1f7);
+    border: 0;
+    color: #08101a;
+    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.12);
+}
+
+/* =================================================================== */
+/* === 6. TEMA "CONTATO" (Página de Suporte) - NOVO CSS UNIFICADO === */
+/* =================================================================== */
+
+/* Adicione class="page-contato" ao <body> de suporte.html */
+body.page-contato {
+    background: #0A0F1A;
+    color: #f2f5f7;
+    padding: 40px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-contato .container {
+    max-width: 700px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 32px;
+    border-radius: 16px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+}
+
+.page-contato h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.page-contato p.sub {
+    color: #a7b3c2;
+    margin-bottom: 28px;
+}
+
+.page-contato form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.page-contato input,
+textarea,
+select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.page-contato textarea {
+    height: 150px;
+    resize: none;
+}
+
+.page-contato button {
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #4a8bff;
+    color: #08101a;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.page-contato button:hover {
+    background: #6ea3ff;
+}
+
+.page-contato .success {
+    display: none;
+    margin-top: 20px;
+    padding: 14px;
+    background: rgba(0, 200, 120, 0.2);
+    border: 1px solid rgba(0, 255, 160, 0.3);
+    border-radius: 10px;
+    color: #9fffe2;
+}
+
+@media (max-width: 500px) {
+    .page-contato .container {
+        padding: 22px;
+    }
+}
+
+.page-contato select {
+    background-color: #394a58;
+    /* COR DO FUNDO */
+    color: #fff;
+    /* COR DO TEXTO */
+    border: 1px solid #555;
+    padding: 10px;
+    border-radius: 8px;
+
+}

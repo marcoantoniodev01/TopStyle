@@ -1,0 +1,1786 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* =========================================================
+   1. RESET & ESTRUTURA GLOBAL
+   ========================================================= */
+
+
+.body-admin,
+.body-admin * {
+    font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+
+.header {
+    top: 0 !important; 
+    margin-top: 1vh;
+    height: 8vh;
+}
+
+body {
+    background-color: #fafafa;
+    color: #191D28;
+    overflow: hidden;
+    height: 100vh;
+}
+
+
+.body-admin {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding-top: 8vh;
+}
+
+main {
+    padding-top: 2rem;
+    width: 100%;
+    height: 100%;
+}
+
+/* =========================================================
+   2. MENU LATERAL (SIDEBAR) - AJUSTADO
+   ========================================================= */
+.body-left {
+    width: 20vw;
+    /* MAIOR, conforme pedido */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-top-right-radius: 12px;
+    flex-shrink: 0;
+    /* Impede que o menu encolha */
+    z-index: 900;
+}
+
+.block-left {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Área de scroll do menu */
+.info-block-left {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem 0;
+}
+
+/* Scrollbar fina e elegante */
+.info-block-left::-webkit-scrollbar {
+    width: 5px;
+}
+
+.info-block-left::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.info-block-left::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    cursor: pointer;
+    padding: 16px 28px;
+    /* Espaçamento interno maior */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #4b5563;
+    /* Cinza texto */
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+/* ÍCONES: Azul Escuro -> Azul Claro no Hover */
+.menu-item i {
+    color: #002a5c;
+    /* AZUL ESCURO (Navy) */
+    font-size: 1.2rem;
+    margin-right: 12px;
+    transition: color 0.3s ease;
+}
+
+.menu-item:hover {
+    background: #f8fafc;
+    color: #191D28;
+}
+
+.menu-item:hover i {
+    color: #007bff;
+    /* AZUL MAIS CLARO no hover */
+}
+
+.menu-item.active {
+    background-color: #f1f5f9;
+    color: #191D28;
+    border-left-color: #191D28;
+    /* Marca lateral preta */
+    font-weight: 600;
+}
+
+.menu-item.active i {
+    color: #007bff;
+    /* Mantém azul claro quando ativo */
+}
+
+/* Seta do menu */
+.arrow {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    transition: transform 0.3s ease;
+}
+
+.menu-item.active .arrow {
+    transform: rotate(90deg);
+}
+
+/* Submenu */
+.submenu {
+    list-style: none;
+    background: #ffffff;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+}
+
+.submenu.open {
+    max-height: 1000px;
+    /* Altura segura */
+}
+
+.submenu li {
+    padding: 12px 20px 12px 60px;
+    /* Indentação para hierarquia */
+    color: #64748b;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.submenu li:hover {
+    color: #007bff;
+    background: #f8fafc;
+}
+
+.submenu li.active {
+    color: #191D28;
+    font-weight: 600;
+    background-color: #e2e8f0;
+}
+
+/* =========================================================
+   3. ÁREA DE CONTEÚDO (DIREITA)
+   ========================================================= */
+.body-right {
+    padding: 0rem 2rem;
+    flex-grow: 1;
+    height: 100%;
+    overflow-y: auto;
+    /* Scroll principal apenas aqui */
+    position: relative;
+}
+
+/* Animação suave entre abas */
+.page {
+    display: none;
+    opacity: 0;
+    animation: fadeInPage 0.4s forwards;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   4. DASHBOARD (VISÃO GERAL / GRÁFICOS)
+   ========================================================= */
+.graficos-body {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* --- Cards do Topo --- */
+.graficos-center {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.center-block-vendidos,
+.center-block-criados,
+.center-block-produtos,
+.center-block-faturamento {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s;
+}
+
+.center-block-vendidos:hover,
+.center-block-criados:hover,
+.center-block-produtos:hover,
+.center-block-faturamento:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Ícones Quadrados dos Cards */
+.icon-center-block-vendidos,
+.icon-center-block-criados,
+.icon-center-block-produtos,
+.icon-center-block-faturamento {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Cores dos Ícones */
+.icon-center-block-vendidos {
+    background-color: #ef4444;
+}
+
+/* Vermelho */
+.icon-center-block-criados {
+    background-color: #3b82f6;
+}
+
+/* Azul */
+.icon-center-block-produtos {
+    background-color: #f59e0b;
+}
+
+/* Amarelo */
+.icon-center-block-faturamento {
+    background-color: #10b981;
+}
+
+/* Verde */
+
+.icon-center-block-vendidos i,
+.icon-center-block-criados i,
+.icon-center-block-produtos i,
+.icon-center-block-faturamento i {
+    font-size: 2rem;
+    color: white;
+}
+
+.vendidos-text h2,
+.criados-text h2,
+.produtos-text h2,
+.faturamento-text h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.vendidos-text p,
+.criados-text p,
+.produtos-text p,
+.faturamento-text p {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* --- Layout da Parte Inferior (Gráficos) --- */
+.graficos-bottom {
+    display: grid;
+    /* Coluna Esquerda Fixa | Centro Flexível | Coluna Direita Fixa */
+    grid-template-columns: 260px 1fr 280px;
+    gap: 20px;
+}
+
+/* Responsividade: Vira coluna única em telas médias */
+@media (max-width: 1300px) {
+    .graficos-bottom {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+}
+
+.bottom-left,
+.bottom-center,
+.bottom-right {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e5e7eb;
+}
+
+/* Totais (Esquerda) */
+.bottom-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 400px;
+}
+
+.block-overall,
+.block-Earnings,
+.block-Revenue,
+.block-Customers {
+    margin-bottom: 20px;
+}
+
+.block-overall h2,
+.block-Earnings h2,
+.block-Revenue h2,
+.block-Customers h2 {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Indicadores coloridos (bolinhas) */
+.block-overall h2::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #3b82f6;
+    border-radius: 50%;
+}
+
+.block-Earnings h2::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #f59e0b;
+    border-radius: 50%;
+}
+
+.block-Revenue h2::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border-radius: 50%;
+}
+
+.block-Customers h2::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #10b981;
+    border-radius: 50%;
+}
+
+.block-overall p,
+.block-Earnings p,
+.block-Revenue p,
+.block-Customers p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    padding-left: 18px;
+}
+
+.block-button-reports {
+    margin-top: auto;
+}
+
+.block-button-reports a {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: #191D28;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.block-button-reports a:hover {
+    background: #333;
+}
+
+/* Gráfico Principal (Centro) */
+.main-chart {
+    width: 100% !important;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.chart-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.chart-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.chart-tabs button {
+    background: #f3f4f6;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #6b7280;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.chart-tabs button.active {
+    background: #191D28;
+    color: white;
+}
+
+/* Gráfico Lateral (Direita) */
+.bottom-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.side-card h2 {
+    font-size: 2.5rem;
+    color: #191D28;
+    margin: 15px 0;
+}
+
+.side-card p {
+    color: #10b981;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   5. PÁGINA DE USUÁRIOS (#usuarios-cadastro) - PADRONIZADA
+   ========================================================= */
+.table-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e5e7eb;
+    padding: 30px;
+}
+
+.table-container h2 {
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    color: #191D28;
+    text-align: center;
+}
+
+#filtroBusca {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #fff;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+#filtroBusca:focus {
+    outline: none;
+    border-color: #191D28;
+    box-shadow: 0 0 0 3px rgba(25, 29, 40, 0.1);
+}
+
+#profilesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#profilesTable th {
+    background-color: #191D28;
+    /* Preto TopStyle */
+    color: white;
+    padding: 16px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    text-align: center;
+}
+
+#profilesTable th:first-child {
+    border-top-left-radius: 8px;
+}
+
+#profilesTable th:last-child {
+    border-top-right-radius: 8px;
+}
+
+#profilesTable td {
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+    font-size: 0.95rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Linhas Zebradas */
+#profilesTable tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+#profilesTable tr:hover {
+    background-color: #f3f4f6;
+}
+
+/* Botões da Tabela */
+.btn-sm {
+    padding: 8px 16px;
+    border-radius: 50px;
+    /* Pílula */
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: white;
+}
+
+/* Verde */
+.btn-success:hover {
+    background-color: #059669;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Vermelho */
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* =========================================================
+   6. PÁGINA DE PRODUTOS (#lista-produto) - ESTILOSA
+   ========================================================= */
+.list-product {
+    width: 100%;
+    padding-bottom: 50px;
+    padding-top: 10px;
+}
+
+.Proh1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #191D28;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* O segredo: padding evita que o overflow corte o filho transformado */
+    padding: 5px 2px;
+}
+
+/* Botão Adicionar Produto */
+.ProAddBtn {
+    background-color: #061338;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+    transition: all 0.3s ease;
+    /* Suaviza a transição */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    /* Garante contexto de empilhamento */
+    z-index: 10;
+}
+
+.ProAddBtn:hover {
+    background-color: #0a1a47;
+    transform: translateY(-4px);
+    /* Sobe o botão */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    /* Aumenta sombra */
+}
+
+/* Grid de Produtos */
+.ProGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* Card Individual */
+.ProCard {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.ProCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+}
+
+.ProImgBox {
+    width: 100%;
+    height: 220px;
+    background: #f9fafb;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #f3f4f6;
+    cursor: pointer;
+}
+
+.ProImgBox img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s;
+    mix-blend-mode: multiply;
+}
+
+.ProCard:hover .ProImgBox img {
+    transform: scale(1.08);
+}
+
+.ProName {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ProPrice {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #000000;
+    /* Verde */
+    margin-bottom: 12px;
+}
+
+.ProRow {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ProRow strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+/* Cores e Estoque */
+.ProColorList {
+    display: flex;
+    gap: 6px;
+}
+
+.ProColorDot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.ProColorDot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ProLowStock {
+    color: #ef4444 !important;
+    font-weight: 800;
+}
+
+/* Botões do Card */
+.ProRow:last-child {
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.ProEdit,
+.ProView,
+.ProDelete {
+    padding: 10px 0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    transition: all 0.2s;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ProEdit {
+    background: #191D28;
+    color: white;
+}
+
+/* Preto TopStyle */
+.ProView {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.ProDelete {
+    background: #ef4444;
+    color: white;
+}
+
+.ProEdit:hover {
+    background: #333;
+}
+
+.ProView:hover {
+    background: #e5e7eb;
+    color: black;
+}
+
+.ProDelete:hover {
+    background: #dc2626;
+}
+
+/* Tooltip do ID */
+.ProTooltip {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.ProCard:hover .ProTooltip {
+    opacity: 1;
+}
+
+
+/* ========================================================= */
+/* GESTÃO DE CATEGORIAS (INTEGRAÇÃO) */
+/* ========================================================= */
+
+.cat-container {
+    padding-top: 10rem;
+    max-width: 100%;
+}
+
+.cat-hidden {
+    display: none !important;
+}
+
+/* HEADER & STATS */
+.cat-header-section {
+    display: flex;
+    padding-bottom: 30rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cat-subtitle {
+    color: #64748b;
+    margin: 5px 0 0 0;
+    font-size: 0.95rem;
+}
+
+/* CARDS DE ESTATÍSTICAS */
+.cat-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.cat-stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.2s;
+}
+
+.cat-stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.cat-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.cat-stat-info h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.cat-stat-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* TABELA ESPECÍFICA DE CATEGORIAS */
+/* CONTAINER DA TABELA COM SCROLL */
+.cat-table-wrapper {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    /* --- ALTERAÇÕES PARA O SCROLL --- */
+    overflow-y: auto;
+    /* Habilita o scroll vertical */
+    max-height: 72.2vh;
+    /* Define a altura máxima (ajuste 65vh conforme sua necessidade) */
+    /* -------------------------------- */
+}
+
+/* (OPCIONAL) CABEÇALHO FIXO AO ROLAR */
+.cat-table thead th {
+    position: sticky;
+    /* Faz o cabeçalho "grudar" no topo */
+    top: 0;
+    z-index: 5;
+    /* Garante que fique acima do conteúdo */
+    background: #f8fafc;
+    /* Cor de fundo para não ficar transparente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Sombra suave para separar */
+}
+
+.cat-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.cat-table th {
+    background: #f8fafc;
+    padding: 16px 24px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.cat-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.cat-table tr:last-child td {
+    border-bottom: none;
+}
+
+.cat-table tr:hover {
+    background: #f8fafc;
+}
+
+/* ESTADO VAZIO */
+#cat-empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* BOTÕES & AÇÕES */
+.cat-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.cat-btn-primary {
+    background: #010b20;
+    color: white;
+}
+
+.cat-btn-primary:hover {
+    background: #041544;
+}
+
+.cat-btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.cat-btn-danger:hover {
+    background: #b91c1c;
+}
+
+.cat-btn-secondary {
+    background: white;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.cat-btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.cat-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    transition: .2s;
+}
+
+.cat-action-btn:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.cat-action-btn.delete:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.cat-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* MODAL */
+.cat-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.cat-modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.cat-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    border-radius: 16px;
+    transform: scale(0.95);
+    transition: transform 0.2s;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.cat-modal-overlay.open .cat-modal-content {
+    transform: scale(1);
+}
+
+.cat-form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.cat-modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.cat-modal-footer .cat-btn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* MODAL EXCLUSÃO ESPECÍFICO */
+.cat-delete-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    font-size: 1.5rem;
+}
+
+.cat-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.cat-modal-desc {
+    color: #64748b;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   9. TOASTS (Notificações)
+   ========================================================= */
+#topstyle-toast {
+    position: fixed;
+    top: 90px;
+    /* Abaixo do header */
+    right: 30px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.topstyle-toast-item {
+    background: #191D28;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/*--------------------- GERAL ---------------------*/
+
+:root {
+    /* FONTES */
+    --font-title: 'Bebas Neue';
+    --font-paragraph: 'Roboto';
+
+    /* CORES */
+    --first-color: #010326;
+    --second-color: #181D26;
+    --third-color: #01403A;
+    --fourth-color: #012623;
+    --fifth-color: #0D0D0D;
+    --sixth-color: #E6F7F2;
+    --first-color-opacity: #0103266c;
+    --second-color-opacity: white;
+    --third-color-opacity: #01403a46;
+    --fourth-color-opacity: #01262346;
+    --fifth-color-opacity: #0d0d0d46;
+    --sixth-color-opacity: #e6f7f2b6;
+
+    /* TAMANHO */
+    --smaller-font: 10px;
+    --small-font: 13px;
+    --regular-font: 16px;
+    --big-font: 30px;
+    --bigger-font: 40px;
+    --icon-size: 1.75rem;
+}
+
+/*--------------------- HEADER ---------------------*/
+
+header {
+    display: flex;
+    top: 4vh;
+    width: 100%;
+    height: 8vh;
+    position: fixed;
+    color: black;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: backdrop-filter .4s, background-color .4s;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.progress-bar {
+    height: 2px;
+    background-color: black;
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.bg-header {
+    background-color: #fafafaad;
+}
+
+.nav__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100vw;
+    height: 80px;
+    align-items: center;
+    position: fixed;
+    padding: 10px;
+}
+
+.nav__menu,
+.nav__actions {
+    justify-self: start;
+}
+
+.logo-text {
+    font-size: 2rem;
+}
+
+.logo-text span {
+    font-size: 1.6rem;
+}
+
+.logo-text-container {
+    justify-self: center;
+    color: black;
+    text-decoration: none;
+}
+
+.logo-text:hover {
+    color: #4e5a7e;
+}
+
+.nav__menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.nav__list {
+    position: relative;
+    display: flex;
+    list-style-type: none;
+    gap: 13%;
+    width: auto;
+    gap: 30px;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav__list li {
+    transition: transform .4s;
+}
+
+.nav__list li:hover {
+    transform: translateY(-10%);
+}
+
+.nav__link {
+    transition: color .4s;
+}
+
+#search-input {
+    background-color: rgba(0, 0, 0, 0.411);
+    border: none;
+    width: 12vw;
+    color: black;
+    border-radius: 4px;
+    padding: 0rem 1rem;
+}
+
+#search-input:focus {
+    outline: none;
+}
+
+/* From Uiverse.io by Yaya12085 */
+.search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 15vw;
+}
+
+.input {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    padding: 18px 16px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all .5s ease-in-out;
+}
+
+.input::placeholder {
+    color: transparent;
+}
+
+.input:focus::placeholder {
+    color: rgb(131, 128, 128);
+}
+
+.input:focus,
+.input:not(:placeholder-shown) {
+    border: 1px solid rgb(91, 107, 255);
+    width: 290px;
+    cursor: none;
+    padding: 18px 16px 18px 45px;
+}
+
+.icon {
+    position: absolute;
+    left: 0;
+    height: 2vw;
+    width: 2vw;
+    border-radius: 99px;
+    z-index: -1;
+    fill: rgb(91, 107, 255);
+    border: 1px solid rgb(91, 107, 255);
+}
+
+.input:focus+.icon,
+.input:not(:placeholder-shown)+.icon {
+    z-index: 0;
+    background-color: transparent;
+    border: none;
+}
+
+header a,
+header>ul>li>a {
+    text-decoration: none;
+    color: black;
+    transition: color .4s;
+}
+
+header a:hover,
+header>ul>li>a:hover {
+    color: #4e5a7e;
+}
+
+a.profile-link.admin-mode i {
+    display: inline-block;
+    transition: all .4s ease-in-out;
+}
+
+
+a.profile-link.admin-mode:hover i {
+    transform: rotate(100deg);
+}
+
+
+
+.social-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    height: 100%;
+    width: auto;
+}
+
+.social-header ul {
+    display: flex;
+    list-style-type: none;
+    gap: 1.5rem;
+    font-size: 1.3rem;
+    align-items: center;
+}
+
+.social-header i {
+    font-size: var(--icon-size);
+}
+
+.nav__toggle,
+.nav__close {
+    display: none;
+    cursor: pointer;
+}
+
+#burger {
+    display: none;
+}
+
+.nav__close {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+}
+
+.trocar {
+    position: relative;
+    display: block;
+    align-items: center;
+    justify-content: center;
+    transition: transform .4s;
+}
+
+.trocar:hover {
+    transform: rotate(-90deg);
+}
+
+.nav__actions {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    transition: i .4s;
+    z-index: 99;
+    margin-right: 1%;
+}
+
+.nav__actions i {
+    color: white;
+    transition: color .4s;
+    cursor: pointer;
+}
+
+.nav__actions i:hover {
+    color: rgb(172, 172, 172);
+}
+
+/* ===== MEGA MENU (INTEGRAÇÃO TOPSTYLE) ===== */
+.mega-menu {
+    top: 2vh;
+    position: fixed;
+    width: 100vw;
+    height: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.35s ease;
+    z-index: 10000;
+    padding-top: 3vh;
+    left: -18%;
+}
+
+/* Aparece somente quando o mouse está sobre Masculino */
+/* Faz o menu aparecer quando o mouse estiver sobre o SHOP ou sobre o próprio bloco */
+.dropdown:hover .mega-menu,
+.mega-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.mega-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    padding: 60px;
+    background-color: #fafafaad;
+    backdrop-filter: blur(3px);
+}
+
+.column h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--second-color);
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--fourth-color-opacity);
+    display: inline-block;
+    padding-bottom: 3px;
+}
+
+.column a {
+    display: block;
+    color: var(--first-color-opacity);
+    font-size: 14px;
+    text-decoration: none;
+    margin: 6px 0;
+    transition: all 0.25s ease;
+}
+
+.column-drop {
+    display: none;
+}
+
+.mega-imgs {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    height: auto;
+    width: 100%;
+    flex: 1;
+    overflow-x: auto;
+    /* habilita scroll horizontal */
+    scroll-snap-type: x mandatory;
+    /* "encaixe" por item (opcional) */
+    align-items: center;
+    overflow-y: hidden;
+}
+
+.mega-imgs::-webkit-scrollbar {
+    height: 8px;
+    /* altura da barra de rolagem */
+    background-color: var(--first-color-opacity);
+    border-radius: 4px;
+    width: 50px;
+}
+
+.mega-imgs::-webkit-scrollbar-thumb {
+    background-color: var(--first-color);
+    border-radius: 4px;
+}
+
+.mega-drops {
+    display: none;
+}
+
+.drop-column {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    height: auto;
+    width: auto;
+    flex: none;
+    /* evita que a coluna cresça além do necessário */
+    scroll-snap-align: start;
+    /* "encaixe" no início do item (opcional) */
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-column {
+    transition: transform 0.3s ease;
+}
+
+.drop__img img {
+    width: 100%;
+    height: 290px;
+}
+
+.drop-column:hover {
+    transform: translateX(3px);
+}
+
+#mega-menu-drops .drop__img {
+    flex: 1;
+    max-width: 250px;
+}
+
+#mega-menu-drops {
+    left: -280%;
+    display: flex;
+}
+
+#mega-menu-drops .mega-content {
+    display: flex;
+    grid-template-columns: unset;
+    padding: 10px;
+    width: 100%;
+}
+
+#mega-menu-off {
+    left: -820%;
+}
+
+.bi-caret-down-fill {
+    display: none;
+}
+
+.column a:hover {
+    color: #000;
+    transform: translateX(4px);
+
+}
+
+.cart-icon {
+    position: relative;
+    display: inline-block;
+    /* Garante que o link tenha dimensões para o posicionamento */
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    /* Move para cima */
+    right: -8px;
+    /* Move para a direita */
+    background: black;
+    color: white;
+    font-size: 0.7rem;
+    /* Um pouco menor para ficar mais delicado */
+    font-weight: bold;
+    height: 18px;
+    /* Altura e largura mínimas iguais para um círculo mais perfeito */
+    min-width: 18px;
+    padding: 0 5px;
+    /* Espaçamento horizontal se o número for maior que 9 */
+    border-radius: 50%;
+    /* Garante que seja sempre um círculo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+/* Animação do carrinho */
+/* Bounce no ícone do carrinho */
+.cart-bounce {
+    animation: cartBounce 0.5s ease;
+}
+
+@keyframes cartBounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-5px);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    75% {
+        transform: translateY(-3px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+
+/* Bounce já existe. Agora o Pulse do badge: */
+.cart-pulse {
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+#admin-modal {
+    z-index: 99999 !important; /* Garante que fique acima do menu lateral */
+}
+
+/* ============ SEÇÃO HEADER LINKS ============ */
+
+.admin-mega-menu-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-top: 20px;
+    justify-content: flex-start; /* Alinha à esquerda como o menu original */
+}
+
+.admin-menu-column {
+    flex: 1;
+    min-width: 180px; /* Largura mínima para não quebrar */
+    border-right: 1px solid #eee;
+    padding-right: 20px;
+}
+
+.admin-menu-column:last-child {
+    border-right: none;
+}
+
+.admin-menu-column h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #000;
+    text-transform: uppercase;
+    border-bottom: 2px solid #000;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+.admin-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-menu-list li {
+    margin-bottom: 8px;
+}
+
+.admin-link-item {
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.admin-link-item:hover {
+    background-color: #f5f5f5;
+    color: #000;
+}
+
+/* Indicador visual de que é editável */
+.admin-link-item::after {
+    content: "✎";
+    font-size: 12px;
+    color: #ccc;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.admin-link-item:hover::after {
+    opacity: 1;
+    color: #000;
+}
+
+/* Se o link já estiver salvo no banco (classe adicionada via JS), fica verde */
+.link-configured {
+    border-left: 3px solid #10b981; /* Verde */
+    background: #f0fdf4;
+}
+

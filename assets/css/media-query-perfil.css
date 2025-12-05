@@ -1,0 +1,77 @@
+@charset "UTF-8";
+
+/* Telas
+------------------------
+Pequenas telas: até 600px
+Celular: 600px - 769px
+Tablet: 769px- 992px
+Desktop: 992px - 1200px
+Grandes telas - acim 1200px
+*/
+
+:root {
+  --first-color: #010326;
+  --fifth-color: #0D0D0D;
+  --icon-size: 1.55rem;
+  --regular-font: 16px;
+  --big-font: 23px;
+}
+
+/*--------------------- PERFIL ---------------------*/
+
+@media screen and (max-width: 769px) {
+  .words {
+    display: none;
+  }
+
+  .perfil-main {
+    display: flex;
+    justify-content: center;
+    padding: 7px;
+  }
+
+  .perfil-cliente {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 7px;
+  }
+
+  .painel-cliente-nav {
+    height: auto;
+    padding: 0%;
+    padding-bottom: 22px;
+  }
+
+  .perfil-cliente>div {
+    width: 100%;
+  }
+
+  .list-page-perfil {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .list-page-perfil a {
+    height: auto;
+    font-size: var(--icon-size);
+    border-left: none;
+    border-bottom: 4px solid transparent;
+  }
+
+  .list-page-perfil a.active {
+    height: auto;
+    border-bottom-color: var(--first-color);
+  }
+
+  #email{
+    max-width: 117px;
+    overflow: hidden;
+  }
+
+  .responsive {
+    display: block;
+    margin-left: 15px;
+  }
+
+}

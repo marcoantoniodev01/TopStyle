@@ -1,0 +1,187 @@
+@charset "UTF-8";
+
+
+@media screen and (max-width: 1024px) {
+  .cart-page {
+    padding: 3rem 1rem; /* Reduz o padding lateral */
+  }
+
+  /* --- Recomendações (Aqui está a mágica do "swiper") --- */
+  .products-content-carrinho {
+    /* Habilita a rolagem horizontal */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Melhora a fluidez no iOS */
+    padding-bottom: 1.5rem; /* Dá espaço para a barra de scroll não ficar colada */
+  }
+
+  .product-row {
+    /* Impede que os produtos quebrem a linha */
+    flex-wrap: nowrap;
+    /* A largura da linha será a soma de todos os produtos */
+    width: max-content;
+    gap: 1.5rem;
+  }
+
+  .product-slot {
+    /* Reseta o flex-basis para não tentar preencher a linha */
+    flex-basis: auto;
+    /* Não deixa o item crescer para preencher espaço */
+    flex-grow: 0;
+    /* Define uma largura fixa ou baseada na tela */
+    width: 30vw;
+    /* Garante um tamanho mínimo */
+    min-width: 250px;
+    /* Reduz um pouco a altura mínima */
+    min-height: 50vh;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cart-page {
+    padding: 1rem 0.5rem; /* Padding mínimo */
+  }
+
+  /* --- Visão de Carrinho Vazio --- */
+  .carrinho-vazio {
+    gap: 2rem; /* Reduz o espaço entre os blocos */
+  }
+
+  .vazio-info {
+    padding: 0 1rem;
+  }
+
+  .vazio-info img {
+    width: 150px; /* Tamanho fixo e razoável para o emoji */
+  }
+
+  .vazio-info p {
+    font-size: 1rem; /* Tamanho de fonte legível */
+    text-align: center;
+  }
+
+  .vazio-info a {
+    width: 80%; /* Botão "Ir as compras" fica mais largo */
+    max-width: 300px;
+    font-size: 1rem;
+  }
+
+  .recomendações-carrinho h1 {
+    font-size: 1.5rem; /* Título de Recomendações menor */
+  }
+
+  /* Recomendações (horizontal scroll) */
+  .product-slot {
+    /* No mobile, os cards ficam maiores para facilitar o scroll */
+    width: 60vw;
+    min-width: 220px;
+    max-width: 280px;
+  }
+
+  /* --- Visão de Carrinho com Itens --- */
+  .carrinho-content {
+    padding: 0.5rem; /* Sem padding lateral no form */
+  }
+
+  .cart-item {
+    /* Empilha a imagem em cima das informações */
+    flex-direction: column;
+    height: auto; /* Altura se ajusta ao conteúdo */
+    padding: 0.5rem;
+  }
+
+  .cart-item-left {
+    width: 100%;
+    height: 250px; /* Uma altura fixa para a imagem */
+  }
+
+  .cart-item-left img {
+    object-fit: contain; /* Garante que a imagem apareça inteira */
+  }
+
+  .cart-item-info {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  /* --- Resumo do Carrinho --- */
+  .content-continuar {
+    height: auto; /* Altura automática */
+    align-items: stretch; /* Itens (cupom, total) esticam 100% */
+    padding: 1rem;
+  }
+
+  .cupom {
+    /* Empilha o input e o botão de cupom */
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .cupom input {
+    width: 100%;
+  }
+
+  .cupom button {
+    width: 100%;
+    height: 2.5rem; /* Altura fixa para o botão */
+  }
+
+  .cupom-aplicado {
+    width: 100%;
+    align-items: center; /* Centraliza o cupom aplicado */
+    padding: 1rem 0;
+    height: auto;
+  }
+
+  .continuar-compra {
+    /* Empilha o "Total" e o botão "Continuar" */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .continuar-info {
+    /* "Total:" de um lado, "R$..." do outro */
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .button-cont-littlecar button {
+    width: 100%; /* Botão de continuar ocupa 100% */
+    font-size: 1.2rem;
+  }
+}
+
+/* --- Telas Muito Pequenas --- */
+@media (max-width: 480px) {
+  .vazio-info img {
+    width: 120px;
+  }
+
+  .vazio-info a {
+    width: 90%;
+  }
+
+  .product-slot {
+    width: 70vw; /* Cards maiores para facilitar a visualização */
+    min-width: 200px;
+  }
+
+  .cart-item-left {
+    height: 200px; /* Imagem um pouco menor */
+  }
+
+  .text-total-litlecar {
+    font-size: 1.2rem;
+  }
+
+  .text-price-litlecar {
+    font-size: 1.5rem;
+  }
+
+  .button-cont-littlecar button {
+    font-size: 1.1rem;
+    height: 3rem;
+  }
+}

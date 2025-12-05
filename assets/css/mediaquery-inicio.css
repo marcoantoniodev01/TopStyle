@@ -1,0 +1,740 @@
+/* ===========================
+   BASE (para todos os tamanhos)
+   =========================== */
+
+/* ===========================
+   MINI (menor que celular)
+   =========================== */
+@media (max-width: 349px) {
+
+    /*INÍCIO*/
+
+    .inicio {
+        height: auto;
+        gap: 10px;
+        flex-direction: column-reverse;
+    }
+
+    .creat__cloth {
+        font-size: 10vw;
+    }
+
+    .creat__cloth span {
+        font-size: 14vw;
+        padding-left: 0px;
+    }
+
+    .inicio__left {
+        margin-left: 5%;
+        width: 100%;
+        text-align: center;
+    }
+
+    .inicio__left p {
+        font-size: 4vw;
+        text-align: center;
+        margin-left: 0px;
+        width: 100%;
+    }
+
+    .buttons__inicio {
+        justify-content: center;
+        align-items: center;
+        margin-left: 0px;
+    }
+
+    .link__creat {
+        font-size: .8rem;
+        white-space: nowrap;
+        width: 50%;
+        height: 9vw;
+    }
+
+    .link__creat-opt {
+        font-size: .8rem;
+        white-space: nowrap;
+        width: 50%;
+        height: 9vw;
+    }
+
+    .inicio__img {
+        position: inherit;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .inicio__img img {
+        width: 80vw;
+    }
+
+    /*marquee*/
+
+    .marquee {
+        margin: 100px 0px;
+    }
+
+    /*seleção de roupa*/
+
+    .selection-initial {
+        height: auto;
+    }
+
+    .card-opt {
+        height: 300px;
+    }
+
+    .page-product-cards {
+        width: 90%;
+    }
+
+
+    .opt1 {
+        flex: 1 1 300px;
+    }
+
+    .opt2 {
+        flex: 1 1 350px;
+    }
+
+    .opt4 {
+        flex: 1 1 350px;
+    }
+
+    .opt3 {
+        flex: 1 1 450px;
+    }
+
+    .opt6 {
+        flex: 1 1 250px;
+    }
+
+    .opt5 {
+        flex: 1 1 300px;
+    }
+
+    /*swiper*/
+
+    .product-slot {
+        min-width: 270px;
+        min-height: 30vh;
+    }
+
+    .two h1 {
+        font-size: 38px;
+    }
+
+}
+
+/* ===========================
+   CELULAR (320px–767px)
+   =========================== */
+/* bonus*/
+
+@media (min-width: 350px) and (max-width: 510px) {
+
+    /*INÍCIO*/
+
+    .inicio {
+        height: auto;
+        gap: 10px;
+        flex-direction: column-reverse;
+    }
+
+    .creat__cloth {
+        font-size: 10vw;
+    }
+
+    .creat__cloth span {
+        font-size: 14vw;
+        padding-left: 0px;
+    }
+
+    .inicio__left {
+        margin-left: 5%;
+        width: 90%;
+        text-align: center;
+        color: #f8f8ff;
+        height: 70vh;
+    }
+
+    .inicio__left p {
+        font-size: 4vw;
+        text-align: center;
+        margin-left: 0px;
+        width: 90%;
+        display: none;
+    }
+
+    .buttons__inicio {
+        justify-content: center;
+        align-items: center;
+        margin-left: 0px;
+    }
+
+    .link__creat {
+        font-size: 1rem;
+        white-space: nowrap;
+        width: 30vw;
+        height: 8.5vw;
+        background-color: white;
+        color: black;
+    }
+
+    .link__creat:hover {
+        background-color: transparent;
+        color: rgb(255, 255, 255);
+        border: 2px solid rgb(255, 255, 255);
+        transform: translateY(-5px);
+    }
+
+    .link__creat-opt {
+        font-size: 1rem;
+        white-space: nowrap;
+        width: 50%;
+        height: 8.5vw;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .link__creat-opt:hover {
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
+        border: none;
+        transform: translateY(-5px);
+    }
+
+    .inicio__img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 66vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: -1;
+        filter: blur(3px);
+    }
+
+    .inicio__img img {
+        width: 80vh;
+        position: absolute;
+    }
+
+    /*marquee*/
+
+    .marquee {
+        margin: 100px 0px;
+    }
+
+    /*seleção de roupa*/
+
+    .selection-initial {
+        height: auto;
+    }
+
+    .card-opt {
+        height: 300px;
+    }
+
+    .page-product-cards {
+        width: 90%;
+    }
+
+
+    .opt1 {
+        flex: 1 1 300px;
+    }
+
+    .opt2 {
+        flex: 1 1 350px;
+    }
+
+    .opt4 {
+        flex: 1 1 350px;
+    }
+
+    .opt3 {
+        flex: 1 1 450px;
+    }
+
+    .opt6 {
+        flex: 1 1 250px;
+    }
+
+    .opt5 {
+        flex: 1 1 300px;
+    }
+
+    /*swiper*/
+
+    .product-slot {
+        min-width: 270px;
+        min-height: 30vh;
+    }
+
+    .two h1 {
+        font-size: 38px;
+    }
+
+}
+
+
+@media (min-width: 511px) and (max-width: 767px) {
+
+    /*INÍCIO*/
+
+    .inicio {
+        height: auto;
+        gap: 10px;
+        flex-direction: column-reverse;
+    }
+
+    .creat__cloth {
+        font-size: 8vw;
+    }
+
+    .inicio__left {
+        margin-left: 5%;
+        width: 80%;
+        text-align: center;
+        height: 75vh;
+        color: rgb(255, 255, 255);
+    }
+
+    .inicio__left p {
+        font-size: 2vw;
+        text-align: center;
+        margin-left: 0px;
+        display: none;
+    }
+
+    .buttons__inicio {
+        justify-content: center;
+        align-items: center;
+        margin-left: 0px;
+    }
+
+    .link__creat {
+        font-size: .9rem;
+        width: 26vw;
+        height: 6vw;
+        color: black;
+        background-color: white;
+    }
+
+    .link__creat:hover {
+        background-color: transparent;
+        color: rgb(255, 255, 255);
+        border: 2px solid rgb(255, 255, 255);
+        transform: translateY(-5px);
+    }
+
+    .link__creat-opt {
+        font-size: .9rem;
+        width: 30vw;
+        height: 6vw;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .link__creat-opt:hover {
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
+        border: none;
+        transform: translateY(-5px);
+    }
+
+
+    .creat__cloth span {
+        padding-left: 0px;
+        font-size: 12vw;
+    }
+
+    .inicio__img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 40vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: -1;
+        filter: blur(3px);
+    }
+
+    .inicio__img img {
+        width: 120vh;
+        position: absolute;
+    }
+
+    /*marquee*/
+
+    .marquee {
+        margin: 100px 0px;
+    }
+
+    /*seleção de roupa*/
+
+    .selection-initial {
+        height: auto;
+    }
+
+    .card-opt {
+        height: 300px;
+    }
+
+    .page-product-cards {
+        width: 90%;
+    }
+
+
+    .opt1 {
+        flex: 1 1 300px;
+    }
+
+    .opt2 {
+        flex: 1 1 350px;
+    }
+
+    .opt4 {
+        flex: 1 1 350px;
+    }
+
+    .opt3 {
+        flex: 1 1 450px;
+    }
+
+    .opt6 {
+        flex: 1 1 250px;
+    }
+
+    .opt5 {
+        flex: 1 1 300px;
+    }
+
+    /*swiper*/
+
+    .product-slot {
+        min-width: 270px;
+        min-height: 30vh;
+    }
+
+    .two h1 {
+        font-size: 38px;
+    }
+
+}
+
+/* ===========================
+   TABLET (768px–1023px)
+   =========================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+    /*INÍCIO*/
+
+    .inicio {
+        height: auto;
+        gap: 10px;
+        flex-direction: column-reverse;
+    }
+
+    .creat__cloth {
+        font-size: 8vw;
+    }
+
+    .inicio__left {
+        margin-left: 5%;
+        width: 80%;
+        text-align: center;
+        height: 55vh;
+        color: white;
+    }
+
+    .inicio__left p {
+        font-size: 1.5vw;
+        text-align: center;
+        margin-left: 0px;
+    }
+
+    .buttons__inicio {
+        justify-content: center;
+        align-items: center;
+        margin-left: 0px;
+    }
+
+    .link__creat {
+        font-size: .9rem;
+        width: 18vw;
+        height: 4vw;
+        color: black;
+        background-color: white;
+    }
+
+    .link__creat:hover {
+        background-color: transparent;
+        color: rgb(255, 255, 255);
+        border: 2px solid rgb(255, 255, 255);
+        transform: translateY(-5px);
+    }
+
+    .link__creat-opt {
+        font-size: .9rem;
+        width: 20vw;
+        height: 4vw;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .link__creat-opt:hover {
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
+        border: none;
+        transform: translateY(-5px);
+    }
+
+    .creat__cloth span {
+        padding-left: 0px;
+        font-size: 12vw;
+    }
+
+    .inicio__img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 66vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: -1;
+        filter: blur(3px);
+    }
+
+    .inicio__img img {
+        width: 160vh;
+        position: absolute;
+    }
+
+    /*marquee*/
+
+    .marquee {
+        margin: 100px 0px;
+    }
+
+    /*seleção de roupa*/
+
+    .selection-initial {
+        height: auto;
+    }
+
+    .card-opt {
+        height: 300px;
+    }
+
+
+    .opt1 {
+        flex: 1 1 300px;
+    }
+
+    .opt2 {
+        flex: 1 1 350px;
+    }
+
+    .opt4 {
+        flex: 1 1 350px;
+    }
+
+    .opt3 {
+        flex: 1 1 450px;
+    }
+
+    .opt6 {
+        flex: 1 1 250px;
+    }
+
+    .opt5 {
+        flex: 1 1 300px;
+    }
+
+    /*swiper*/
+
+    .product-slot {
+        min-width: 270px;
+        min-height: 30vh;
+    }
+
+    .two h1 {
+        font-size: 38px;
+    }
+
+}
+
+/* ===========================
+   PC / NOTEBOOK (1024px–1919px)
+   =========================== */
+@media (min-width: 1024px) and (max-width: 1600px) {
+
+    /*INÍCIO*/
+
+    .inicio {
+        height: auto;
+        gap: 10px;
+        flex-direction: column-reverse;
+    }
+
+    .creat__cloth {
+        font-size: 8vw;
+    }
+
+    .inicio__left {
+        margin-left: 5%;
+        width: 80%;
+        text-align: center;
+        height: 70vh;
+    }
+
+    .inicio__left h1 {
+        color: white;
+        text-shadow: 1px 1px 0px black;
+    }
+
+    .inicio__left p {
+        font-size: 1.3vw;
+        text-align: center;
+        margin-left: 0px;
+        color: white;
+        text-shadow: 1px 1px 0px black;
+    }
+
+    .buttons__inicio {
+        justify-content: center;
+        align-items: center;
+        margin-left: 0px;
+    }
+
+    .link__creat {
+        font-size: 1.1rem;
+        width: 14.5vw;
+        height: 4vw;
+        color: black;
+        background-color: white;
+    }
+
+    .link__creat:hover {
+        background-color: transparent;
+        color: rgb(255, 255, 255);
+        border: 2px solid rgb(255, 255, 255);
+        transform: translateY(-5px);
+    }
+
+    .link__creat-opt {
+        font-size: 1.1rem;
+        width: 18vw;
+        height: 4vw;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .link__creat-opt:hover {
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
+        border: none;
+        transform: translateY(-5px);
+    }
+
+    .creat__cloth span {
+        padding-left: 0px;
+        font-size: 12vw;
+    }
+
+    .inicio__img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 32vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: -1;
+        filter: blur(3px);
+    }
+
+    .inicio__img img {
+        width: 240vh;
+        position: absolute;
+    }
+
+    /*marquee*/
+
+    .marquee {
+        margin: 150px 0px;
+    }
+
+    /*seleção de roupa*/
+
+    .selection-initial {
+        height: auto;
+    }
+
+    .card-opt {
+        height: 300px;
+    }
+
+
+    .opt1 {
+        flex: 1 1 300px;
+    }
+
+    .opt2 {
+        flex: 1 1 350px;
+    }
+
+    .opt4 {
+        flex: 1 1 350px;
+    }
+
+    .opt3 {
+        flex: 1 1 450px;
+    }
+
+    .opt6 {
+        flex: 1 1 250px;
+    }
+
+    .opt5 {
+        flex: 1 1 300px;
+    }
+
+    /*swiper*/
+
+    .product-slot {
+        min-width: 270px;
+        min-height: 30vh;
+    }
+
+
+    .two h1 {
+        font-size: 38px;
+    }
+
+}
+
+/* ===========================
+   TV / TELAS GRANDES (1920px+)
+   =========================== */
+@media (min-width: 1920px) {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

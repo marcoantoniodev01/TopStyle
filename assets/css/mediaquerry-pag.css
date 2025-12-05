@@ -1,0 +1,356 @@
+/* ========================================================== */
+/* ===== MEDIA QUERIES (RESPONSIVIDADE) ===== */
+/* ========================================================== */
+
+/* --- 1. TABLETS E LAPTOPS MENORES (Até 1024px) --- */
+@media (max-width: 1024px) {
+
+    /* --- AJUSTES PÁGINA PAGAMENTO --- */
+    .pagamento {
+        top: 10vh;
+        padding-bottom: 10rem;
+    }
+
+    .pagamento-content {
+        width: 95%;
+    }
+}
+
+
+/* --- 2. TABLETS (Até 768px) --- */
+@media (max-width: 768px) {
+
+    main {
+        margin-top: 8vh;
+    }
+
+    /* --- PÁGINA PAGAMENTO --- */
+    .pagamento {
+        top: 8vh;
+        padding-top: 2rem;
+        padding-bottom: 5rem;
+    }
+
+    .pagamento-content {
+        width: 100%;
+        padding: 0 1.5rem;
+        gap: 1.5rem;
+    }
+
+    /* Reduz a altura (padding) das opções de pagamento */
+    .pagamento-opcao,
+    #cartao-accordion-header {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    /* Remove alturas fixas e padroniza os cards */
+    .pagamento-endereco,
+    .pagamento-produtos,
+    .pagamento-cupom,
+    .pagamento-forma,
+    .pagamento-total-do-pedido {
+        height: auto;
+        min-height: auto;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        border-top: none;
+    }
+
+    .title-endereco-pagamento h2 {
+        font-size: 1.3rem;
+    }
+
+    /* --- Bloco de Endereço --- */
+    .pagamento-endereco-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .pagamento-endereco-bottom .text-endereco-pagamanto,
+    .pagamento-endereco-bottom .pagamento-endereco-data,
+    .pagamento-endereco-bottom .pagamento-botao {
+        width: 100%;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    /* --- Bloco de Cupom --- */
+    .pagamento-cupom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .pagamento-cupom h2 {
+        width: 100%;
+    }
+
+    .cupom-container {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .cupom {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .cupom input {
+        flex-grow: 1;
+        width: 100%;
+    }
+
+    .cupom button {
+        width: 100%;
+    }
+
+    .cupom-aplicado-car {
+        align-items: center;
+        padding-left: 0;
+    }
+
+    /* --- Bloco de Produtos --- */
+    #checkout-products {
+        max-height: 40vh;
+    }
+
+    .pagamento-detalhe {
+        font-size: 0.85rem;
+    }
+
+    .cartao-salvo-opcao label {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .cartao-salvo-info p {
+        font-size: 0.85rem;
+    }
+
+    .cartao-salvo-info p b {
+        font-size: 0.95rem;
+    }
+
+    /* --- Bloco Resumo do Pedido --- */
+    .frete-opcao label {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .frete-opcao label span {
+        font-size: 0.95rem;
+    }
+
+    .frete-opcao label span small {
+        font-size: 0.85rem;
+        color: #555;
+    }
+
+    /* --- MODAIS --- */
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+        padding-top: 3.5rem;
+    }
+
+    .sucesso-content {
+        max-width: 95%;
+    }
+
+    .sucesso-icon-wrapper.qr img {
+        width: 250px;
+        height: 250px;
+    }
+
+    .pix-copia-cola {
+        width: 100%;
+    }
+
+    /* Grid do formulário do modal (Endereço, Cartão) */
+    .form-grid {
+        grid-template-columns: 1fr; /* Força 1 coluna em tablets/celulares */
+    }
+
+    .phone-input-group {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .country-select-wrapper {
+        width: 100%;
+    }
+
+    #telefone-input {
+        width: 100%;
+    }
+}
+
+
+/* --- 3. CELULARES PEQUENOS (Até 480px) --- */
+@media (max-width: 480px) {
+    .pagamento {
+        padding-top: 1.5rem;
+    }
+
+    .pagamento-content {
+        padding: 0 1rem;
+    }
+
+    .pagamento-endereco,
+    .pagamento-produtos,
+    .pagamento-cupom,
+    .pagamento-forma,
+    .pagamento-total-do-pedido {
+        padding: 1.25rem;
+    }
+
+    .title-endereco-pagamento {
+        font-size: 1.15rem;
+    }
+
+    .title-endereco-pagamento i {
+        font-size: 1.3rem;
+    }
+
+    .pagamento-botao {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .checkout-product-item {
+        gap: 0.75rem;
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .checkout-product-item img {
+        width: 65px;
+        height: 65px;
+    }
+
+    .checkout-product-item .info .nome {
+        font-size: 0.95rem;
+    }
+
+    /* ************************************************************
+       AQUI ESTÁ A CORREÇÃO DA "DIV PAYMENT" E BOTÕES DE CARTÃO 
+       ************************************************************ */
+    
+    /* 1. Garante que a div container não quebre */
+    #pagamento-opcoes-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 2. Arruma o layout interno dos botões (Label) */
+    .pagamento-opcao label {
+        display: flex;
+        align-items: center; /* Centraliza verticalmente */
+        justify-content: space-between; /* Mantém ícone na esq e seta/texto na dir */
+        width: 100%;
+        gap: 10px; /* Espaço mínimo entre os elementos */
+    }
+    
+    /* 3. Ajusta o tamanho do texto "Pix" e "Cartão" */
+    .pagamento-opcao-info b {
+        font-size: 0.95rem; /* Texto um pouco menor para caber */
+    }
+
+    /* 4. Ajusta o ícone do Pix/Cartão */
+    .pagamento-icone {
+        width: 24px; /* Ícone menor */
+        height: 24px;
+    }
+
+    /* 5. Ajusta o texto verde "Aprovação imediata" do PIX */
+    .pagamento-detalhe {
+        font-size: 0.75rem; /* Fonte menor */
+        text-align: right;
+        white-space: normal; /* Permite quebrar linha se precisar */
+        line-height: 1.2;
+        max-width: 40%; /* Limita a largura para não esmagar o título */
+    }
+    
+    /* 6. Corrige os Inputs do Cartão (Modal) para não ficarem espremidos */
+    .form-grid {
+        display: flex;
+        flex-direction: column; /* Empilha tudo */
+        gap: 1rem;
+    }
+    
+    /* Garante que CVV e Validade fiquem lado a lado corretamente se estiverem num sub-grid */
+    /* Se você tiver uma div agrupando Validade e CVV, force ela a manter linha ou coluna */
+    .form-grid > div[style*="gap: 1rem"] { 
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Mantém validade e CVV lado a lado */
+        gap: 10px !important;
+    }
+    
+    /* ************************************************************
+       FIM DA CORREÇÃO PAGAMENTO
+       ************************************************************ */
+
+    .total-final-container {
+        font-size: 1.5rem;
+    }
+
+    #btn-fazer-pedido {
+        font-size: 1.1rem;
+        padding: 14px;
+    }
+
+    .sucesso-content {
+        padding: 1rem;
+        padding-top: 3.5rem;
+    }
+
+    .sucesso-view h2 {
+        font-size: 1.5rem;
+    }
+
+    .sucesso-view p {
+        font-size: 1rem;
+    }
+
+    .sucesso-icon-wrapper.check {
+        width: 90px;
+        height: 90px;
+    }
+
+    .sucesso-icon-wrapper.check i {
+        font-size: 3.5rem;
+    }
+
+    .sucesso-icon-wrapper.qr img {
+        width: 220px;
+        height: 220px;
+    }
+
+    .btn-whatsapp,
+    .btn-voltar-home {
+        font-size: 1rem;
+        padding: 14px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .modal-actions button {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+    }
+}

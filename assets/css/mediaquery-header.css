@@ -1,0 +1,326 @@
+@charset "UTF-8";
+
+/* Telas
+------------------------
+Pequenas telas: até 600px
+Celular: 600px - 769px
+Tablet: 769px- 992px
+Desktop: 992px - 1200px
+Grandes telas - acim 1200px
+*/
+
+:root {
+  --first-color: #010326 !important;
+  --fifth-color: #0D0D0D !important;
+  --icon-size: 1.55rem !important;
+  --regular-font: 16px !important;
+  --big-font: 23px !important;
+}
+
+/*--------------------- HEADER ---------------------*/
+
+@media screen and (max-width: 769px) {
+
+  .logo-text-container {
+    height: 80px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .logo-text {
+    width: 100px !important;
+    margin: 1rem !important;
+  }
+
+  .nav__toggle {
+    color: var(--fifth-color) !important;
+    cursor: pointer !important;
+    position: relative !important;
+  }
+
+  .nav__toggle.active {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .3s ease, visibility .3s ease !important;
+  }
+
+  .nav__menu {
+    background-color: var(--second-color-opacity) !important;
+    height: 100% !important;
+    width: 100% !important;
+    position: fixed !important;
+    display: flex !important;
+    justify-content: start !important;
+    align-items: start !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .3s ease, visibility .3s ease, right .5s ease !important;
+    z-index: 1 !important;
+    right: -100% !important;
+    overflow-y: auto !important;
+  }
+
+  .nav__menu.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    top: 0% !important;
+    right: 0 !important;
+  }
+
+  .nav__menu::-webkit-scrollbar {
+    width: 6px !important;
+    background-color: var(--first-color-opacity) !important;
+    border-radius: 4px !important;
+  }
+
+  .nav__menu::-webkit-scrollbar-thumb {
+    background-color: var(--first-color) !important;
+    border-radius: 4px !important;
+  }
+
+  .nav__close {
+    font-size: var(--icon-size) !important;
+    cursor: pointer !important;
+    position: absolute !important;
+    color: var(--fifth-color) !important;
+    display: block !important;
+    right: 0 !important;
+    margin-right: 1rem !important;
+  }
+
+  .trocar {
+    display: block !important;
+    position: absolute !important;
+    top: 15px !important;
+    left: 0 !important;
+    margin-left: 1rem !important;
+    font-size: var(--icon-size) !important;
+    cursor: pointer !important;
+    color: var(--fifth-color) !important;
+  }
+
+  .nav__list {
+    margin-top: 70px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    height: 100% !important;
+    /* important: use flex-start so the list doesn't recenter when a mega-menu expands
+       this keeps the clicked .header__link visually in the same place while items below are pushed down */
+    justify-content: flex-start !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  /* Disable hover translate on mobile: touch can trigger :hover and move the item up
+     which makes the clicked header__link 'pular' — remove that behavior on small screens */
+  .nav__list li:hover {
+    transform: none !important;
+  }
+
+  /* reduce transform transitions for list items on mobile to avoid jumpy motion */
+  .nav__list li {
+    transition: none !important;
+  }
+
+  #burger {
+    display: block !important;
+  }
+
+  .nav__link {
+    color: var(--fifth-color) !important;
+    list-style: none !important;
+    font-size: var(--big-font) !important;
+    padding: 2px !important;
+    border-radius: 30px !important;
+    text-decoration: none !important;
+  }
+
+  .nav__link:hover {
+    transition: color 0.2s ease !important;
+    color: var(--fifth-color) !important;
+  }
+
+  .nav__link::after {
+    transition: text-decoration 0.6s ease !important;
+    text-decoration: underline !important;
+  }
+
+  .social-header ul {
+    gap: 10px !important;
+  }
+
+  .bi-caret-down-fill {
+    display: block !important;
+    font-size: 12px !important;
+    margin-top: 5px !important;
+    transition: transform .25s !important;
+  }
+
+  .header__link {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 10px !important;
+  }
+
+  .header__link.open .bi-caret-down-fill {
+    transform: rotate(-90deg) !important;
+  }
+
+  /* O PRÓPRIO MEGA MENU (colapsado) */
+  .mega-menu {
+    /* 🔑 CHAVES PARA ANULAR ESTILOS DE DESKTOP */
+    position: static !important;
+    /* Deve ser estático para empurrar o conteúdo */
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: auto !important;
+    /* CONFIGURAÇÃO PARA ACORDEÃO (COLAPSADO) */
+    display: block !important;
+    /* Mantenha 'block' para que a transição max-height funcione */
+    width: 100% !important;
+    max-height: 0 !important;
+    /* O menu começa fechado */
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
+    /* Apenas padding horizontal quando fechado */
+    background: var(--second-color-opacity) !important;
+    /* TRANSITION: Apenas o max-height e padding devem ser transicionados */
+    transition: max-height 0.55s ease, padding 0.5s ease !important;
+  }
+
+  /* ESTILO QUANDO O MENU ESTÁ ABERTO (mobile-open é adicionado pelo JS) */
+  .nav__item.dropdown .mega-menu.mobile-open {
+    max-height: 1200px !important;
+    height: auto !important;
+    /* Valor grande o suficiente para expandir totalmente */
+    padding: 12px 16px !important;
+    /* Restaura o padding vertical quando aberto */
+  }
+
+  /* CONTEÚDO DENTRO DO MEGA MENU */
+  .mega-content {
+    display: block !important;
+    /* Garante que as colunas sejam empilhadas (como blocos) */
+    width: 100% !important;
+    margin: 0 !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  .mega-content .column {
+    padding: 10px 0 !important;
+  }
+
+  /* h3 clicável */
+  .mega-content .column h3 {
+    font-size: var(--regular-font) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    color: #000 !important;
+    gap: 8px !important;
+  }
+
+  /* caret (se estiver usando bootstrap icons, mostra aqui) */
+  .mega-content .column h3 .mobile-caret {
+    transition: transform .25s ease !important;
+  }
+
+  .mega-content .column.open h3 .mobile-caret {
+    transform: rotate(-90deg) !important;
+  }
+
+  /* links escondidos por padrão e aparecem quando coluna tem .open */
+  .mega-content .column a {
+    display: none !important;
+    padding: 8px 6px !important;
+    margin: 0 !important;
+    color: var(--first-color-opacity) !important;
+    font-size: 14px !important;
+  }
+
+  .mega-content .column.open a {
+    display: block !important;
+  }
+
+  /* espaço entre header link e o bloco (opcional) */
+  .nav__item .header__link {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  /* garantir que caret no header seja visível no mobile */
+  .bi-caret-down-fill {
+    display: inline-block !important;
+  }
+
+  .nav__item.dropdown .mega-menu {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    transition: none !important;
+    display: none !important;
+    overflow: hidden !important;
+  }
+
+  .nav__item.dropdown .mega-menu.mobile-open {
+    display: block !important;
+  }
+
+  .header__link .bi-caret-down-fill {
+    display: inline-block !important;
+  }
+
+  /* força cada li ocupar a largura inteira do menu mobile */
+  .nav__list li {
+    width: 100% !important;
+  }
+
+  .mega-content .column h3 {
+    display: flex !important;
+    justify-content: space-between !important;
+    /* faz o texto ficar na esquerda e o caret na direita */
+    align-items: center !important;
+    width: 100% !important;
+    padding: 8px 0 !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+  }
+
+  #mega-menu-drops .mega-content {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    gap: 8px !important;
+  }
+
+  .mega-drops {
+    display: block !important;
+  }
+
+  .mega-imgs {
+    display: none !important;
+  }
+}

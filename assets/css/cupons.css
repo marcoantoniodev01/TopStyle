@@ -1,0 +1,587 @@
+/* cupons.css */
+
+/* Layout Geral */
+.admin-container {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    color: #191D28;
+    display: inline-block;
+}
+
+/* Lista de Cupons */
+.coupons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.coupon-card-row {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.coupon-card-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.coupon-card-row.suspended {
+    opacity: 0.6;
+    background: #f9f9f9;
+    border-style: dashed;
+}
+
+.coupon-info-group {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex: 1;
+}
+
+/* Miniatura do Cupom na Lista */
+.coupon-thumb {
+    width: 100px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.coupon-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.coupon-code-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #191D28;
+    letter-spacing: 1px;
+}
+
+.coupon-creator {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Ações */
+.coupon-actions {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    color: white;
+}
+
+.btn-suspend { background-color: #555; }
+.btn-edit { background-color: #d4ac0d; }
+.btn-delete { background-color: #dc3545; }
+.action-btn:hover { opacity: 0.9; transform: scale(1.05); }
+
+/* Botão Gigante */
+.big-add-btn {
+    background-color: #191D28;
+    color: white;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 2px dashed #333;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.big-add-btn:hover {
+    background-color: #000;
+    border-style: solid;
+}
+
+/* --- MODAL ESTILO FIGMA --- */
+.modal-content.modal-lg {
+    width: 90%;
+    max-width: 1000px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+.modal-content h2 {
+    padding: 1.5rem 2rem;
+    margin: 0;
+    background: #fcfcfc;
+    border-bottom: 1px solid #eee;
+}
+
+.coupon-modal-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    height: 65vh; /* Altura fixa para scroll */
+}
+
+/* Lado Esquerdo (Form) */
+.coupon-form-side {
+    padding: 2rem;
+    overflow-y: auto;
+    border-right: 1px solid #eee;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #f9f9f9;
+}
+
+/* Dinâmicos */
+.dynamic-options {
+    background: #f0f7ff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #cce5ff;
+}
+
+.dynamic-options.hidden {
+    display: none !important;
+}
+
+/* Grid de Porcentagem */
+.percent-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.percent-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.percent-btn.active {
+    background: #191D28;
+    color: white;
+    border-color: #191D28;
+}
+
+/* Seletores de Frete */
+.shipping-type-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.shipping-radio-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.shipping-radio-box input {
+    margin-top: 4px;
+}
+
+.radio-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.radio-title { font-weight: bold; font-size: 0.95rem; }
+.radio-desc { font-size: 0.8rem; color: #666; }
+
+#shipping-percent-wrapper.hidden { display: none; }
+#shipping-percent-wrapper { margin-top: 10px; }
+
+/* Lado Direito (Preview) */
+.coupon-preview-side {
+    padding: 2rem;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.preview-container {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee; /* Fundo cinza do container preview */
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.coupon-ticket {
+    width: 200px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    text-align: center;
+    transition: all 0.3s ease;
+    padding: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Controles de Estilo */
+.style-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.style-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.color-picker-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.color-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.color-dot:hover { transform: scale(1.1); }
+.color-dot.active { 
+    transform: scale(1.2); 
+    border-color: #999;
+}
+
+.custom-wrapper {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 1px solid #ccc;
+}
+
+.custom-wrapper input[type="color"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Ações do Modal */
+.modal-actions {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #eee;
+    background: white;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-principal {
+    background: #191D28;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-cancelar {
+    background: white;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ============ DROPDOWNS CUSTOMIZADOS (Estilo Pagamento) ============ */
+.admin-custom-select {
+    position: relative;
+    user-select: none;
+    width: 100%;
+}
+
+.select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.select-trigger:hover {
+    background-color: #fff;
+    border-color: #bbb;
+}
+
+.admin-custom-select.open .select-trigger {
+    border-color: #191D28;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(25, 29, 40, 0.1);
+}
+
+.select-trigger i {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+}
+
+.admin-custom-select.open .select-trigger i {
+    transform: rotate(180deg);
+}
+
+.select-options {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.admin-custom-select.open .select-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.select-option {
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+}
+
+.select-option i {
+    font-size: 1.2rem;
+    color: #191D28;
+}
+
+.select-option:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.select-option.selected {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #191D28;
+}
+
+/* ============ CARDS DE FRETE (Estilo Pagamento) ============ */
+.shipping-cards-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.shipping-card-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border: 2px solid transparent;
+    background-color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.shipping-card-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+}
+
+.shipping-card-option.selected {
+    border-color: #191D28;
+    background-color: #fafafa;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    color: #191D28;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #191D28;
+}
+
+.card-desc {
+    font-size: 0.75rem;
+    color: #777;
+}
+
+.check-icon {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+    color: #191D28;
+    font-size: 1.2rem;
+}
+
+.shipping-card-option.selected .check-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ============ INPUT COM ÍCONE ============ */
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-wrapper i {
+    position: absolute;
+    left: 12px;
+    color: #777;
+    font-size: 1.2rem;
+}
+
+.input-icon-wrapper input {
+    padding-left: 40px !important; /* Espaço para o ícone */
+}
+
+/* ============ ANIMAÇÕES ============ */
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ BOTÕES DE PORCENTAGEM (Refinamento) ============ */
+.percent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+}
+
+.percent-btn {
+    padding: 10px 0;
+    text-align: center;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 8px; /* Mais quadrado, moderno */
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    color: #555;
+}
+
+.percent-btn:hover {
+    border-color: #999;
+}
+
+.percent-btn.active {
+    background: #191D28;
+    color: white;
+    border-color: #191D28;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}

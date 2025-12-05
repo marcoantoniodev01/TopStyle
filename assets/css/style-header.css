@@ -1,0 +1,512 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/*--------------------- GERAL ---------------------*/
+
+:root {
+  /* FONTES */
+  --font-title: 'Bebas Neue';
+  --font-paragraph: 'Roboto';
+
+  /* CORES */
+  --first-color: #010326;
+  --second-color: #181D26;
+  --third-color: #01403A;
+  --fourth-color: #012623;
+  --fifth-color: #0D0D0D;
+  --sixth-color: #E6F7F2;
+  --first-color-opacity: #0103266c;
+  --second-color-opacity: white;
+  --third-color-opacity: #01403a46;
+  --fourth-color-opacity: #01262346;
+  --fifth-color-opacity: #0d0d0d46;
+  --sixth-color-opacity: #e6f7f2b6;
+
+  /* TAMANHO */
+  --smaller-font: 10px;
+  --small-font: 13px;
+  --regular-font: 16px;
+  --big-font: 30px;
+  --bigger-font: 40px;
+  --icon-size: 1.75rem;
+}
+
+/*--------------------- HEADER ---------------------*/
+
+header {
+  display: flex;
+  top: 4vh;
+  width: 100%;
+  height: 8vh;
+  position: fixed;
+  color: black;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: backdrop-filter .4s, background-color .4s;
+}
+
+.progress-bar {
+  height: 2px;
+  background-color: black;
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.bg-header {
+  background-color: #fafafaad;
+}
+
+.nav__container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100vw;
+  height: 80px;
+  align-items: center;
+  position: fixed;
+  padding: 10px;
+}
+
+.nav__menu,
+.nav__actions {
+  justify-self: start;
+}
+
+.logo-text span {
+  font-size: 1.6rem;
+}
+
+.logo-text-container {
+  justify-self: center;
+  color: black;
+  text-decoration: none;
+}
+
+.logo-text:hover {
+  color: #4e5a7e;
+}
+
+.nav__menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.nav__list {
+  position: relative;
+  display: flex;
+  list-style-type: none;
+  gap: 13%;
+  width: auto;
+  gap: 30px;
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav__list li {
+  transition: transform .4s;
+}
+
+.nav__list li:hover {
+  transform: translateY(-10%);
+}
+
+.nav__link {
+  transition: color .4s;
+}
+
+#search-input {
+  background-color: rgba(0, 0, 0, 0.411);
+  border: none;
+  width: 12vw;
+  color: black;
+  border-radius: 4px;
+  padding: 0rem 1rem;
+}
+
+#search-input:focus {
+  outline: none;
+}
+
+/* From Uiverse.io by Yaya12085 */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 15vw;
+}
+
+.input {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  padding: 18px 16px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all .5s ease-in-out;
+}
+
+.input::placeholder {
+  color: transparent;
+}
+
+.input:focus::placeholder {
+  color: rgb(131, 128, 128);
+}
+
+.input:focus,
+.input:not(:placeholder-shown) {
+  border: 1px solid rgb(91, 107, 255);
+  width: 290px;
+  cursor: none;
+  padding: 18px 16px 18px 45px;
+}
+
+.icon {
+  position: absolute;
+  left: 0;
+  height: 2vw;
+  width: 2vw;
+  border-radius: 99px;
+  z-index: -1;
+  fill: rgb(91, 107, 255);
+  border: 1px solid rgb(91, 107, 255);
+}
+
+.input:focus+.icon,
+.input:not(:placeholder-shown)+.icon {
+  z-index: 0;
+  background-color: transparent;
+  border: none;
+}
+
+header a,
+header>ul>li>a {
+  text-decoration: none;
+  color: black;
+  transition: color .4s;
+}
+
+header a:hover,
+header>ul>li>a:hover {
+  color: #4e5a7e;
+}
+
+a.profile-link.admin-mode i {
+  display: inline-block;
+  transition: all .4s ease-in-out;
+}
+
+
+a.profile-link.admin-mode:hover i {
+  transform: rotate(100deg);
+}
+
+
+
+.social-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  height: 100%;
+  width: auto;
+}
+
+.social-header ul {
+  display: flex;
+  list-style-type: none;
+  gap: 1.5rem;
+  font-size: 1.3rem;
+  align-items: center;
+}
+
+.social-header i {
+  font-size: var(--icon-size);
+}
+
+.nav__toggle,
+.nav__close {
+  display: none;
+  cursor: pointer;
+}
+
+#burger {
+  display: none;
+}
+
+.nav__close {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+}
+
+.trocar {
+  position: relative;
+  display: block;
+  align-items: center;
+  justify-content: center;
+  transition: transform .4s;
+}
+
+.trocar:hover {
+  transform: rotate(-90deg);
+}
+
+.nav__actions {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  transition: i .4s;
+  z-index: 99;
+  margin-right: 1%;
+}
+
+.nav__actions i {
+  color: white;
+  transition: color .4s;
+  cursor: pointer;
+}
+
+.nav__actions i:hover {
+  color: rgb(172, 172, 172);
+}
+
+/* ===== MEGA MENU (INTEGRAÇÃO TOPSTYLE) ===== */
+.mega-menu {
+  top: 2vh;
+  position: fixed;
+  width: 100vw;
+  height: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.35s ease;
+  z-index: 10000;
+  padding-top: 3vh;
+  left: -18%;
+}
+
+/* Aparece somente quando o mouse está sobre Masculino */
+/* Faz o menu aparecer quando o mouse estiver sobre o SHOP ou sobre o próprio bloco */
+.dropdown:hover .mega-menu,
+.mega-menu:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mega-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+  padding: 60px;
+  background-color: #fafafaad;
+  backdrop-filter: blur(3px);
+}
+
+.column h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--second-color);
+  margin-bottom: 12px;
+  border-bottom: 2px solid var(--fourth-color-opacity);
+  display: inline-block;
+  padding-bottom: 3px;
+}
+
+.column a {
+  display: block;
+  color: var(--first-color-opacity);
+  font-size: 14px;
+  text-decoration: none;
+  margin: 6px 0;
+  transition: all 0.25s ease;
+}
+
+.column-drop {
+  display: none;
+}
+
+.mega-imgs {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+  height: auto;
+  width: 100%;
+  flex: 1;
+  overflow-x: auto;
+  /* habilita scroll horizontal */
+  scroll-snap-type: x mandatory;
+  /* "encaixe" por item (opcional) */
+  align-items: center;
+  overflow-y: hidden;
+}
+
+.mega-imgs::-webkit-scrollbar {
+  height: 8px;
+  /* altura da barra de rolagem */
+  background-color: var(--first-color-opacity);
+  border-radius: 4px;
+  width: 50px;
+}
+
+.mega-imgs::-webkit-scrollbar-thumb {
+  background-color: var(--first-color);
+  border-radius: 4px;
+}
+
+.mega-drops {
+  display: none;
+}
+
+.drop-column {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  height: auto;
+  width: auto;
+  flex: none;
+  /* evita que a coluna cresça além do necessário */
+  scroll-snap-align: start;
+  /* "encaixe" no início do item (opcional) */
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-column {
+  transition: transform 0.3s ease;
+}
+
+.drop__img img {
+  width: 100%;
+  height: 290px;
+}
+
+.drop-column:hover {
+  transform: translateX(3px);
+}
+
+#mega-menu-drops .drop__img {
+  flex: 1;
+  max-width: 250px;
+}
+
+#mega-menu-drops {
+  left: -280%;
+  display: flex;
+}
+
+#mega-menu-drops .mega-content {
+  display: flex;
+  grid-template-columns: unset;
+  padding: 10px;
+  width: 100%;
+}
+
+#mega-menu-off {
+  left: -820%;
+}
+
+.bi-caret-down-fill {
+  display: none;
+}
+
+.column a:hover {
+  color: #000;
+  transform: translateX(4px);
+
+}
+
+.cart-icon {
+  position: relative;
+  display: inline-block;
+  /* Garante que o link tenha dimensões para o posicionamento */
+}
+
+.cart-count {
+  position: absolute;
+  top: -5px;
+  /* Move para cima */
+  right: -8px;
+  /* Move para a direita */
+  background: black;
+  color: white;
+  font-size: 0.7rem;
+  /* Um pouco menor para ficar mais delicado */
+  font-weight: bold;
+  height: 18px;
+  /* Altura e largura mínimas iguais para um círculo mais perfeito */
+  min-width: 18px;
+  padding: 0 5px;
+  /* Espaçamento horizontal se o número for maior que 9 */
+  border-radius: 50%;
+  /* Garante que seja sempre um círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* Animação do carrinho */
+/* Bounce no ícone do carrinho */
+.cart-bounce {
+  animation: cartBounce 0.5s ease;
+}
+
+@keyframes cartBounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(-5px);
+  }
+
+  50% {
+    transform: translateY(0);
+  }
+
+  75% {
+    transform: translateY(-3px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+
+/* Bounce já existe. Agora o Pulse do badge: */
+.cart-pulse {
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.3);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

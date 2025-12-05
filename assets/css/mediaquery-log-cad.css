@@ -1,0 +1,389 @@
+@charset "UTF-8";
+
+/* TELAS
+-------------------------------
+Pequenas telas: até 600px
+Celular: 600px - 769px
+Tablet: 769px 922px
+Desktop: 992px - 1200px
+Grandes Telas: Acima de 1200px
+*/
+
+/* --- Bloco de 0px até 921px --- */
+@media screen and (max-width: 921px) {
+
+    .caixa {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        /* Permitir rolagem */
+        box-shadow: none;
+        /* Remover sombra no mobile */
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .overlay_form {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .formulario-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        justify-content: center;
+    }
+
+    .formulario-cadastro {
+        transform: translateY(-100%);
+    }
+
+    .formulario-recuperar {
+        transform: translateY(100%);
+        /* --- [CORREÇÃO] --- */
+        /* Reseta o tema escuro para o modo mobile */
+        background: #FFFAFA; /* Fundo branco padrão */
+        color: #333; /* Texto escuro padrão */
+        animation: none; /* Remove a animação de 'pan' */
+    }
+
+    /* Ajusta o .block__left para não ocupar 100vh dentro do container */
+    .block__left {
+        height: auto;
+        overflow-y: visible;
+        /*
+          --- [CORREÇÃO PRINCIPAL] ---
+          Adiciona 'margin: auto'.
+          Isso centra o bloco verticalmente QUANDO houver espaço
+          (como no iPhone 12 Pro).
+          Quando NÃO houver espaço (iPhone SE, form de cadastro),
+          a margem será 0 e a rolagem funcionará.
+        */
+        margin-top: auto;
+        margin-bottom: auto;
+
+        /* Adiciona padding para o conteúdo não colar nas bordas */
+        padding: 40px 0;
+    }
+
+    /* --- ANIMAÇÃO DE CADASTRO (MOBILE) --- */
+    .caixa.painel-direito-ativo .formulario-login {
+        transform: translateY(100%);
+        /* Login Sobe */
+        opacity: 1;
+        z-index: 1;
+    }
+
+    .caixa.painel-direito-ativo .formulario-cadastro {
+        transform: translateY(0%);
+        /* Cadastro Entra de baixo */
+        opacity: 1;
+        z-index: 2;
+    }
+
+
+    /* --- ANIMAÇÃO DE RECUPERAR SENHA (Mobile) --- */
+    .caixa.recuperar-ativo .formulario-login {
+        transform: translateY(-100%);
+        /* Sobe e sai */
+        opacity: 0;
+        z-index: 1;
+    }
+
+    .caixa.recuperar-ativo .formulario-cadastro {
+        transform: translateY(100%);
+        /* Desce e sai (só por garantia) */
+        opacity: 0;
+        z-index: 1;
+    }
+
+    .caixa.recuperar-ativo .formulario-recuperar {
+        transform: translateY(0%);
+        /* Entra do fundo */
+        opacity: 1;
+        z-index: 10;
+        /* Fica na frente de tudo */
+    }
+
+    /* --- FIM DA ANIMAÇÃO DE RECUPERAR --- */
+
+    .container-overlay {
+        display: none;
+        /* Esconde o painel da imagem */
+    }
+
+    .logo_form {
+        display: none;
+        /* O logo já está dentro do formulário */
+    }
+
+    .input_com_img>input {
+        width: 100%;
+        /* Ajustado de 400px para 100% */
+    }
+
+    .opt__left input[type="checkbox"] {
+        width: 9px;
+        height: 9px;
+        transform: scale(1.5);
+        accent-color: #333;
+        cursor: pointer;
+    }
+
+    .opt__left label {
+        font-size: 0.8rem;
+    }
+
+    .opt__right a {
+        font-size: 0.8rem;
+    }
+
+    /* Mostra o botão de troca no modo responsivo */
+    .troca {
+        display: block;
+        /* Sobrescreve o display:none do CSS principal */
+        position: relative;
+        bottom: 0;
+        margin-top: 20px;
+        width: 80%;
+        /* Ajustado para % */
+        max-width: 300px;
+        height: 45px;
+        padding: 0px 0px;
+        opacity: 1;
+
+        /* Estilos do seu .troca original */
+        background-color: transparent;
+        border: 2px solid black;
+        color: black;
+    }
+
+    .troca:hover {
+        background-color: transparent;
+        border: 2px solid black;
+    }
+
+    .troca:active {
+        background-color: rgba(0, 0, 0, 0.068);
+    }
+
+    /* Remove estilos absolutos desnecessários */
+    .confirmar {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .confirmar:active {
+        background-color: rgb(66, 64, 64);
+    }
+
+    /* -----------------------------------------------------------------
+    --- AJUSTES GERAIS DE RESPONSIVIDADE (para < 921px) ---
+    -----------------------------------------------------------------
+    */
+
+    /* 1. Ajusta o container principal do formulário */
+    .left__center {
+        width: 90%;
+        /* Usa mais espaço da tela (original era 55%) */
+        max-width: 450px;
+        /* Evita que fique largo demais em tablets */
+    }
+
+    /* 2. Aumenta a logo em telas menores (sobrepõe o 10vw) */
+    .logo img {
+        width: 120px;
+        /* Tamanho fixo e razoável para mobile */
+        height: auto;
+    }
+
+    /* 3. Reduz o tamanho da fonte do título principal */
+    .left__center h1 {
+        font-size: 2.3rem;
+        /* Um pouco menor que 3rem para caber melhor */
+        padding: 15px 0;
+    }
+
+    /* 4. Reduz o espaçamento vertical entre os inputs */
+    .input__container {
+        margin-top: 30px;
+        padding: 0px 0px 0px 10px;
+        /* Um pouco mais que os 25px de antes, menos que 50px */
+    }
+
+    /* 5. Padroniza os botões de ação e 'troca' para não esticarem */
+    .button-log {
+        width: 80%;
+        /* Mesma largura do .troca */
+        max-width: 300px;
+        /* Mesmo max-width do .troca */
+    }
+
+    /* 6. Corrige o formulário de "Recuperar Senha" */
+    .center__form-recuperar {
+        width: 100%;
+        /* O .left__center já limita a largura */
+    }
+
+    .input__container input {
+        width: 100%;
+        padding: 0px 10px 0px 15px;
+        border: none;
+        background: none;
+        outline: none;
+    }
+
+    .input__container-recuperar input {
+        width: 100%;
+        /* Sobrescreve a regra de 50% do style-log-cad.css */
+    }
+
+    /* 7. Ajuste fino nos ícones de redes sociais */
+    .redes {
+        gap: 20px;
+        /* Reduz um pouco o espaçamento original de 30px */
+        padding-top: 1.5rem;
+        /* Reduz o padding original de 2rem */
+    }
+
+    .redes__icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .redes__icon img {
+        width: 30px;
+    }
+
+
+    /* -----------------------------------------------------------------
+    --- [NOVO] AJUSTES RESPONSIVOS P/ ESQUECI SENHA ---
+    -----------------------------------------------------------------
+    */
+
+    /* Remove a marca d'água 'TOPSTYLE' */
+    .formulario-recuperar::before {
+        display: none;
+    }
+
+    /* Reseta a logo (remove o filtro invertido) */
+    .formulario-recuperar .logo img {
+        filter: none;
+    }
+
+    /* Reseta o título e o parágrafo (cores) */
+    .formulario-recuperar .left__center h1 {
+        color: #333;
+        font-size: 2.1rem; /* Um pouco menor para "Recuperar Senha" */
+    }
+
+    .formulario-recuperar .left__center .p-recuperar {
+        color: #525252;
+        font-size: 0.9rem;
+        line-height: 2;
+    }
+
+    /* Reseta os inputs (borda, ícone, cor do texto e placeholder) */
+    .formulario-recuperar .input__container {
+        border-bottom: 1px solid rgb(0, 0, 0);
+    }
+
+    .formulario-recuperar .input__container label img {
+        filter: none;
+        opacity: 0.5;
+    }
+
+    .formulario-recuperar .input__container input {
+        color: #333;
+        background: transparent;
+    }
+
+    .formulario-recuperar .input__container input::placeholder {
+        color: #777;
+    }
+
+    /* Reseta o autofill do Chrome para o tema claro */
+    .formulario-recuperar input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 1000px #FFFAFA inset !important; /* Fundo branco */
+      -webkit-text-fill-color: black !important; /* Texto preto */
+    }
+
+    /* Reseta os inputs do código OTP */
+    .code-input {
+        color: #333;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .code-input:focus {
+        border-bottom-color: #333;
+        box-shadow: none;
+    }
+
+    /* Reseta o botão para o padrão azul */
+    .formulario-recuperar .button-log {
+        background-color: #2F4A62;
+        color: white;
+    }
+
+    .formulario-recuperar .button-log:hover {
+        background-color: #3a5c7c;
+        scale: 1.05;
+    }
+
+    /* Reseta os links (Ex: "Lembrei minha senha") */
+    .formulario-recuperar .opt__righte a {
+        color: gray;
+    }
+
+    .formulario-recuperar .opt__righte a:hover {
+        color: black;
+    }
+
+}
+
+/* -----------------------------------------------------------------
+--- AJUSTES FINOS PARA TELAS MUITO PEQUENAS ---
+-----------------------------------------------------------------
+*/
+/* Regras específicas para telas com 400px de largura ou menos */
+@media screen and (max-width: 400px) {
+
+    /* 1. Garante que o logo não seja cortado */
+    .block__left {
+        padding: 30px 0;
+        /* Um padding menor, mas ainda presente */
+    }
+
+    /* 2. Diminui a logo */
+    .logo img {
+        width: 100px;
+        /* Menor que os 120px */
+    }
+
+    /* 3. Diminui o título */
+    .left__center h1 {
+        font-size: 2.0rem;
+        /* Menor que 2.3rem */
+        padding: 5px 0;
+    }
+
+    /* 4. Diminui o espaçamento dos inputs */
+    .input__container {
+        margin-top: 22px;
+        /* Menor que 30px */
+    }
+
+    /* 5. Diminui o espaçamento das redes sociais */
+    .redes {
+        padding-top: 1rem;
+        /* Menor que 1.5rem */
+    }
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato / Suporte – TopStyle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/footer.css">
+</head>
+
+<body class="page-contato">
+    <div class="container">
+        <h1>Contato / Suporte</h1>
+        <p class="sub">Envie sua dúvida, sugestão ou problema e nossa equipe responderá o mais rápido possível.</p>
+
+        <form id="supportForm">
+            <select required>
+                <option value="">Selecione o tipo de atendimento</option>
+                <option>Problema com pedido</option>
+                <option>Troca ou devolução</option>
+                <option>Dúvida sobre produto</option>
+                <option>Erro no site</option>
+                <option>Outros</option>
+            </select>
+
+            <input type="text" placeholder="Seu nome" required>
+            <input type="email" placeholder="Seu e-mail" required>
+            <input type="text" placeholder="Número do pedido (opcional)">
+
+            <textarea placeholder="Descreva sua mensagem..." required></textarea>
+
+            <button type="submit">Enviar mensagem</button>
+        </form>
+
+        <div class="success" id="successMessage">
+            ✔ Sua mensagem foi enviada! Retornaremos no seu e-mail em breve.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("supportForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            document.getElementById("successMessage").style.display = "block";
+            this.reset();
+        });
+    </script>
+</body>
+
+</html>
