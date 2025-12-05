@@ -265,6 +265,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (signInError) throw signInError;
+        const user = loginData.user;
+
+        // 2.5 VERIFICAÇÃO DE BANIMENTO (NOVO)
+        const { data: banData, error: banError } = await supabase
+          .from('user_bans')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(); // maybeSingle evita erro se não achar nada
+
+        if (banData) {
+          // Verifica se o banimento ainda é válido
+          let isBanned = false;
+
+          if (banData.ban_type === 'permanent') {
+            isBanned = true;
+          } else if (banData.ban_type === 'temporary' && banData.banned_until) {
+            const now = new Date();
+            const until = new Date(banData.banned_until);
+            if (now < until) {
+              isBanned = true;
+            }
+          }
+
+          if (isBanned) {
+            await supabase.auth.signOut(); // Desloga imediatamente
+            showAppToast(`ACESSO NEGADO: Você está banido. Motivo: ${banData.reason}`);
+            formLoginContainer.classList.remove('loading');
+            return; // Para a execução
+          }
+        }
+
+        if (signInError) throw signInError;
         if (!loginData.user) throw new Error('Login falhou, tente novamente.');
 
         // 3. Login bem-sucedido! Buscar o perfil para checar se é admin.
