@@ -35,6 +35,10 @@ Grandes telas - acim 1200px
     margin: 1rem !important;
   }
 
+  .logo-text span{
+    display: none !important;
+  }
+
   .nav__toggle {
     color: var(--fifth-color) !important;
     cursor: pointer !important;
@@ -155,6 +159,10 @@ Grandes telas - acim 1200px
     gap: 10px !important;
   }
 
+  .social-header{
+    width: auto !important;
+  }
+
   .bi-caret-down-fill {
     display: block !important;
     font-size: 12px !important;
@@ -218,6 +226,7 @@ Grandes telas - acim 1200px
     margin: 0 !important;
     gap: 8px !important;
     padding: 0 !important;
+    background-color: transparent !important;
   }
 
   .mega-content .column {
@@ -309,18 +318,28 @@ Grandes telas - acim 1200px
     cursor: pointer !important;
   }
 
-  #mega-menu-drops .mega-content {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    gap: 8px !important;
+  #mega-content-drops{
+    background-color: transparent !important;
   }
 
-  .mega-drops {
-    display: block !important;
+  .mega-imgs{
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: start !important;
   }
 
-  .mega-imgs {
+  .drop__img {
     display: none !important;
+  }
+
+  .drop-column{
+    align-items: start !important;
+    width: 100% !important;
+  }
+
+  .drop-name{
+    font-weight: 700 !important;
+    width: 100% !important;
+    border-bottom: 2px solid var(--fourth-color-opacity) !important;
   }
 }
