@@ -2242,7 +2242,7 @@ a.profile-link.admin-mode:hover i {
 .ban-modal-pro {
     background: #fff;
     width: 100%;
-    max-width: 480px;
+    max-width: 50vw;
     border-radius: 20px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     overflow: hidden;
@@ -2659,3 +2659,4 @@ a.profile-link.admin-mode:hover i {
     border-color: #d1d5db;
     color: #111827;
 }
+
