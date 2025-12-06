@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/cupons.css">
+  <link rel="stylesheet" href="assets/css/mediaquery-header.css">
   <link rel="stylesheet" href="assets/css/style-header.css">
   <link rel="stylesheet" href="assets/css/dashboard.css">
   <link rel="stylesheet" href="assets/css/style.css">
@@ -17,6 +18,11 @@
 </head>
 
 <body>
+
+  <div id="global-loader" class="page-loading-overlay">
+    <div class="spinner"></div>
+    <p class="loading-text">Carregando sua dashboard...</p>
+  </div>
 
   <header class="header " id="header">
     <nav class="nav__container">
@@ -226,8 +232,29 @@
     <section class="body-admin">
       <section class="body-left">
         <div class="block-left">
-          <div class="logo-block-left">
+          <div class="sidebar-profile-header">
+            <div class="sidebar-avatar-wrapper" id="sidebar-avatar-wrapper">
+              <span id="sidebar-initials">AD</span>
 
+              <img id="sidebar-img" src="" style="display:none;" alt="Perfil"
+                onerror="this.style.display='none'; document.getElementById('sidebar-initials').style.display='block';">
+            </div>
+
+            <div class="sidebar-user-info">
+              <h3 id="sidebar-fullname">Carregando...</h3>
+
+              <div class="user-meta">
+                <span id="sidebar-username">@usuario</span>
+                <span id="sidebar-email">email@exemplo.com</span>
+              </div>
+
+              <div class="user-status-row">
+                <span class="sidebar-role">Admin</span>
+                <p class="sidebar-since">Desde: <span id="sidebar-created">--/--/--</span></p>
+              </div>
+
+              <p id="sidebar-cpf" style="display:none;"></p>
+            </div>
           </div>
           <div class="info-block-left">
             <ul class="menu">
@@ -305,8 +332,10 @@
                 <a href="perfil-cliente.html">
                   <li>Dados pessoais</li>
                 </a>
-                <li>Alterar senha</li>
-                <a href="index.html">
+                <li class="submenu-item" id="alterarSenha" onclick="window.location.href='index.html?recuperar=1'">
+                  Alterar senha
+                </li>
+                <a href="index.html#botaoEsqueciSenha">
                   <li>Logout</li>
                 </a>
               </ul>
@@ -357,7 +386,7 @@
                 <div class="icon-center-block-criados"><i class="bi bi-hammer"></i></div>
                 <div class="criados-text">
                   <h2>0 m</h2>
-                  <p>Criados</p>
+                  <p>Criados</p>a
                 </div>
               </div>
               <div class="center-block-produtos">
@@ -1054,6 +1083,7 @@
     </div>
   </div>
 
+  <script src="assets/js/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script type="module" src="assets/js/supabase-client.js"></script>
   <script src="assets/js/main.js"></script>
@@ -1066,5 +1096,3 @@
 </body>
 
 </html>
-
-
