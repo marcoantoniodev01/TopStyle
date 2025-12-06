@@ -37,6 +37,7 @@ async function initSupabaseClient() {
 window.initSupabaseClient = initSupabaseClient;
 
 
+
 /* ============ MODAL DE CONFIRMAÇÃO CUSTOMIZADO ============ */
 function showConfirmationModal(message, { okText = 'Confirmar', cancelText = 'Cancelar' } = {}) {
   return new Promise(resolve => {
@@ -1121,76 +1122,113 @@ function splitLetters(selector) {
    LÓGICA DE PRELOADER (Conforme solicitado)
   ========================================================= 
 */
+// Dentro de main.js
+
 function handlePreloaderAndIntro() {
-  const minPreloaderTime = 3000;
   const preloader = document.getElementById('preloader');
   const intro = document.getElementById('intro');
   const body = document.body;
   const role = localStorage.getItem('userRole');
   const introAlreadyShown = sessionStorage.getItem('introShown');
 
-  const isAdminOrReturnVisit = role === 'admin' || introAlreadyShown;
+  // Define se devemos pular a animação (Admin ou já viu a intro)
+  const skipAnimation = (role === 'admin' || introAlreadyShown);
 
-  if (isAdminOrReturnVisit) {
-    if (intro) intro.style.display = 'none';
-    body.style.overflow = 'auto';
-    body.classList.remove('com-intro');
-
-    if (preloader) {
-      window.addEventListener('load', () => {
-        preloader.classList.add('hidden');
-      }, { once: true });
-    }
-    return;
-  }
-
-  if (body.classList.contains('com-intro')) {
+  // Trava a rolagem se for mostrar a intro
+  if (!skipAnimation && body.classList.contains('com-intro')) {
     body.style.overflow = 'hidden';
+  } else if (skipAnimation && intro) {
+    // Se for pular, esconde o intro visualmente, mas mantém preloader até carregar tudo
+    intro.style.display = 'none';
   }
 
-  let pageLoaded = false;
-  let minTimeElapsed = false;
+  // === CRIAÇÃO DAS PROMISES (As travas de segurança) ===
 
-  const hidePreloaderAndRunIntro = () => {
-    if (!pageLoaded || !minTimeElapsed) return;
+  // 1. Tempo Mínimo (3s) - Só usado se NÃO for pular a animação
+  const minTimePromise = new Promise(resolve => setTimeout(resolve, 3000));
 
-    if (preloader) preloader.classList.add('hidden');
+  // 2. Window Load (Imagens, CSS e Scripts carregados)
+  const windowLoadPromise = new Promise(resolve => {
+    if (document.readyState === 'complete') resolve();
+    else window.addEventListener('load', resolve);
+  });
 
-    if (intro) {
-      intro.style.display = 'flex';
-
-      if (typeof splitLetters === 'function') {
-        splitLetters(".intro-text, .intro-text-top");
-      } else {
-        console.warn('Função splitLetters não encontrada.');
-      }
-
-      if (typeof runIntro === 'function' && window.gsap) {
-        runIntro();
-      } else {
-        setTimeout(() => {
-          if (intro) intro.style.display = 'none';
-          body.style.overflow = 'auto';
-          body.classList.remove('com-intro');
-          sessionStorage.setItem("introShown", "true");
-        }, 2000);
-      }
+  // 3. Lógica Admin (Espera o admiconedash.js terminar)
+  const adminCheckPromise = new Promise(resolve => {
+    if (document.body.classList.contains('admin-logic-complete')) {
+      resolve();
     } else {
+      document.addEventListener('admin-logic-complete', resolve, { once: true });
+      // Timeout de segurança de 7s caso o Supabase falhe
+      setTimeout(resolve, 7000); 
+    }
+  });
+
+  // 4. Lógica Produtos (Espera o applyProductsFromDBToDOM terminar)
+  const productsLoadPromise = new Promise(resolve => {
+    // Se não estiver na home (sem slots), resolve rápido
+    if (!document.querySelector('.product-slot') && !document.querySelector('.product-content-selecao')) {
+       resolve();
+       return;
+    }
+
+    if (document.body.classList.contains('products-logic-complete')) {
+      resolve();
+    } else {
+      document.addEventListener('products-logic-complete', resolve, { once: true });
+      // Timeout de segurança de 10s (banco de dados pode demorar)
+      setTimeout(resolve, 10000);
+    }
+  });
+
+  // === LISTA DE COISAS A ESPERAR ===
+  const promisesToWait = [
+    windowLoadPromise,
+    adminCheckPromise,
+    productsLoadPromise
+  ];
+
+  // Se for usuário novo, adiciona o tempo mínimo de 3s na espera
+  if (!skipAnimation) {
+    promisesToWait.push(minTimePromise);
+  }
+
+  // === QUANDO TUDO TERMINAR ===
+  Promise.all(promisesToWait).then(() => {
+    // Esconde o preloader
+    if (preloader) {
+       preloader.classList.add('hidden');
+       // Remove do DOM após o fade-out CSS
+       setTimeout(() => preloader.style.display = 'none', 500);
+    }
+
+    if (skipAnimation) {
+      // Modo Rápido: Libera a tela imediatamente
       body.style.overflow = 'auto';
       body.classList.remove('com-intro');
-      sessionStorage.setItem("introShown", "true");
+    } else {
+      // Modo Animação: Inicia a Intro (Derretimento/Letras)
+      if (intro) {
+        intro.style.display = 'flex';
+
+        if (typeof splitLetters === 'function') {
+          splitLetters(".intro-text, .intro-text-top");
+        }
+
+        if (typeof runIntro === 'function' && window.gsap) {
+          runIntro();
+        } else {
+          // Fallback se GSAP falhar
+          setTimeout(() => {
+            intro.style.display = 'none';
+            body.style.overflow = 'auto';
+            body.classList.remove('com-intro');
+            sessionStorage.setItem("introShown", "true");
+          }, 2000);
+        }
+      }
     }
-  };
-
-  setTimeout(() => {
-    minTimeElapsed = true;
-    hidePreloaderAndRunIntro();
-  }, minPreloaderTime);
-
-  window.addEventListener('load', () => {
-    pageLoaded = true;
-    hidePreloaderAndRunIntro();
-  }, { once: true });
+  });
 }
 
 /* ============ LÓGICA DE PRODUTOS E FILTROS (ATUALIZADO) ============ */
@@ -1202,79 +1240,87 @@ let g_activeFilters = {
 };
 
 // Função principal que carrega tudo
+// Dentro de main.js
+
 async function applyProductsFromDBToDOM() {
-  const urlParams = new URLSearchParams(window.location.search);
+  // Prepara o evento de finalização
+  const dispatchProductEvent = () => {
+    document.body.classList.add('products-logic-complete');
+    document.dispatchEvent(new Event('products-logic-complete'));
+  };
 
-  // URL: categoria.html?categoria=vestuario (Ver Todos)
-  // URL: categoria.html?tipo=camisetas (Item Específico)
-  // URL: categoria.html?categoria=vestuario&tipo=camisetas (Híbrido - Prioriza o tipo)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageGroup = urlParams.get('categoria');
+    const pageSpecificType = urlParams.get('tipo');
+    const pageGender = urlParams.get('genero');
 
-  const pageGroup = urlParams.get('categoria'); // ex: vestuario
-  const pageSpecificType = urlParams.get('tipo'); // ex: camisetas
-  const pageGender = urlParams.get('genero');
-
-  // Atualiza título da página
-  const displayTitle = pageSpecificType || pageGroup;
-  if (displayTitle) {
-    updateCategoryPageTitle(displayTitle);
-  }
-
-  const filters = {};
-
-  // Prioriza o tipo específico. Se não tiver tipo, verifica se é um grupo (Ver Todos).
-  if (pageSpecificType) {
-    filters.category = pageSpecificType;
-  } else if (pageGroup && CATEGORY_GROUPS[pageGroup]) {
-    // Aqui acontece a mágica do "Ver Todos"
-    filters.categoryList = CATEGORY_GROUPS[pageGroup];
-  }
-
-  if (pageGender) filters.gender = pageGender;
-
-  // Busca no banco
-  const products = await fetchProductsFromDB(filters);
-  g_allCategoryProducts = products;
-
-  const isCategoryPage = pageGroup || pageSpecificType || pageGender;
-
-  if (isCategoryPage && qs('.filtros')) {
-    populateFiltersUI(products);
-    renderProductGrid(products);
-    attachFilterListeners();
-
-    // Se não encontrou produtos
-    if (products.length === 0) {
-      const container = qs('.product-content-selecao');
-      if (container) container.innerHTML = '<p style="text-align:center; width:100%; padding:20px;">Nenhum produto encontrado nesta categoria.</p>';
+    // Atualiza título da página
+    const displayTitle = pageSpecificType || pageGroup;
+    if (displayTitle) {
+      updateCategoryPageTitle(displayTitle);
     }
-  } else {
-    // Lógica da Home Page (Slots)
-    ensureSlotIds();
-    const productMap = products.reduce((map, p) => {
-      if (p.slot) {
-        map[p.slot] = p;
-      }
-      return map;
-    }, {});
 
-    const slots = qsa('.product-slot');
-    const isAdmin = (localStorage.getItem('userRole') || 'cliente') === 'admin';
+    const filters = {};
 
-    slots.forEach(slotEl => {
-      const slotId = slotEl.dataset.slot;
-      const productData = productMap[slotId];
-      if (productData) {
-        renderProductInSlot(slotEl, productData);
-      } else if (isAdmin) {
-        renderAddButtonInSlot(slotEl, slotId);
-      } else {
-        slotEl.innerHTML = '';
-        slotEl.style.visibility = 'hidden';
+    if (pageSpecificType) {
+      filters.category = pageSpecificType;
+    } else if (pageGroup && CATEGORY_GROUPS[pageGroup]) {
+      filters.categoryList = CATEGORY_GROUPS[pageGroup];
+    }
+
+    if (pageGender) filters.gender = pageGender;
+
+    // Busca no banco
+    const products = await fetchProductsFromDB(filters);
+    g_allCategoryProducts = products;
+
+    const isCategoryPage = pageGroup || pageSpecificType || pageGender;
+
+    if (isCategoryPage && qs('.filtros')) {
+      populateFiltersUI(products);
+      renderProductGrid(products);
+      attachFilterListeners();
+
+      if (products.length === 0) {
+        const container = qs('.product-content-selecao');
+        if (container) container.innerHTML = '<p style="text-align:center; width:100%; padding:20px;">Nenhum produto encontrado nesta categoria.</p>';
       }
-    });
+    } else {
+      // Lógica da Home Page (Slots)
+      ensureSlotIds();
+
+      // Cria mapa de produtos
+      const productMap = products.reduce((map, p) => {
+        if (p.slot) map[p.slot] = p;
+        return map;
+      }, {});
+
+      const slots = qsa('.product-slot');
+      const isAdmin = (localStorage.getItem('userRole') || 'cliente') === 'admin';
+
+      slots.forEach(slotEl => {
+        const slotId = slotEl.dataset.slot;
+        const productData = productMap[slotId];
+        if (productData) {
+          renderProductInSlot(slotEl, productData);
+        } else if (isAdmin) {
+          renderAddButtonInSlot(slotEl, slotId);
+        } else {
+          slotEl.innerHTML = '';
+          slotEl.style.visibility = 'hidden';
+        }
+      });
+    }
+
+    prepareProductHoverAndOptions();
+
+  } catch (err) {
+    console.error('Erro ao aplicar produtos:', err);
+  } finally {
+    // === IMPORTANTE: Avisa que acabou de carregar os produtos ===
+    dispatchProductEvent();
   }
-
-  prepareProductHoverAndOptions();
 }
 
 function populateFiltersUI(products) {
