@@ -1145,3 +1145,645 @@ document.querySelectorAll('.submenu li').forEach(li => {
         // ... (resto do seu código de transição de abas) ...
     });
 });
+
+/* =========================================================
+   LÓGICA DO RELATÓRIO DE VENDAS (Best Sellers)
+   ========================================================= */
+
+// Estado global do relatório
+let reportState = {
+    period: 'all', // all, month, week, today
+    sortAsc: false, // false = mais vendidos primeiro
+    offset: 0,
+    limit: 10,
+    loading: false
+};
+
+// Listener para inicializar quando clicar no menu
+document.querySelectorAll('.submenu li[data-content="relatorio-vendas"]').forEach(li => {
+    li.addEventListener('click', () => {
+        // Reseta e carrega ao entrar na aba
+        setReportPeriod('all');
+    });
+});
+
+// 1. Define o período e recarrega
+function setReportPeriod(period) {
+    reportState.period = period;
+
+    // Atualiza botões visuais
+    document.querySelectorAll('.filter-group-time .filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(periodToText(period))) {
+            btn.classList.add('active');
+        } else if (period === 'all' && btn.textContent === 'Tudo') {
+            btn.classList.add('active');
+        }
+    });
+
+    resetAndLoadReport();
+}
+
+// Helper para texto do botão
+function periodToText(p) {
+    if (p === 'month') return 'mês';
+    if (p === 'week') return 'semana';
+    if (p === 'today') return 'hoje';
+    return 'tudo';
+}
+
+// 2. Reseta paginação e carrega do zero
+function resetAndLoadReport() {
+    reportState.offset = 0;
+    reportState.sortAsc = document.getElementById('report-sort-select').value === 'asc';
+
+    const grid = document.getElementById('report-grid');
+    grid.innerHTML = ''; // Limpa grid
+    document.getElementById('btn-report-load-more').classList.add('hidden');
+
+    fetchBestSellers();
+}
+
+// 3. Carregar Mais (Paginação Infinita manual)
+function loadMoreReport() {
+    reportState.offset += reportState.limit;
+    fetchBestSellers();
+}
+
+// Chame isso uma vez ao carregar a página de Relatórios
+document.addEventListener('DOMContentLoaded', () => {
+    // se o container do relatório está presente, inicializa
+    if (document.getElementById('report-grid')) {
+        // garante que o select exista antes de ler
+        const sel = document.getElementById('report-sort-select');
+        reportState.sortAsc = sel ? sel.value === 'asc' : false;
+        resetAndLoadReport(); // carrega a primeira página
+    }
+});
+
+// ----------------- fetchBestSellers (melhorada, com loader e log) -----------------
+async function fetchBestSellers() {
+    if (reportState.loading) return;
+    reportState.loading = true;
+
+    const loader = document.getElementById('report-loader');
+    const grid = document.getElementById('report-grid');
+    const btnMore = document.getElementById('btn-report-load-more');
+
+    if (loader) loader.classList.remove('hidden');
+    if (btnMore) btnMore.classList.add('hidden');
+
+    // Calcular Data de Início
+    let startDate = new Date(0).toISOString(); // default tudo
+    const now = new Date();
+
+    if (reportState.period === 'today') {
+        now.setHours(0, 0, 0, 0);
+        startDate = now.toISOString();
+    } else if (reportState.period === 'week') {
+        const day = now.getDay();
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(now.setDate(diff));
+        monday.setHours(0, 0, 0, 0);
+        startDate = monday.toISOString();
+    } else if (reportState.period === 'month') {
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        startDate = firstDay.toISOString();
+    }
+
+    try {
+        // Chama a função RPC
+        const { data, error } = await client.rpc('get_best_sellers_report', {
+            period_start: startDate,
+            sort_asc: reportState.sortAsc,
+            page_limit: reportState.limit,
+            page_offset: reportState.offset
+        });
+
+        if (error) throw error;
+
+        console.log('RPC data', data);
+
+        // Se não vier array ou vazio na primeira página, mostra vazio
+        if (!Array.isArray(data) || data.length === 0) {
+            if (reportState.offset === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#6b7280;">Nenhuma venda encontrada neste período.</div>';
+            }
+            // nada mais a fazer
+        } else {
+            renderReportCards(data);
+            // controla botão ver mais
+            if (data.length < reportState.limit) {
+                btnMore?.classList.add('hidden');
+            } else {
+                btnMore?.classList.remove('hidden');
+            }
+        }
+    } catch (err) {
+        console.error("Erro relatório (fetchBestSellers):", err);
+        if (window.showToast) window.showToast("Erro ao carregar relatório: " + (err.message || err));
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#ef4444;">Erro ao buscar relatório. Veja console.</div>`;
+    } finally {
+        if (loader) loader.classList.add('hidden');
+        reportState.loading = false;
+    }
+}
+
+
+// 5. Renderiza HTML
+function renderReportCards(products) {
+    const grid = document.getElementById('report-grid');
+
+    if (products.length === 0 && reportState.offset === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280;">Nenhuma venda encontrada neste período.</div>';
+        return;
+    }
+
+    products.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'report-card fade-in';
+        // Adiciona cursor pointer para indicar clique
+        div.style.cursor = 'pointer';
+
+        // Passamos os dados do produto para a função ao clicar
+        // Precisamos escapar as aspas do nome e imagem para não quebrar o HTML
+        const safeName = p.nome ? p.nome.replace(/'/g, "\\'") : '';
+        const safeImg = p.img ? p.img : '';
+        const safeId = p.product_id;
+        const total = p.total_sold;
+
+        // O evento onclick chama nosso novo modal
+        div.setAttribute('onclick', `openProductDetailsModal('${safeId}', '${safeName}', '${safeImg}', '${total}')`);
+
+        let icon = p.total_sold > 50 ? 'bi-fire' : 'bi-bag-check-fill';
+        let badgeColor = p.total_sold > 50 ? '#ef4444' : '#191D28';
+
+        div.innerHTML = `
+            <div class="sales-badge" style="background: ${badgeColor};">
+                <i class="bi ${icon}"></i>
+                <span>${p.total_sold} vendidos</span>
+            </div>
+            
+            <div class="report-img-box">
+                ${p.img ? `<img src="${p.img}" alt="${p.nome}">` : '<i class="bi bi-image" style="font-size:2rem;color:#ccc;"></i>'}
+            </div>
+            
+            <div class="report-info">
+                <h3 class="report-title" title="${p.nome}">${p.nome || 'Produto sem nome'}</h3>
+                <div class="report-id">ID: ${p.product_id}</div>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+// =========================================================
+// NOVO: LÓGICA DO MODAL DE DETALHES DO PRODUTO
+// =========================================================
+let currentViewingProductId = null; // Guarda o ID para usar no modal de histórico
+
+function openProductDetailsModal(id, name, img, total) {
+    currentViewingProductId = id;
+
+    // Preencher Modal
+    document.getElementById('prod-detail-name').innerText = name;
+    document.getElementById('prod-detail-id').innerText = id;
+    document.getElementById('prod-detail-total').innerText = total + " unidades";
+
+    const imgEl = document.getElementById('prod-detail-img');
+    const iconEl = document.getElementById('prod-detail-icon');
+
+    if (img && img !== 'null') {
+        imgEl.src = img;
+        imgEl.style.display = 'block';
+        iconEl.style.display = 'none';
+    } else {
+        imgEl.style.display = 'none';
+        iconEl.style.display = 'block';
+    }
+
+    // Configurar botão de ver vendas
+    const btnHistory = document.getElementById('btn-view-sales-history');
+    btnHistory.onclick = () => {
+        // NÃO fechamos o modal de detalhes, apenas abrimos o próximo por cima
+        openProductSalesModal();
+    };
+
+    // Mostrar Modal
+    const modal = document.getElementById('modal-product-details-view');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeProductDetailsModal() {
+    const modal = document.getElementById('modal-product-details-view');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+// =========================================================
+// NOVO: LÓGICA DO MODAL DE HISTÓRICO DE VENDAS
+// =========================================================
+
+function openProductSalesModal() {
+    const modal = document.getElementById('modal-product-sales-history');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+
+    // Carrega dados iniciais (Filtro: Tudo)
+    // Reseta botões visualmente para "Tudo"
+    const buttons = modal.querySelectorAll('.filter-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    buttons[0].classList.add('active');
+
+    loadProductSales('all');
+}
+
+function closeProductSalesModal() {
+    const modal = document.getElementById('modal-product-sales-history');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+
+    // Opcional: Reabrir o modal de detalhes ao voltar?
+    // Se quiser, descomente a linha abaixo e passe os dados salvos anteriormente
+    // openProductDetailsModal(currentViewingProductId, ...); 
+}
+
+async function loadProductSales(period, btnElement) {
+    if (!currentViewingProductId) return;
+
+    // Atualiza visual dos botões se foi clicado
+    if (btnElement) {
+        const parent = btnElement.parentElement;
+        parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+
+    const listContainer = document.getElementById('sales-history-list');
+    listContainer.innerHTML = '<div style="text-align:center; padding: 20px; color:#94a3b8;"><i class="ri-loader-4-line ri-spin"></i> Carregando vendas...</div>';
+
+    // Calcular Data de Início (Mesma lógica do relatório principal)
+    let startDate = '1970-01-01';
+    const now = new Date();
+
+    if (period === 'today') {
+        now.setHours(0, 0, 0, 0);
+        startDate = now.toISOString();
+    } else if (period === 'week') {
+        const day = now.getDay();
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(now.setDate(diff));
+        monday.setHours(0, 0, 0, 0);
+        startDate = monday.toISOString();
+    } else if (period === 'month') {
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        startDate = firstDay.toISOString();
+    }
+
+    try {
+        const { data, error } = await client.rpc('get_product_sales_history', {
+            p_product_id: currentViewingProductId,
+            period_start: startDate
+        });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            listContainer.innerHTML = `
+                <div style="text-align:center; padding: 30px; color:#64748b; display:flex; flex-direction:column; align-items:center;">
+                    <i class="bi bi-calendar-x" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>Nenhuma venda encontrada neste período.</p>
+                </div>`;
+            return;
+        }
+
+        // Renderizar Lista
+        listContainer.innerHTML = data.map(sale => {
+            // Formatar Data
+            const dateObj = new Date(sale.created_at);
+            const dateStr = dateObj.toLocaleDateString('pt-BR');
+            const timeStr = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            // Iniciais para avatar
+            const initials = sale.username ? sale.username.substring(0, 2).toUpperCase() : '??';
+
+            return `
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #64748b; font-size: 0.9rem; overflow:hidden;">
+                        ${sale.avatar_url
+                    ? `<img src="${sale.avatar_url}" style="width:100%; height:100%; object-fit:cover;">`
+                    : initials}
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">${sale.username}</div>
+                        <div style="color: #94a3b8; font-size: 0.8rem;">${dateStr} às ${timeStr}</div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+                        +${sale.quantity} uni
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("Erro sales history:", err);
+        listContainer.innerHTML = `<p style="text-align:center; color:red;">Erro ao buscar dados.</p>`;
+    }
+}
+
+/* =========================================================
+   LÓGICA DE EXPORTAÇÃO DE PDF (ATUALIZADA E CORRIGIDA)
+   ========================================================= */
+
+let selectedExportDateOption = null; // Variável para guardar qual data o usuário clicou
+
+function openExportModal() {
+    const modal = document.getElementById('modal-export-reports');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+    renderExportOptions('day'); // Padrão
+}
+
+function closeExportModal() {
+    const modal = document.getElementById('modal-export-reports');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+// --- NOVO: Funções do Modal de Tipo ---
+
+function openReportTypeModal(option) {
+    selectedExportDateOption = option; // Guarda a opção (Ex: "Dezembro 2025")
+    const modal = document.getElementById('modal-report-type');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeReportTypeModal() {
+    const modal = document.getElementById('modal-report-type');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+function confirmExportGeneration(type) {
+    if (selectedExportDateOption) {
+        closeReportTypeModal(); // Fecha pergunta
+        generatePDFReport(selectedExportDateOption, type); // Gera PDF
+    }
+}
+
+// --- Renderização das datas (Modificado o onclick) ---
+function renderExportOptions(type) {
+    // 1. Atualiza visual dos botões (Deixa o botão clicado escuro)
+    document.querySelectorAll('#modal-export-reports .filter-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById(`btn-exp-${type}`);
+    if (btn) btn.classList.add('active');
+
+    const container = document.getElementById('export-options-list');
+    container.innerHTML = '';
+
+    const now = new Date();
+    const options = [];
+
+    // ==========================
+    // LÓGICA DIÁRIA
+    // ==========================
+    if (type === 'day') {
+        for (let i = 0; i < 6; i++) {
+            const d = new Date();
+            d.setDate(now.getDate() - i);
+            d.setHours(0, 0, 0, 0);
+
+            const start = d.toISOString();
+            const end = new Date(d);
+            end.setHours(23, 59, 59, 999);
+
+            options.push({
+                label: i === 0 ? "Hoje" : i === 1 ? "Ontem" : d.toLocaleDateString('pt-BR'),
+                sub: d.toLocaleDateString('pt-BR', { weekday: 'long' }),
+                start: start,
+                end: end.toISOString(),
+                filename: `Vendas_${d.toLocaleDateString('pt-BR').replace(/\//g, '-')}`
+            });
+        }
+    }
+    // ==========================
+    // LÓGICA SEMANAL (CORRIGIDA)
+    // ==========================
+    else if (type === 'week') {
+        // Mostra as últimas 5 semanas
+        for (let i = 0; i < 5; i++) {
+            let start = new Date(now);
+
+            // 1. Encontrar a Segunda-feira da semana atual
+            // getDay(): 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+            const currentDay = start.getDay();
+
+            // Se for Domingo (0), a segunda-feira foi há 6 dias. 
+            // Se for Segunda (1), foi há 0 dias. 
+            // Se for Terça (2), foi há 1 dia...
+            const distanceToMonday = currentDay === 0 ? 6 : currentDay - 1;
+
+            start.setDate(start.getDate() - distanceToMonday);
+
+            // 2. Voltar 'i' semanas para trás no tempo
+            start.setDate(start.getDate() - (i * 7));
+            start.setHours(0, 0, 0, 0);
+
+            // 3. Calcular o final da semana (Domingo)
+            let end = new Date(start);
+            end.setDate(start.getDate() + 6); // Segunda + 6 dias = Domingo
+            end.setHours(23, 59, 59, 999);
+
+            // 4. Definir Labels bonitos
+            let label = "";
+            if (i === 0) label = "Esta Semana";
+            else if (i === 1) label = "Semana Passada";
+            else label = `Semana de ${start.toLocaleDateString('pt-BR')}`;
+
+            options.push({
+                label: label,
+                sub: `${start.toLocaleDateString('pt-BR')} até ${end.toLocaleDateString('pt-BR')}`,
+                start: start.toISOString(),
+                end: end.toISOString(),
+                filename: `Relatorio_Semana_${start.toLocaleDateString('pt-BR').replace(/\//g, '-')}`
+            });
+        }
+    }
+    // ==========================
+    // LÓGICA MENSAL
+    // ==========================
+    else if (type === 'month') {
+        for (let i = 0; i < 6; i++) {
+            // Pega o dia 1 do mês ajustado
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+
+            // Início: Dia 1 às 00:00
+            const start = d.toISOString();
+
+            // Fim: Último dia do mês (Dia 0 do mês seguinte)
+            const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+            lastDay.setHours(23, 59, 59, 999);
+
+            const label = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+            options.push({
+                label: label.charAt(0).toUpperCase() + label.slice(1), // Capitaliza (Dezembro...)
+                sub: i === 0 ? "Mês Atual" : "",
+                start: start,
+                end: lastDay.toISOString(),
+                filename: `Vendas_Mes_${d.getMonth() + 1}_${d.getFullYear()}`
+            });
+        }
+    }
+
+    // Renderiza HTML dos Cards
+    options.forEach(opt => {
+        const div = document.createElement('div');
+        div.className = 'export-option-card';
+        div.innerHTML = `
+            <div class="export-option-text">
+                <span>${opt.label}</span>
+                <span class="export-option-sub">${opt.sub}</span>
+            </div>
+            <i class="bi bi-download export-icon"></i>
+        `;
+        // Ao clicar, abre o modal de pergunta (Resumo vs Completo)
+        div.onclick = () => openReportTypeModal(opt);
+        container.appendChild(div);
+    });
+}
+
+// --- GERAÇÃO DO PDF (Lógica Nova) ---
+async function generatePDFReport(option, reportType) {
+    const { jsPDF } = window.jspdf;
+    if (window.showToast) window.showToast("Processando dados... aguarde.");
+
+    try {
+        // 1. Busca dados no Supabase
+        const { data: items, error } = await client.rpc('export_sales_report', {
+            start_date: option.start,
+            end_date: option.end
+        });
+
+        if (error) throw error;
+
+        if (!items || items.length === 0) {
+            if (window.showToast) window.showToast("Nenhuma venda encontrada neste período.");
+            return;
+        }
+
+        // 2. Processa os dados (Agrupa por Categoria e Produto)
+        const categoriesMap = {};
+        const productsMap = {};
+
+        let grandTotalRevenue = 0;
+        let grandTotalItems = 0;
+
+        items.forEach(item => {
+            const catName = item.category || "Sem Categoria";
+            const prodName = item.prod_name || "Produto Desconhecido";
+
+            // Preço: Prioriza histórico (item_price), senão atual (prod_price)
+            let price = Number(item.item_price) || Number(item.prod_price) || 0;
+            let qty = Number(item.qty) || 0;
+            let total = price * qty;
+
+            // Agrupa Categorias
+            if (!categoriesMap[catName]) categoriesMap[catName] = { qty: 0, revenue: 0 };
+            categoriesMap[catName].qty += qty;
+            categoriesMap[catName].revenue += total;
+
+            // Agrupa Produtos (Para relatório completo)
+            if (!productsMap[prodName]) productsMap[prodName] = { qty: 0, revenue: 0, category: catName };
+            productsMap[prodName].qty += qty;
+            productsMap[prodName].revenue += total;
+
+            grandTotalItems += qty;
+            grandTotalRevenue += total;
+        });
+
+        // Transforma mapas em arrays para tabela
+        const categoriesArray = Object.keys(categoriesMap).map(cat => [
+            cat,
+            categoriesMap[cat].qty,
+            categoriesMap[cat].revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+        ]).sort((a, b) => b[1] - a[1]); // Ordena por quantidade
+
+        const productsArray = Object.keys(productsMap).map(prod => [
+            prod,
+            productsMap[prod].category,
+            productsMap[prod].qty,
+            productsMap[prod].revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+        ]).sort((a, b) => b[2] - a[2]);
+
+        // 3. Cria o PDF
+        const doc = new jsPDF();
+
+        // Cabeçalho
+        doc.setFontSize(18); doc.setFont("helvetica", "bold");
+        doc.text("Relatório de Vendas - TopStyle", 14, 22);
+
+        doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.setTextColor(100);
+        doc.text(`Período: ${option.label}`, 14, 29);
+        doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 34);
+
+        // Totais Gerais
+        doc.setTextColor(0); doc.setFontSize(11);
+        doc.text(`Total Vendido: ${grandTotalItems} itens`, 14, 44);
+        doc.text(`Faturamento: ${grandTotalRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`, 80, 44);
+
+        doc.setDrawColor(200); doc.line(14, 48, 196, 48);
+
+        let finalY = 55;
+
+        // --- TABELA 1: CATEGORIAS (Sempre aparece) ---
+        doc.setFontSize(14); doc.setFont("helvetica", "bold");
+        doc.text("1. Resumo por Categoria", 14, finalY);
+        finalY += 6;
+
+        doc.autoTable({
+            startY: finalY,
+            head: [['Categoria', 'Qtd', 'Receita']],
+            body: categoriesArray,
+            theme: 'striped',
+            headStyles: { fillColor: [25, 29, 40] },
+            columnStyles: { 0: { cellWidth: 'auto' }, 1: { halign: 'center' }, 2: { halign: 'right' } }
+        });
+
+        finalY = doc.lastAutoTable.finalY + 15;
+
+        // --- TABELA 2: PRODUTOS (Só se for 'full') ---
+        if (reportType === 'full') {
+            // Se não couber na página, cria nova
+            if (finalY > 250) { doc.addPage(); finalY = 20; }
+
+            doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(0);
+            doc.text("2. Detalhamento por Produtos", 14, finalY);
+            finalY += 6;
+
+            doc.autoTable({
+                startY: finalY,
+                head: [['Produto', 'Categoria', 'Qtd', 'Receita']],
+                body: productsArray,
+                theme: 'grid',
+                headStyles: { fillColor: [25, 29, 40] },
+                columnStyles: { 2: { halign: 'center' }, 3: { halign: 'right' } }
+            });
+        }
+
+        // Salva
+        const nomeArquivo = reportType === 'full' ? `${option.filename}_Completo.pdf` : `${option.filename}_Resumo.pdf`;
+        doc.save(nomeArquivo);
+
+        if (window.showToast) window.showToast("Download concluído!");
+
+    } catch (err) {
+        console.error("Erro PDF:", err);
+        if (window.showToast) window.showToast("Erro: " + err.message);
+    }
+}
