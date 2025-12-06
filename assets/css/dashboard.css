@@ -63,6 +63,111 @@ main {
     flex-direction: column;
 }
 
+/* =========================================================
+   SIDEBAR: PERFIL DO ADMIN (VERSION 3.0 - LARGE & DETAILED)
+   ========================================================= */
+.sidebar-profile-header {
+    display: flex;
+    flex-direction: row; /* Mantém lado a lado */
+    align-items: center; /* Alinha ao topo para caber as infos */
+    gap: 16px; 
+    padding: 24px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+/* --- 1. AVATAR MAIOR --- */
+.sidebar-avatar-wrapper {
+    width: 110px; /* Aumentado de 48px para 68px */
+    height: 110px;
+    border-radius: 16px; /* Borda um pouco mais arredondada */
+    background-color: #191D28;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem; /* Fonte da sigla maior também */
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 3px solid #e2e6ff; /* Borda sutil externa */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.sidebar-avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- 2. ÁREA DE TEXTO DETALHADA --- */
+.sidebar-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100vw;
+    padding-top: 2px; /* Pequeno ajuste ótico */
+}
+
+/* Nome Principal */
+.sidebar-user-info h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+
+/* Username e Email (Combinados ou em linhas próximas) */
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 6px;
+}
+
+.user-meta span {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px; /* Evita estourar a largura */
+}
+
+/* Badge de Admin e Data - Linha Final */
+.user-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.sidebar-role {
+    background: #0f172a;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-since {
+    font-size: 0.65rem !important;
+    color: #94a3b8 !important;
+    margin: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
 /* Área de scroll do menu */
 .info-block-left {
     flex-grow: 1;
@@ -160,6 +265,10 @@ main {
 .submenu.open {
     max-height: 1000px;
     /* Altura segura */
+}
+
+.submenu a {
+    text-decoration: none;
 }
 
 .submenu li {
@@ -2907,3 +3016,4 @@ a.profile-link.admin-mode:hover i {
 .export-option-card:hover .export-icon {
     color: #2563eb;
 }
+
