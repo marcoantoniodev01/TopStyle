@@ -43,6 +43,7 @@ function ouvirMudancasProdutos() {
 document.addEventListener("DOMContentLoaded", () => {
     atualizarTotalProdutos();
     ouvirMudancasProdutos();
+    loadSidebarProfile(); // <--- CHAMA AQUI
 });
 
 const menuItems = document.querySelectorAll('.menu-item');
@@ -1785,5 +1786,86 @@ async function generatePDFReport(option, reportType) {
     } catch (err) {
         console.error("Erro PDF:", err);
         if (window.showToast) window.showToast("Erro: " + err.message);
+    }
+}
+
+/* =========================================================
+   CARREGAR PERFIL DA SIDEBAR (CORRIGIDO)
+   ========================================================= */
+async function loadSidebarProfile() {
+    try {
+        // 1. Pega usuário logado
+        const { data: { user } } = await client.auth.getUser();
+        
+        if (!user) return; 
+
+        // 2. Busca dados na tabela profiles
+        const { data: profile, error } = await client
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        if (error) throw error;
+
+        // 3. Elementos do DOM
+        const elImg = document.getElementById('sidebar-img');
+        const elInitials = document.getElementById('sidebar-initials');
+        const elName = document.getElementById('sidebar-fullname');
+        const elUser = document.getElementById('sidebar-username');
+        const elEmail = document.getElementById('sidebar-email');
+        const elCreated = document.getElementById('sidebar-created');
+        const elWrapper = document.getElementById('sidebar-avatar-wrapper');
+
+        // 4. Preenche Dados de Texto
+        const fullName = profile.full_name || 'Administrador';
+        const username = profile.username || 'admin';
+        
+        // Formatação do Nome (apenas Primeiro e Último para economizar espaço se for muito longo)
+        const names = fullName.split(' ');
+        const displayName = names.length > 1 
+            ? `${names[0]} ${names[names.length - 1]}` 
+            : names[0];
+
+        if(elName) elName.innerText = displayName;
+        if(elUser) elUser.innerText = '@' + username;
+        if(elEmail) elEmail.innerText = profile.email || user.email;
+        
+        // Data formatada
+        if (profile.created_at && elCreated) {
+            const date = new Date(profile.created_at);
+            elCreated.innerText = date.toLocaleDateString('pt-BR');
+        }
+
+        // 5. Lógica da Imagem (Debug Avançado)
+        // Verifica se existe URL e se ela não é vazia ou null
+        if (profile.avatar_url && profile.avatar_url.trim() !== "") {
+            console.log("Tentando carregar avatar:", profile.avatar_url);
+            
+            elImg.src = profile.avatar_url;
+            elImg.style.display = 'block';
+            elInitials.style.display = 'none';
+            
+            // Força o wrapper a não ter fundo preto se tiver imagem (opcional)
+            elWrapper.style.backgroundColor = 'transparent';
+        } else {
+            console.log("Sem avatar URL, usando iniciais.");
+            
+            // Lógica das Iniciais
+            const initials = fullName
+                .split(' ')
+                .map(n => n[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase();
+            
+            elInitials.innerText = initials || "AD";
+            elImg.style.display = 'none';
+            elInitials.style.display = 'block';
+            elWrapper.style.backgroundColor = '#191D28'; // Volta cor original
+        }
+
+    } catch (err) {
+        console.error('Erro ao carregar sidebar:', err);
     }
 }
