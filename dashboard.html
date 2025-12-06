@@ -274,7 +274,7 @@
                 <span class="arrow">▶</span>
               </li>
               <ul class="submenu">
-                <li>Produtos mais vendidos</li>
+                <li data-content="relatorio-vendas">Produtos mais vendidos</li>
                 <li>Sei la </li>
               </ul>
 
@@ -452,6 +452,52 @@
             <div id="user-cards-list" class="user-cards-list">
             </div>
 
+          </div>
+        </div>
+
+        <div class="page" id="relatorio-vendas">
+          <div class="admin-container">
+            <div class="page-header">
+              <h1>Relatório de Vendas</h1>
+              <p class="cat-subtitle">Ranking de produtos por volume de saída</p>
+            </div>
+
+            <div class="report-filters-bar">
+              <div class="filters-best">
+                <div class="filter-group-time">
+                  <button class="filter-btn active" onclick="setReportPeriod('all')">Tudo</button>
+                  <button class="filter-btn" onclick="setReportPeriod('month')">Este Mês</button>
+                  <button class="filter-btn" onclick="setReportPeriod('week')">Esta Semana</button>
+                  <button class="filter-btn" onclick="setReportPeriod('today')">Hoje</button>
+                </div>
+
+                <div class="filter-group-sort">
+                  <label><i class="bi bi-sort-down"></i> Ordenar:</label>
+                  <select id="report-sort-select" onchange="resetAndLoadReport()">
+                    <option value="desc">Mais Vendidos (Desc)</option>
+                    <option value="asc">Menos Vendidos (Asc)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="filter-btn-best">
+                <button onclick="openExportModal()" class="cat-btn cat-btn-primary" style="margin-left: auto;">
+                  <i class="bi bi-file-earmark-pdf-fill"></i> Baixar Relatórios
+                </button>
+              </div>
+
+            </div>
+
+            <div id="report-grid" class="report-grid">
+            </div>
+
+            <div id="report-loader" class="cat-loader hidden"></div>
+
+            <div class="load-more-container">
+              <button id="btn-report-load-more" class="cat-btn cat-btn-secondary hidden" onclick="loadMoreReport()">
+                Ver Mais Produtos <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -639,7 +685,7 @@
 
   <div id="modal-user-details" class="custom-modal-overlay hidden">
     <div class="custom-modal-content details-modal-pro">
-      
+
       <div class="details-header-pro">
         <h3>Ficha do Usuário</h3>
         <button class="close-modal-btn-pro" onclick="closeUserModal()">
@@ -648,7 +694,7 @@
       </div>
 
       <div class="details-body-pro">
-        
+
         <div class="details-avatar-section">
           <div class="avatar-large-wrapper" id="detail-avatar-wrapper">
             <span id="detail-initials">US</span>
@@ -873,6 +919,141 @@
     </div>
   </div>
 
+  <div id="modal-product-details-view" class="custom-modal-overlay hidden">
+    <div class="custom-modal-content details-modal-pro">
+
+      <div class="details-header-pro">
+        <h3>Detalhes do Produto</h3>
+        <button class="close-modal-btn-pro" onclick="closeProductDetailsModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="details-body-pro">
+        <div class="details-avatar-section">
+          <div class="avatar-large-wrapper avatar-large-wrapper-best" id="prod-detail-img-wrapper"
+            style="border-radius: 12px; background: #f3f4f6;">
+            <img id="prod-detail-img" src="" alt="Produto" style="display:none; object-fit: contain;">
+            <i id="prod-detail-icon" class="bi bi-box-seam" style="display:none; color: #9ca3af;"></i>
+          </div>
+          <h2 id="prod-detail-name" class="user-fullname-pro" style="margin-top: 10px;">Nome do Produto</h2>
+          <p id="prod-detail-id" class="user-username-pro">ID: ---</p>
+        </div>
+
+        <div class="details-info-grid">
+          <div class="info-item-pro">
+            <span class="info-label">Total Vendido</span>
+            <span id="prod-detail-total" class="info-value" style="font-size: 1.2rem; font-weight: 700;">0</span>
+          </div>
+          <div class="info-item-pro">
+            <span class="info-label">Status</span>
+            <span class="info-value" style="color: #10b981; font-weight: 600;">Ativo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-footer-pro">
+        <button class="btn-pro-secondary" onclick="closeProductDetailsModal()">Fechar</button>
+        <button id="btn-view-sales-history" class="btn-pro-black">
+          <i class="bi bi-receipt" style="margin-right: 8px;"></i> Ver Histórico de Vendas
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-product-sales-history" class="custom-modal-overlay hidden" style="z-index: 10002;">
+    <div class="custom-modal-content details-modal-pro details-modal-pro-best"
+      style="max-height: 85vh; display:flex; flex-direction:column;">
+
+      <div class="details-header-pro">
+        <h3>Histórico de Vendas</h3>
+        <button class="close-modal-btn-pro" onclick="closeProductSalesModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div style="padding: 15px 24px; border-bottom: 1px solid #f3f4f6; background: #fff;">
+        <div class="filter-group-time" style="justify-content: center; width: 100%; display: flex;">
+          <button class="filter-btn active" onclick="loadProductSales('all', this)">Tudo</button>
+          <button class="filter-btn" onclick="loadProductSales('month', this)">Mês</button>
+          <button class="filter-btn" onclick="loadProductSales('week', this)">Semana</button>
+          <button class="filter-btn" onclick="loadProductSales('today', this)">Hoje</button>
+        </div>
+      </div>
+
+      <div class="details-body-pro" style="padding: 0; overflow-y: auto; flex: 1; background: #f9fafb;">
+
+        <div id="sales-history-list" class="user-cards-list user-cards-list-best" style="padding: 20px; gap: 10px;">
+          <div style="text-align:center; padding: 20px; color:#9ca3af;">Carregando...</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-export-reports" class="custom-modal-overlay hidden" style="z-index: 10005;">
+    <div class="custom-modal-content" style="max-width: 60vw;">
+      <div class="details-header-pro">
+        <h3>Exportar Relatório de Vendas</h3>
+        <button class="close-modal-btn-pro" onclick="closeExportModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="details-body-pro" style="padding: 20px;">
+        <p style="text-align:center; color:#64748b; margin-bottom:20px;">Selecione o tipo de período:</p>
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; width:100%;">
+          <button onclick="renderExportOptions('day')" class="filter-btn active" id="btn-exp-day">Diário</button>
+          <button onclick="renderExportOptions('week')" class="filter-btn" id="btn-exp-week">Semanal</button>
+          <button onclick="renderExportOptions('month')" class="filter-btn" id="btn-exp-month">Mensal</button>
+        </div>
+
+        <div id="export-options-list"
+          style="max-height: 300px; overflow-y: auto; display:flex; flex-direction:column; gap:10px; width:100%; padding:1rem;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-report-type" class="custom-modal-overlay hidden" style="z-index: 10010;">
+    <div class="custom-modal-content details-modal-pro" style="max-width: 40vw;">
+
+      <div class="details-header-pro">
+        <h3>Tipo de Relatório</h3>
+        <button class="close-modal-btn-pro" onclick="closeReportTypeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="details-body-pro" style="text-align: center; padding: 30px;">
+        <div
+          style="background: #f0f9ff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #0284c7; font-size: 1.8rem;">
+          <i class="bi bi-file-earmark-bar-graph"></i>
+        </div>
+
+        <h4 style="margin-bottom: 10px; color: #1e293b;">Visualização dos Dados</h4>
+        <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">
+          O sumário por categorias será incluído no topo de ambas as opções.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button onclick="confirmExportGeneration('full')" class="btn-pro-black"
+            style="justify-content: space-between; width: 30vw;">
+            <span>Relatório Completo</span>
+            <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8; gap: 1rem;">(Categorias + Produtos)</span>
+          </button>
+
+          <button onclick="confirmExportGeneration('summary')" class="btn-pro-secondary"
+            style="justify-content: space-between;">
+            <span>Apenas Resumo</span>
+            <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8;">(Somente Categorias)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script type="module" src="assets/js/supabase-client.js"></script>
   <script src="assets/js/main.js"></script>
@@ -880,6 +1061,8 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script src="assets/js/dashboard.js"></script>
   <script src="assets/js/header-control.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 </body>
 
 </html>
