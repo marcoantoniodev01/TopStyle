@@ -19,7 +19,7 @@ Grandes telas - acim 1200px
 
 /*--------------------- HEADER ---------------------*/
 
-@media screen and (max-width: 769px) {
+@media screen and (max-width: 803px) {
 
   .logo-text-container {
     height: 80px !important;
@@ -33,10 +33,6 @@ Grandes telas - acim 1200px
   .logo-text {
     width: 100px !important;
     margin: 1rem !important;
-  }
-
-  .logo-text span{
-    display: none !important;
   }
 
   .nav__toggle {
@@ -159,7 +155,7 @@ Grandes telas - acim 1200px
     gap: 10px !important;
   }
 
-  .social-header{
+  .social-header {
     width: auto !important;
   }
 
@@ -318,11 +314,11 @@ Grandes telas - acim 1200px
     cursor: pointer !important;
   }
 
-  #mega-content-drops{
+  #mega-content-drops {
     background-color: transparent !important;
   }
 
-  .mega-imgs{
+  .mega-imgs {
     display: flex !important;
     flex-direction: column !important;
     align-items: start !important;
@@ -332,14 +328,20 @@ Grandes telas - acim 1200px
     display: none !important;
   }
 
-  .drop-column{
+  .drop-column {
     align-items: start !important;
     width: 100% !important;
   }
 
-  .drop-name{
+  .drop-name {
     font-weight: 700 !important;
     width: 100% !important;
     border-bottom: 2px solid var(--fourth-color-opacity) !important;
+  }
+}
+
+@media screen and (max-width: 490px) {
+    .logo-text span{
+    display: none !important;
   }
 }
