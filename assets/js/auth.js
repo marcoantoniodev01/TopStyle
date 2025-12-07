@@ -12,94 +12,40 @@
 // Espera o DOM carregar antes de executar
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- 1. LÓGICA DA ANIMAÇÃO DO PAINEL LOGIN/CADASTRO ---
+  // ============================================================
+  // 1. DECLARAÇÃO DE VARIÁVEIS GLOBAIS E SELETORES CRÍTICOS
+  // (Movido para o topo para evitar erros de referência)
+  // ============================================================
 
-  const botaoCadastrar = document.getElementById('botaoCadastrar');
-  const botaoEntrar = document.getElementById('botaoEntrar');
+  // Variável para guardar o e-mail entre as etapas (Escopo Global dentro do DOMContentLoaded)
+  let recoveryEmail = '';
+
+  // Seletores das Etapas de Recuperação
+  const stepEmail = document.getElementById('step-email');
+  const stepCode = document.getElementById('step-code');
+  const stepPassword = document.getElementById('step-password');
+
+  // Seletores dos Formulários de Recuperação
+  const formRecuperarEmail = document.getElementById('recuperar-form-email');
+  const formRecuperarCode = document.getElementById('recuperar-form-code');
+  const formRecuperarPassword = document.getElementById('recuperar-form-password');
+
+  // Seletores de Inputs Específicos
+  const emailInput = document.getElementById('recuperar-email');
+  const emailEnviadoEl = document.getElementById('email-enviado');
+  const novaSenhaInput = document.getElementById('recuperar-nova-senha');
+  const confirmSenhaInput = document.getElementById('recuperar-confirm-senha');
+  
+  // Seletores de Inputs do Código (OTP)
+  const codeInputsContainer = document.getElementById('code-inputs');
+  // Converte NodeList para Array para facilitar manipulação
+  const codeInputs = codeInputsContainer ? Array.from(codeInputsContainer.querySelectorAll('.code-input')) : [];
+
+  // Seletores Gerais
   const caixa = document.getElementById('caixa');
-
-  if (botaoCadastrar && botaoEntrar && caixa) {
-    botaoCadastrar.addEventListener('click', () => {
-      caixa.classList.add('painel-direito-ativo');
-    });
-
-    botaoEntrar.addEventListener('click', () => {
-      caixa.classList.remove('painel-direito-ativo');
-    });
-  } else {
-    console.warn('Elementos da animação de login/cadastro não encontrados.');
-  }
-
-  // --- 1.5. LÓGICA DE ANIMAÇÃO (MOBILE) - [ADIÇÃO] ---
-  const botaoTrocarParaCadastro = document.getElementById('botaoTrocarParaCadastro');
-  const botaoTrocarParaLogin = document.getElementById('botaoTrocarParaLogin');
-
-  if (botaoTrocarParaCadastro && botaoTrocarParaLogin && caixa) {
-    botaoTrocarParaCadastro.addEventListener('click', () => {
-      caixa.classList.add('painel-direito-ativo');
-    });
-
-    botaoTrocarParaLogin.addEventListener('click', () => {
-      caixa.classList.remove('painel-direito-ativo');
-    });
-  } else {
-    console.warn('Botões de troca mobile (troca) não encontrados.');
-  }
-  // --- [FIM DA ADIÇÃO] ---
-
-
-  // --- NOVA LÓGICA DA ANIMAÇÃO: ESQUECI A SENHA (ATUALIZADO) ---
-
-  const botaoEsqueciSenha = document.getElementById('botaoEsqueciSenha');
-
-  // Seleciona TODOS os botões de "Lembrei a senha"
-  const botoesLembreiSenha = document.querySelectorAll(
-    '#botaoLembreiSenha, #botaoLembreiSenhaEtapa2, #botaoLembreiSenhaEtapa3'
-  );
-
-  if (botaoEsqueciSenha && botoesLembreiSenha.length > 0 && caixa) {
-
-    // Listener para ABRIR o painel
-    botaoEsqueciSenha.addEventListener('click', (e) => {
-      e.preventDefault(); // Previne o link de navegar
-      caixa.classList.add('recuperar-ativo');
-    });
-
-    // Listeners para FECHAR o painel (em qualquer etapa)
-    botoesLembreiSenha.forEach(botao => {
-      botao.addEventListener('click', (e) => {
-        e.preventDefault(); // Previne o link de navegar
-        caixa.classList.remove('recuperar-ativo');
-
-        // Adicionado: Reseta o formulário de recuperação se o usuário voltar
-        // O setTimeout garante que o reset ocorra DEPOIS da animação de saída
-        setTimeout(resetRecoveryForm, 500);
-      });
-    });
-
-  } else {
-    console.warn('Elementos da animação de recuperar senha não encontrados.');
-  }
-
-  // --- Seleciona os CONTAINERS dos formulários para o loader ---
+  const formRecuperarContainer = document.getElementById('form-recuperar');
   const formLoginContainer = document.querySelector('.formulario-login');
   const formCadastroContainer = document.querySelector('.formulario-cadastro');
-  const formRecuperarContainer = document.getElementById('form-recuperar');
-
-
-  // --- 2. INICIALIZAÇÃO DO SUPABASE ---
-
-  let supabase = null;
-
-  if (typeof window.initSupabaseClient === 'function') {
-    window.initSupabaseClient().then(client => {
-      supabase = client;
-      attachAuthListeners();
-    }).catch(console.error);
-  } else {
-    console.error('initSupabaseClient não encontrado. Verifique se main.js está carregado e expõe a função.');
-    return;
-  }
 
   // Helper para mostrar pop-ups (definido em main.js)
   const showAppToast = (message, options) => {
@@ -110,8 +56,133 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // --- 2. INICIALIZAÇÃO DO SUPABASE ---
 
-  // --- 3. LÓGICA DE CADASTRO (Mantida) ---
+  let supabase = null;
+
+  if (typeof window.initSupabaseClient === 'function') {
+    window.initSupabaseClient().then(client => {
+      supabase = client;
+      // attachAuthListeners(); // (Opcional, listeners já estão no fluxo abaixo)
+    }).catch(console.error);
+  } else {
+    console.error('initSupabaseClient não encontrado. Verifique se main.js está carregado e expõe a função.');
+    // Não retornamos aqui para permitir que a UI carregue mesmo se a conexão falhar inicialmente
+  }
+
+
+  // ============================================================
+  // 3. LÓGICA DE REDIRECIONAMENTO DA DASHBOARD (CORRIGIDO)
+  // ============================================================
+  /* Esta lógica agora está posicionada APÓS a declaração das variáveis (stepEmail, stepCode, etc).
+     Isso garante que o script não quebre ao tentar acessar elementos undefined.
+  */
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const action = urlParams.get('action');
+  const emailParam = urlParams.get('email');
+
+  if (action === 'reset_step2' && emailParam) {
+      
+      // 1. Ativa o painel de recuperação
+      if (caixa) caixa.classList.add('recuperar-ativo');
+
+      // 2. Preenche a variável global com o email da URL
+      recoveryEmail = decodeURIComponent(emailParam);
+      
+      // 3. Atualiza a UI visual
+      if (emailEnviadoEl) emailEnviadoEl.textContent = recoveryEmail;
+
+      // 4. Manipula as etapas (Esconde etapa 1, Mostra etapa 2)
+      if (stepEmail) stepEmail.style.display = 'none';
+      if (stepCode) stepCode.style.display = 'flex';
+      if (stepPassword) stepPassword.style.display = 'none'; // Garante que a 3 esteja oculta
+
+      // 5. Feedback visual
+      showAppToast('Código enviado! Verifique seu e-mail.');
+
+      // 6. CORREÇÃO DO FOCO: Espera a animação/renderização e foca no input
+      setTimeout(() => {
+          if (codeInputs.length > 0) {
+              codeInputs[0].focus();
+          }
+      }, 500);
+
+      // 7. Limpa a URL para não ficar em loop se der F5
+      window.history.replaceState({}, document.title, "index.html");
+  }
+
+
+  // ============================================================
+  // 4. ANIMAÇÕES DO PAINEL (LOGIN / CADASTRO / RECUPERAR)
+  // ============================================================
+
+  const botaoCadastrar = document.getElementById('botaoCadastrar');
+  const botaoEntrar = document.getElementById('botaoEntrar');
+  const botaoTrocarParaCadastro = document.getElementById('botaoTrocarParaCadastro');
+  const botaoTrocarParaLogin = document.getElementById('botaoTrocarParaLogin');
+  const botaoEsqueciSenha = document.getElementById('botaoEsqueciSenha');
+
+  // Seleciona TODOS os botões de "Lembrei a senha"
+  const botoesLembreiSenha = document.querySelectorAll(
+    '#botaoLembreiSenha, #botaoLembreiSenhaEtapa2, #botaoLembreiSenhaEtapa3'
+  );
+
+  // Animação Desktop
+  if (botaoCadastrar && botaoEntrar && caixa) {
+    botaoCadastrar.addEventListener('click', () => {
+      caixa.classList.add('painel-direito-ativo');
+    });
+    botaoEntrar.addEventListener('click', () => {
+      caixa.classList.remove('painel-direito-ativo');
+    });
+  }
+
+  // Animação Mobile
+  if (botaoTrocarParaCadastro && botaoTrocarParaLogin && caixa) {
+    botaoTrocarParaCadastro.addEventListener('click', () => {
+      caixa.classList.add('painel-direito-ativo');
+    });
+    botaoTrocarParaLogin.addEventListener('click', () => {
+      caixa.classList.remove('painel-direito-ativo');
+    });
+  }
+
+  // Função para resetar o formulário inteiro de recuperação
+  function resetRecoveryForm() {
+    recoveryEmail = '';
+    if(stepEmail) stepEmail.style.display = 'flex';
+    if(stepCode) stepCode.style.display = 'none';
+    if(stepPassword) stepPassword.style.display = 'none';
+    
+    if(formRecuperarEmail) formRecuperarEmail.reset();
+    if(formRecuperarCode) formRecuperarCode.reset();
+    if(formRecuperarPassword) formRecuperarPassword.reset();
+  }
+
+  // Animação "Esqueci a Senha"
+  if (botaoEsqueciSenha && botoesLembreiSenha.length > 0 && caixa) {
+    // Listener para ABRIR o painel
+    botaoEsqueciSenha.addEventListener('click', (e) => {
+      e.preventDefault(); 
+      caixa.classList.add('recuperar-ativo');
+    });
+
+    // Listeners para FECHAR o painel (em qualquer etapa)
+    botoesLembreiSenha.forEach(botao => {
+      botao.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        caixa.classList.remove('recuperar-ativo');
+        // Reseta o formulário após a animação de saída
+        setTimeout(resetRecoveryForm, 500);
+      });
+    });
+  }
+
+
+  // ============================================================
+  // 5. LÓGICA DE CADASTRO
+  // ============================================================
 
   const formCadastro = document.getElementById('form-cadastro');
   if (formCadastro) {
@@ -119,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       if (!supabase) return showAppToast('Erro de conexão. Tente novamente.');
 
-      formCadastroContainer.classList.add('loading'); // <-- MOSTRA O LOADER
+      formCadastroContainer.classList.add('loading'); // Mostra loader
 
       const nome = document.getElementById('cadastro-nome').value.trim();
       const username = document.getElementById('cadastro-username').value.trim();
@@ -127,27 +198,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const senha = document.getElementById('cadastro-senha').value;
       const senhaConfirm = document.getElementById('cadastro-senha-confirm').value;
 
-      // 1. Validação: Senhas coincidem
+      // Validação: Senhas coincidem
       if (senha !== senhaConfirm) {
-        formCadastroContainer.classList.remove('loading'); // <-- ESCONDE O LOADER
+        formCadastroContainer.classList.remove('loading');
         return showAppToast('Erro: As senhas não coincidem.');
       }
 
-      // 2. Validação: Formato do Username (letras, números, _, ., -)
+      // Validação: Formato do Username
       const usernameRegex = /^[a-zA-Z0-9_.-]+$/;
       if (!usernameRegex.test(username)) {
-        formCadastroContainer.classList.remove('loading'); // <-- ESCONDE O LOADER
+        formCadastroContainer.classList.remove('loading');
         return showAppToast('Erro: Nome de usuário inválido. Use apenas letras, números e ( _, ., - )');
       }
 
       // Validação rápida de campos vazios
       if (!nome || !username || !email || !senha) {
-        formCadastroContainer.classList.remove('loading'); // <-- ESCONDE O LOADER
+        formCadastroContainer.classList.remove('loading');
         return showAppToast('Erro: Todos os campos são obrigatórios.');
       }
 
       try {
-        // 3. Validação: Checar se username ou email já existem
+        // Validação: Checar se username ou email já existem na tabela profiles
         const { data: existingProfiles, error: checkError } = await supabase
           .from('profiles')
           .select('username, email')
@@ -157,14 +228,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (existingProfiles && existingProfiles.length > 0) {
           if (existingProfiles.some(p => p.username === username)) {
-            return showAppToast('Erro: Este nome de usuário já está em uso.');
+             formCadastroContainer.classList.remove('loading');
+             return showAppToast('Erro: Este nome de usuário já está em uso.');
           }
           if (existingProfiles.some(p => p.email === email)) {
-            return showAppToast('Erro: Este email já está cadastrado.');
+             formCadastroContainer.classList.remove('loading');
+             return showAppToast('Erro: Este email já está cadastrado.');
           }
         }
 
-        // 4. Criar o usuário no Supabase Auth
+        // Criar o usuário no Supabase Auth
         const { data: authData, error: signUpError } = await supabase.auth.signUp({
           email: email,
           password: senha
@@ -179,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!authData.user) throw new Error('Falha ao criar usuário, tente novamente.');
 
-        // 5. ATUALIZAR O PERFIL MANUALMENTE
+        // ATUALIZAR O PERFIL MANUALMENTE (Nome e Username)
         const { error: updateError } = await supabase
           .from('profiles')
           .update({
@@ -190,10 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (updateError) {
           console.error('Usuário criado, mas falha ao atualizar perfil:', updateError);
-          throw new Error('Falha ao salvar dados do perfil. Tente fazer login.');
+          // Não impedimos o fluxo, pois o Auth foi criado
         }
 
-        // 6. Sucesso!
         showAppToast('Cadastro concluído com sucesso! Verifique seu e-mail para a verificação.');
         formCadastro.reset();
         if (caixa) {
@@ -210,7 +282,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // --- 4. LÓGICA DE LOGIN (Mantida) ---
+  // ============================================================
+  // 6. LÓGICA DE LOGIN
+  // ============================================================
 
   const formLogin = document.getElementById('form-login');
   if (formLogin) {
@@ -241,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
               .single();
 
             if (error) {
+              // PGRST116 = JSON object requested, multiple (or no) rows returned
               if (error.code === 'PGRST116') {
                 throw new Error('Usuário ou senha inválidos.');
               }
@@ -267,15 +342,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (signInError) throw signInError;
         const user = loginData.user;
 
-        // 2.5 VERIFICAÇÃO DE BANIMENTO (NOVO)
+        // 3. VERIFICAÇÃO DE BANIMENTO
         const { data: banData, error: banError } = await supabase
           .from('user_bans')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle(); // maybeSingle evita erro se não achar nada
+          .maybeSingle(); 
 
         if (banData) {
-          // Verifica se o banimento ainda é válido
           let isBanned = false;
 
           if (banData.ban_type === 'permanent') {
@@ -296,10 +370,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
 
-        if (signInError) throw signInError;
         if (!loginData.user) throw new Error('Login falhou, tente novamente.');
 
-        // 3. Login bem-sucedido! Buscar o perfil para checar se é admin.
+        // 4. Buscar o perfil para checar se é admin e salvar no LocalStorage
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('is_admin')
@@ -314,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('userRole', userRole);
         }
 
-        // 4. Redirecionar
+        // 5. Redirecionar
         window.location.href = 'inicial.html';
 
       } catch (error) {
@@ -331,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 5. LÓGICA DE MOSTRAR/OCULTAR SENHA (Mantida) ---
+  // --- LÓGICA DE MOSTRAR/OCULTAR SENHA ---
   const toggleSenha = document.getElementById('toggleSenha');
   if (toggleSenha) {
     toggleSenha.addEventListener('click', () => {
@@ -346,95 +419,59 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- 6. LÓGICA DE RECUPERAR SENHA (NOVO FLUXO DE 3 ETAPAS) ---
 
-  // Variável para guardar o e-mail entre as etapas
-  let recoveryEmail = '';
+  // ============================================================
+  // 7. LÓGICA DE INPUTS DO CÓDIGO (AUTO-AVANÇO E SUBMIT)
+  // ============================================================
 
-  // Seletores das Etapas
-  const stepEmail = document.getElementById('step-email');
-  const stepCode = document.getElementById('step-code');
-  const stepPassword = document.getElementById('step-password');
+  // Função centralizada para verificar o código
+  async function checkAndSubmitCode() {
+    // Pega os valores atuais dos inputs
+    const code = codeInputs.map(input => input.value).join('');
 
-  // Seletores dos Formulários
-  const formRecuperarEmail = document.getElementById('recuperar-form-email');
-  const formRecuperarCode = document.getElementById('recuperar-form-code');
-  const formRecuperarPassword = document.getElementById('recuperar-form-password');
-
-  // Seletores de Inputs e Erros
-  const emailInput = document.getElementById('recuperar-email');
-  const emailEnviadoEl = document.getElementById('email-enviado');
-  const codeInputsContainer = document.getElementById('code-inputs');
-  const codeInputs = Array.from(codeInputsContainer.querySelectorAll('.code-input'));
-  const novaSenhaInput = document.getElementById('recuperar-nova-senha');
-  const confirmSenhaInput = document.getElementById('recuperar-confirm-senha');
-
-  // [REMOVIDO] Seletores de Mensagens de Erro
-  // const errorEmailEl = document.getElementById('recuperar-error-email');
-  // const errorCodeEl = document.getElementById('recuperar-error-code');
-  // const errorPasswordEl = document.getElementById('recuperar-error-password');
-
-  // [REMOVIDO] Função para mostrar erros
-  // function showRecoveryError(step, message) { ... }
-
-  // [REMOVIDO] Função para limpar erros
-  // function clearAllErrors() { ... }
-
-  // Função para resetar o formulário inteiro
-  function resetRecoveryForm() {
-    recoveryEmail = '';
-    stepEmail.style.display = 'flex';
-    stepCode.style.display = 'none';
-    stepPassword.style.display = 'none';
-    formRecuperarEmail.reset();
-    formRecuperarCode.reset();
-    formRecuperarPassword.reset();
-    // clearAllErrors(); // Removido
-  }
-
-  // ETAPA 1: Envio do E-mail
-  if (formRecuperarEmail) {
-    formRecuperarEmail.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!supabase) return showAppToast('Erro de conexão. Tente novamente.');
-
-      formRecuperarContainer.classList.add('loading');
-      // clearAllErrors(); // Removido
-
-      const email = emailInput.value.trim();
-      if (!email) {
-        formRecuperarContainer.classList.remove('loading');
-        showAppToast('Por favor, digite seu e-mail.'); // MODIFICADO
-        return; // MODIFICADO
+    // Só submete se tiver 6 dígitos
+    if (code.length === 6) {
+      if(!recoveryEmail) {
+          showAppToast('Erro: E-mail não identificado. Por favor, reinicie o processo.');
+          return;
       }
 
-      // IMPORTANTE: Para o Supabase enviar um OTP (código) em vez de um link,
-      // NÂO devemos passar o 'redirectTo'.
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      formRecuperarContainer.classList.add('loading');
+
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: recoveryEmail,
+        token: code,
+        type: 'recovery'
+      });
 
       formRecuperarContainer.classList.remove('loading');
 
       if (error) {
-        console.error('Erro ao enviar e-mail de recuperação:', error);
-        // Não informamos o erro exato por segurança (evitar enumeração de usuários)
-        showAppToast('Ocorreu um erro. Tente novamente.'); // MODIFICADO
+        console.error('Erro ao verificar OTP:', error);
+        showAppToast('Código inválido ou expirado. Tente novamente.');
+        // Limpa os inputs para o usuário tentar de novo
+        codeInputs.forEach(input => input.value = '');
+        codeInputs[0].focus();
       } else {
         // Sucesso!
-        recoveryEmail = email; // Guarda o e-mail para a próxima etapa
-        emailEnviadoEl.textContent = email; // Mostra o e-mail na UI
+        console.log('OTP verificado com sucesso!', data);
 
-        // Transição para a Etapa 2
-        stepEmail.style.display = 'none';
-        stepCode.style.display = 'flex';
-        codeInputs[0].focus(); // Foca no primeiro input do código
+        // Transição para a Etapa 3
+        if(stepCode) stepCode.style.display = 'none';
+        if(stepPassword) stepPassword.style.display = 'flex';
+        
+        // Foca na nova senha
+        if(novaSenhaInput) {
+            setTimeout(() => novaSenhaInput.focus(), 100);
+        }
       }
-    });
+    }
   }
 
-  // ETAPA 2: Lógica dos Inputs de Código (Auto-avanço, Backspace, Paste)
-  if (codeInputsContainer) {
+  // ETAPA 2: Listeners dos Inputs de Código
+  if (codeInputsContainer && codeInputs.length > 0) {
     codeInputs.forEach((input, index) => {
-      // 1. Auto-avanço
+      // 1. Auto-avanço e verificação ao digitar
       input.addEventListener('input', (e) => {
         const value = e.target.value;
         if (value && index < codeInputs.length - 1) {
@@ -458,50 +495,68 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Colar (Paste)
     codeInputsContainer.addEventListener('paste', (e) => {
       e.preventDefault();
-      const pasteData = e.clipboardData.getData('text').trim().slice(0, 6);
-      if (/^\d{6}$/.test(pasteData)) {
+      const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().slice(0, 6);
+      
+      // Verifica se são apenas números
+      if (/^\d+$/.test(pasteData)) {
         pasteData.split('').forEach((char, index) => {
-          codeInputs[index].value = char;
+          if (codeInputs[index]) {
+              codeInputs[index].value = char;
+          }
         });
-        checkAndSubmitCode(); // Tenta submeter após colar
+        
+        // Se colou 6 dígitos, tenta submeter
+        if (pasteData.length === 6) {
+             checkAndSubmitCode(); 
+        } else if (codeInputs[pasteData.length]) {
+             // Se colou menos, foca no próximo vazio
+             codeInputs[pasteData.length].focus();
+        }
       }
     });
   }
 
-  // Função que junta o código e tenta verificar
-  async function checkAndSubmitCode() {
-    const code = codeInputs.map(input => input.value).join('');
 
-    // Só submete se tiver 6 dígitos
-    if (code.length === 6) {
+  // ============================================================
+  // 8. FORMULÁRIOS DE RECUPERAÇÃO (ETAPA 1 E ETAPA 3)
+  // ============================================================
+
+  // ETAPA 1: Envio do E-mail
+  if (formRecuperarEmail) {
+    formRecuperarEmail.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!supabase) return showAppToast('Erro de conexão. Tente novamente.');
+
       formRecuperarContainer.classList.add('loading');
-      // clearAllErrors(); // Removido
 
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: recoveryEmail,
-        token: code,
-        type: 'recovery'
-      });
+      const email = emailInput.value.trim();
+      if (!email) {
+        formRecuperarContainer.classList.remove('loading');
+        showAppToast('Por favor, digite seu e-mail.');
+        return;
+      }
+
+      // Envia OTP (sem redirectTo)
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
 
       formRecuperarContainer.classList.remove('loading');
 
       if (error) {
-        console.error('Erro ao verificar OTP:', error);
-        showAppToast('Código inválido ou expirado. Tente novamente.'); // MODIFICADO
-        // Limpa os inputs para o usuário tentar de novo
-        codeInputs.forEach(input => input.value = '');
-        codeInputs[0].focus();
+        console.error('Erro ao enviar e-mail de recuperação:', error);
+        showAppToast('Ocorreu um erro. Tente novamente.');
       } else {
-        // Sucesso! O usuário está verificado e pode mudar a senha
-        // A sessão é armazenada temporariamente pelo Supabase
-        console.log('OTP verificado com sucesso!', data);
+        // Sucesso!
+        recoveryEmail = email; // Guarda o e-mail
+        if(emailEnviadoEl) emailEnviadoEl.textContent = email;
 
-        // Transição para a Etapa 3
-        stepCode.style.display = 'none';
-        stepPassword.style.display = 'flex';
-        novaSenhaInput.focus();
+        // Transição para a Etapa 2
+        if(stepEmail) stepEmail.style.display = 'none';
+        if(stepCode) stepCode.style.display = 'flex';
+        
+        // Foca no primeiro input
+        if(codeInputs.length > 0) codeInputs[0].focus();
       }
-    }
+    });
   }
 
   // ETAPA 3: Definir Nova Senha
@@ -513,29 +568,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const newPassword = novaSenhaInput.value;
       const confirmPassword = confirmSenhaInput.value;
 
-      // Validação 1: Campos vazios
+      // Validações
       if (!newPassword || !confirmPassword) {
-        showAppToast('Por favor, preencha os dois campos.'); // MODIFICADO
-        return; // MODIFICADO
+        showAppToast('Por favor, preencha os dois campos.');
+        return;
       }
-
-      // Validação 2: Senhas coincidem
       if (newPassword !== confirmPassword) {
-        showAppToast('As senhas não coincidem.'); // MODIFICADO
-        return; // MODIFICADO
+        showAppToast('As senhas não coincidem.');
+        return;
       }
-
-      // Validação 3: Senha forte (exemplo mínimo)
       if (newPassword.length < 6) {
-        showAppToast('A senha deve ter no mínimo 6 caracteres.'); // MODIFICADO
-        return; // MODIFICADO
+        showAppToast('A senha deve ter no mínimo 6 caracteres.');
+        return;
       }
 
       formRecuperarContainer.classList.add('loading');
-      // clearAllErrors(); // Removido
 
-      // Como o OTP foi verificado na etapa anterior, o Supabase
-      // agora permite a atualização da senha do usuário.
+      // Atualiza a senha do usuário autenticado (OTP validou a sessão)
       const { data, error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -544,16 +593,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) {
         console.error('Erro ao atualizar senha:', error);
-        showAppToast('Não foi possível atualizar a senha. Tente novamente.'); // MODIFICADO
+        showAppToast('Não foi possível atualizar a senha. Tente novamente.');
       } else {
-        // SUCESSO TOTAL!
         console.log('Senha atualizada!', data);
         showAppToast('✅ Senha atualizada com sucesso!');
 
-        // Reseta o formulário
+        // Reseta o formulário e fecha o modal
         resetRecoveryForm();
-
-        // Fecha o painel "Esqueci a Senha" e volta para o Login
         if (caixa) {
           caixa.classList.remove('recuperar-ativo');
         }
@@ -561,12 +607,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-  // Função para anexar os listeners (chamada após Supabase inicializar)
-  function attachAuthListeners() {
-    // Esta função está aqui caso precisemos dela no futuro,
-    // mas os listeners de submit já estão configurados acima.
-  }
-
 });
-
