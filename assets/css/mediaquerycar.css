@@ -1,0 +1,670 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   MASTER CART RESPONSIVENESS SYSTEM V3.0 - ULTIMATE EDITION
+   Foco: Layout App-Like, Correção de Bugs Visuais e UX Premium.
+   ========================================================================== */
+
+/* SUMÁRIO:
+   1. Variáveis & Resets
+   2. Laptop & Telas Médias (1024px - 1366px)
+   3. Tablet & Ipads (768px - 1023px)
+   4. Mobile Master (Max 767px) - Onde a mágica acontece
+      4.1. Estrutura Geral
+      4.2. Card do Produto (Grid Layout)
+      4.3. Área de Cupom (Stack Layout)
+      4.4. Resumo e Total
+      4.5. Carrinho Vazio (Correção de Bug)
+      4.6. Recomendações (Carrossel Swipe Style)
+   5. Small Mobile / Fold (Max 374px)
+   6. Animações e Polimento
+*/
+
+/* ==========================================================================
+   1. VARIÁVEIS & CONFIGURAÇÕES GLOBAIS
+   ========================================================================== */
+:root {
+    --cart-padding-mobile: 1.25rem;
+    --cart-radius: 12px;
+    --cart-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    --primary-color: #191d28;
+    --danger-color: #e74c3c;
+    --success-bg: #e6fffa;
+    --success-text: #00bfa5;
+}
+
+/* ==========================================================================
+   2. LAPTOP & TELAS MÉDIAS (1024px - 1366px)
+   Ajustes finos para notebooks que não são Full HD
+   ========================================================================== */
+@media screen and (max-width: 1366px) {
+    .cart-page {
+        padding: 6rem 4rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .carrinho-content {
+        gap: 2rem;
+    }
+
+    .cart-item {
+        height: auto;
+        min-height: 160px;
+    }
+}
+
+/* ==========================================================================
+   3. TABLET & IPADS (768px - 1023px)
+   Adaptação para toque, mas mantendo estrutura expandida
+   ========================================================================== */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .cart-page {
+        padding: 8rem 2rem 4rem;
+        flex-direction: column;
+        display: block;
+    }
+
+    .carrinho-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    /* Card Híbrido */
+    .cart-item {
+        height: auto; 
+        min-height: 140px;
+        padding: 1.5rem;
+    }
+
+    .cart-item-left {
+        width: 140px;
+        flex-shrink: 0;
+    }
+
+    /* Recomendações em Grid de 3 */
+    .recomendações-carrinho .product-row {
+        justify-content: flex-start;
+        gap: 15px;
+    }
+    
+    .product-slot {
+        min-width: 30%;
+    }
+}
+
+/* ==========================================================================
+   4. MOBILE MASTER (Max 767px)
+   Transformação completa da interface.
+   ========================================================================== */
+@media screen and (max-width: 767px) {
+    
+    /* 4.1. ESTRUTURA GERAL DO APP */
+    body {
+        background-color: #f8f9fa; /* Fundo levemente cinza para destacar cards */
+        overflow-x: hidden;
+    }
+
+    main {
+        overflow: visible; /* Permite sombras passarem */
+    }
+
+    .cart-page {
+        padding: 0; /* Remove padding global para controle total */
+        padding-top: 80px; /* Espaço do header fixo */
+        padding-bottom: 40px;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: calc(100vh - 80px);
+    }
+
+    .carrinho-content {
+        width: 100%;
+        padding: 0 var(--cart-padding-mobile);
+        gap: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 4.2. CARD DO PRODUTO (LAYOUT INTELIGENTE) */
+    .cart-item {
+        position: relative;
+        display: grid;
+        /* Grid: Imagem (90px) | Conteúdo (Auto) */
+        grid-template-columns: 90px 1fr; 
+        grid-template-rows: auto auto;
+        
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: var(--cart-radius);
+        padding: 12px;
+        gap: 15px;
+        margin-bottom: 15px;
+        height: auto; /* IMPORTANTE: Sobrescreve altura fixa */
+        min-height: 120px;
+        box-shadow: var(--cart-shadow);
+        transition: transform 0.2s ease;
+    }
+
+    /* Imagem do Produto */
+    .cart-item-left {
+        grid-row: 1 / 3; 
+        width: 100%;
+        height: 120px; /* Altura fixa para alinhar */
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #f0f0f0;
+    }
+
+    .cart-item-left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Container de Texto */
+    .cart-item-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-right: 35px; /* Espaço para o ícone de lixeira */
+        width: 100%;
+    }
+
+    .cart-item-name {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.35;
+        color: var(--primary-color);
+        margin-bottom: 4px;
+        
+        /* Limitar texto a 2 linhas */
+        display: -webkit-box;
+
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cart-item-info p {
+        font-size: 0.8rem;
+        color: #666;
+        margin: 0;
+        line-height: 1.4;
+    }
+    
+    /* Preço no Card */
+    .cart-item-info p:last-of-type {
+        font-weight: 700;
+        color: #000;
+        margin-top: auto;
+        font-size: 1rem;
+    }
+
+    /* Controles de Quantidade (+ -) */
+    .quantity-controls {
+        margin-top: 8px;
+        background: #f4f4f5;
+        padding: 4px;
+        border-radius: 8px;
+        width: fit-content;
+        gap: 10px;
+        border: 1px solid #e5e5e5;
+    }
+
+    .quantity-controls button {
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        color: #333;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .quantity-controls button:active {
+        background: #ebebeb;
+        transform: scale(0.95);
+    }
+    
+    .quantity-controls span {
+        font-weight: 600;
+        min-width: 20px;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+
+    /* Ícone de Remover (Lixeira Vermelha) */
+    .remove {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+        width: 30px !important;
+        height: 30px !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 0 !important; /* Esconde texto */
+        color: transparent !important;
+        cursor: pointer;
+        z-index: 10;
+        opacity: 0.8;
+    }
+
+    .remove::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e74c3c'%3E%3Cpath d='M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 20px;
+    }
+    
+    .remove:active {
+        transform: scale(0.9);
+        opacity: 1;
+    }
+
+    /* 4.3. BLOCO DE RESUMO E CUPOM */
+    .content-continuar {
+        background: #fff;
+        padding: 1.5rem;
+        height: auto;
+        border-radius: 16px;
+        box-shadow: 0 -2px 15px rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 0.5rem;
+        border: 1px solid #eee;
+    }
+
+    /* Input Cupom */
+    .cupom {
+        flex-direction: row;
+        width: 100%;
+        height: 50px;
+        gap: 8px;
+    }
+
+    .cupom input {
+        width: 100%;
+        flex: 1;
+        height: 100%;
+        font-size: 16px; /* Evita zoom iOS */
+        border-radius: 8px;
+        padding-left: 15px;
+        background: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        color: #333;
+    }
+    
+    .cupom input:focus {
+        background: #fff;
+        border-color: #000;
+    }
+
+    .cupom button {
+        width: auto;
+        min-width: 90px;
+        height: 100%;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- CUPOM APLICADO (LAYOUT SOLICITADO) --- */
+    /* Badge em cima, Link embaixo */
+    .cupom-aplicado-car {
+        display: flex;
+        flex-direction: column !important; /* Força coluna */
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100%;
+        padding: 0.5rem 0;
+        gap: 6px; /* Espaço entre o badge e o link */
+        height: auto;
+    }
+
+    /* Estilo do Badge */
+    .badge-cupom {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        display: inline-block;
+        text-align: center;
+        width: fit-content;
+    }
+
+    /* Link Remover */
+    #trocar-div {
+        width: fit-content;
+    }
+    
+    #trocar-cupom {
+        font-size: 0.8rem;
+        color: #666;
+        text-decoration: underline;
+        padding: 5px;
+    }
+    
+    #trocar-cupom:hover {
+        color: #e74c3c;
+    }
+
+    /* 4.4. TOTAL E BOTÃO CONTINUAR */
+    .continuar-compra {
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        border-top: 1px dashed #eee;
+        padding-top: 1rem;
+    }
+
+    .continuar-info {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end; /* Alinha na base do preço */
+        margin-bottom: 0.5rem;
+    }
+
+    .text-total-litlecar {
+        font-size: 1.1rem;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .text-price-litlecar span {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #000;
+        letter-spacing: -0.5px;
+    }
+
+    .button-cont-littlecar {
+        width: 100%;
+    }
+
+    .button-cont-littlecar button {
+        width: 100%;
+        height: 58px; /* Botão grande e fácil de clicar */
+        font-size: 1.1rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        background: #000;
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    .button-cont-littlecar button:active {
+        transform: scale(0.98);
+        background: #1a1a1a;
+    }
+
+    /* 4.5. CARRINHO VAZIO (CORREÇÃO DE BUGS) */
+    .carrinho-vazio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 2rem 1rem;
+        gap: 3rem;
+        min-height: 60vh;
+        width: 100%;
+    }
+
+    .vazio-info {
+        width: 100%;
+        height: auto; /* Remove altura fixa que quebrava */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        text-align: center;
+        padding: 2rem 0;
+    }
+
+    /* Corrige a imagem do emoji triste */
+    .vazio-info img {
+        width: 100px; /* Tamanho fixo em px para não sumir */
+        height: auto;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    /* Texto "Você ainda não..." */
+    .vazio-info p {
+        font-size: 1.1rem;
+        color: #666;
+        max-width: 80%;
+        line-height: 1.5;
+    }
+
+    /* BOTÃO "IR AS COMPRAS" - CORREÇÃO CRÍTICA */
+    .vazio-info a {
+        width: auto; /* Remove o 10vw que quebrava */
+        min-width: 200px;
+        height: auto;
+        padding: 14px 28px;
+        background-color: #191D28;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        white-space: nowrap; /* Impede quebra de linha interna */
+    }
+
+    /* 4.6. RECOMENDAÇÕES (CARROSSEL SWIPE STYLE) */
+    .recomendações-carrinho {
+        width: 100%;
+        padding: 1rem 0 2rem 0;
+        gap: 1.5rem;
+        border-top: 1px solid #eee;
+        background: #fff; /* Destaca a seção */
+        margin-top: 2rem;
+    }
+
+    .recomendações-carrinho h1 {
+        font-size: 1.4rem;
+        text-align: left;
+        padding-left: var(--cart-padding-mobile); /* Alinha com o conteúdo */
+        margin-bottom: 10px;
+        color: #191d28;
+        font-weight: 700;
+    }
+
+    /* Container do Scroll (Simulando Swiper) */
+    .products-content-carrinho {
+        width: 100%;
+        overflow: hidden; /* Evita scroll duplo */
+    }
+
+    /* A linha de produtos vira o "track" do slider */
+    .recomendações-carrinho .product-row {
+        display: flex;
+        flex-wrap: nowrap !important; /* Força linha única */
+        overflow-x: auto; /* Scroll horizontal nativo */
+        scroll-snap-type: x mandatory; /* Efeito magnético */
+        -webkit-overflow-scrolling: touch; /* Fluidez no iOS */
+        gap: 16px; /* Espaço entre cards */
+        
+        /* Padding lateral para o primeiro e último item não colarem na borda */
+        padding: 10px var(--cart-padding-mobile) 30px var(--cart-padding-mobile);
+        
+        width: 100%;
+        justify-content: flex-start;
+        align-items: stretch;
+    }
+
+    /* Card de Recomendação */
+    .recomendações-carrinho .product-slot {
+        flex: 0 0 auto; /* Não encolhe nem cresce */
+        width: 180px; /* Largura fixa ideal para ver 1.5 produtos */
+        min-width: 180px;
+        scroll-snap-align: start; /* Alinha à esquerda ao soltar */
+        
+        /* Reset de estilos para garantir visual limpo */
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 280px;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #eee;
+    }
+
+    /* Ajuste da imagem dentro da recomendação */
+    .recomendações-carrinho .product-link {
+        height: 200px; /* Altura fixa da imagem */
+        max-height: 200px;
+    }
+
+    .recomendações-carrinho .product-title {
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 5px;
+    }
+
+    .recomendações-carrinho .product-price {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    /* Esconder scrollbar feia, manter funcionalidade */
+    .recomendações-carrinho .product-row::-webkit-scrollbar {
+        height: 4px; /* Barra fina */
+    }
+    .recomendações-carrinho .product-row::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+    .recomendações-carrinho .product-row::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}
+
+/* ==========================================================================
+   5. SMALL MOBILE / FOLD (Max 374px)
+   Para Galaxy Z Fold (fechado), iPhone SE 1ª Gen
+   ========================================================================== */
+@media screen and (max-width: 374px) {
+    .cart-page {
+        top: 20vh;
+    }
+
+    /* Card mais compacto */
+    .cart-item {
+        grid-template-columns: 70px 1fr;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .cart-item-left {
+        width: 100%;
+        height: 100px;
+    }
+
+    .cart-item-name {
+        font-size: 0.85rem;
+    }
+
+    .quantity-controls button {
+        width: 20px;
+        height: 20px;
+    }
+
+    .text-price-litlecar span {
+        font-size: 1.5rem;
+    }
+    
+    /* Botão "Ir as compras" menor */
+    .vazio-info a {
+        min-width: 160px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    /* Recomendações menores */
+    .recomendações-carrinho .product-slot {
+        width: 150px;
+        min-width: 150px;
+    }
+    
+    .recomendações-carrinho .product-link {
+        height: 160px;
+    }
+}
+
+/* ==========================================================================
+   6. ANIMAÇÕES E POLIMENTO
+   ========================================================================== */
+
+/* Fade In ao carregar itens */
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.cart-item {
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Delay escalonado para itens (até 5 itens) */
+.cart-item:nth-child(1) { animation-delay: 0.05s; }
+.cart-item:nth-child(2) { animation-delay: 0.1s; }
+.cart-item:nth-child(3) { animation-delay: 0.15s; }
+.cart-item:nth-child(4) { animation-delay: 0.2s; }
+.cart-item:nth-child(5) { animation-delay: 0.25s; }
+
+/* Ajustes Finais de Header e Nav (Prevenção de sobreposição) */
+@media screen and (max-width: 768px) {
+    .nav__menu {
+        z-index: 10000;
+    }
+    
+    .cart-count {
+        top: -6px;
+        right: -8px;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+        line-height: 18px;
+    }
+    
+    /* Garante que o toast apareça acima de tudo no mobile */
+    #topstyle-toast {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+        align-items: center !important;
+    }
+}
