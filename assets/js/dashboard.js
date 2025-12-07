@@ -1869,3 +1869,46 @@ async function loadSidebarProfile() {
         console.error('Erro ao carregar sidebar:', err);
     }
 }
+
+/* =========================================================
+   LÓGICA DE ALTERAR SENHA (DASHBOARD -> INDEX)
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    const btnChangePass = document.getElementById('btn-alterar-senha-dash');
+    
+    if (btnChangePass) {
+        btnChangePass.addEventListener('click', async () => {
+            // 1. Pega o usuário atual
+            const { data: { user } } = await client.auth.getUser();
+            
+            if (!user || !user.email) {
+                window.showToast("Erro: Não foi possível identificar o usuário logado.");
+                return;
+            }
+
+            // 2. Modal de Confirmação
+            const confirmed = await window.showConfirmationModal(
+                "Deseja iniciar o processo de alteração de senha? Enviaremos um código para seu e-mail e você será redirecionado para a tela de login.",
+                { okText: 'Sim, Alterar', cancelText: 'Cancelar' }
+            );
+
+            if (!confirmed) return;
+
+            // 3. Envia o e-mail de recuperação (Step 1 automático)
+            if (window.showToast) window.showToast("Enviando código de verificação...");
+            
+            const { error } = await client.auth.resetPasswordForEmail(user.email);
+
+            if (error) {
+                console.error("Erro ao enviar reset:", error);
+                window.showToast("Erro ao enviar e-mail: " + error.message);
+                return;
+            }
+
+            // 4. Redireciona para Index na Etapa 2
+            // Passamos 'action=reset_step2' e o 'email' para preencher o form lá
+            const redirectUrl = `index.html?action=reset_step2&email=${encodeURIComponent(user.email)}`;
+            window.location.href = redirectUrl;
+        });
+    }
+});
