@@ -1,0 +1,134 @@
+@charset "UTF-8";
+
+/* Telas
+------------------------
+Pequenas telas: até 600px
+Celular: 600px - 769px
+Tablet: 769px- 992px
+Desktop: 992px - 1200px
+Grandes telas - acim 1200px
+*/
+
+:root {
+    --first-color: #010326 !important;
+    --fifth-color: #0D0D0D !important;
+    --icon-size: 1.55rem !important;
+    --regular-font: 16px !important;
+    --big-font: 23px !important;
+}
+
+/*--------------------- COLEÇÕES ---------------------*/
+@media (max-width: 1024px) {
+  /* container que envolve tudo — garante contexto visual */
+  .selecao-content {
+    position: relative;
+    z-index: 0;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* transformamos #filter em overlay/backdrop, escondido por padrão */
+  #filter {
+    display: none; /* oculto por padrão no mobile */
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.48);
+    align-items: center;
+    justify-content: center;
+    z-index: 12000;
+    padding: 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* quando aberto, mudamos display */
+  #filter.mobile-open {
+    display: flex;
+  }
+
+  /* conteúdo do painel: caixa branca central */
+  #filter .filtros-content {
+    width: min(720px, 96%);
+    max-width: 520px;
+    max-height: calc(100vh - 120px);
+    overflow: auto;
+    border-radius: 12px;
+    padding: 18px;
+    background: #ffffff;
+    box-shadow: 0 18px 50px rgba(2,6,23,0.24);
+    transform: translateY(0);
+    transition: transform .18s ease, opacity .18s ease;
+    position: relative; /* referência pro botão fechar */
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  /* remove sticky/mobile undesired styles dentro do modal */
+  #filter .filtros-content {
+    position: relative !important;
+    margin-top: 0 !important;
+  }
+
+  /* botão fechar no topo direito da caixa */
+  .filter-close-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    z-index: 3;
+  }
+
+  .filter-close-btn .bi {
+    font-size: 18px;
+    color: #222;
+  }
+
+  /* não mostrar o painel lateral padrão enquanto modal for usado */
+  .filtros {
+    /* garantimos que o bloco não ocupe largura como sidebar no mobile */
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  .bi-filter{
+    display: block;
+    font-size: 1.8rem;
+    color: var(--first-color);
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  .product-slot{
+    height: auto;
+    min-height: 0;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .product{
+    height: auto;
+  }
+
+  .product-link{
+    height: auto;
+  }
+
+  .product-content-selecao{
+    min-height: auto;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .product-content{
+    min-height: auto;
+    width: auto;
+    gap: 10px;
+  }
+}
