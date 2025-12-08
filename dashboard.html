@@ -653,59 +653,6 @@
         </div>
 
         <div class="page" id="status-pedido">
-          <div id="deleteModal">
-            <div class="delete-card">
-              <div class="delete-icon">
-                <i class="bi bi-trash-fill"></i>
-              </div>
-              <h2 class="delete-title">Excluir Pedido</h2>
-              <p class="delete-text">
-                Tem certeza de que deseja excluir o pedido
-                <span id="deleteOrderId" style="font-weight: bold; color: #dc2626;"></span>?
-              </p>
-              <p class="delete-warning">Esta ação é irreversível.</p>
-              <div class="delete-buttons">
-                <button class="btn-modal btn-cancel-modal" onclick="fecharDeleteModal()">Cancelar</button>
-                <button class="btn-confirm-delete" onclick="confirmarExclusao()">Sim, Excluir</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-overlay" id="statusModal">
-            <div class="modal-card">
-              <div class="modal-header">
-                <h3 class="modal-title">Gerenciar Pedido</h3>
-                <p class="modal-subtitle">Editando Pedido <span id="modalOrderId" style="font-weight: bold;">#...</span>
-                </p>
-              </div>
-
-              <p style="font-weight: 600; margin-bottom: 12px; font-size: 0.9rem; color:#64748b;">Alterar Status:</p>
-              <div class="status-options-grid">
-                <button class="status-option-btn" onclick="selecionarOpcaoModal('PENDENTE')" id="opt-pendente">
-                  <span><i class="bi bi-hourglass-split"></i> Pendente</span>
-                  <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
-                </button>
-                <button class="status-option-btn" onclick="selecionarOpcaoModal('CONFIRMADO')" id="opt-confirmado">
-                  <span><i class="bi bi-check-lg"></i> Confirmado</span>
-                  <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
-                </button>
-                <button class="status-option-btn" onclick="selecionarOpcaoModal('CANCELADO')" id="opt-cancelado">
-                  <span><i class="bi bi-x-circle"></i> Cancelado</span>
-                  <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
-                </button>
-              </div>
-
-              <div class="modal-actions">
-                <button class="btn-delete-modal" onclick="excluirPedido()"><i class="bi bi-trash"></i> Excluir</button>
-                <div class="action-group">
-                  <button class="btn-modal btn-cancel-modal" onclick="fecharModal()">Cancelar</button>
-                  <button class="btn-modal btn-save" onclick="salvarAlteracaoModal()">Salvar</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
           <div class="content-wrapper">
 
             <div class="page-header-internal">
@@ -1165,6 +1112,58 @@
         <button onclick="catCloseModals()" class="cat-btn cat-btn-secondary">Cancelar</button>
         <button onclick="catConfirmDelete()" id="cat-btn-confirm-delete" class="cat-btn cat-btn-danger">Sim,
           excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="deleteModal">
+    <div class="delete-card">
+      <div class="delete-icon">
+        <i class="bi bi-trash-fill"></i>
+      </div>
+      <h2 class="delete-title">Excluir Pedido</h2>
+      <p class="delete-text">
+        Tem certeza de que deseja excluir o pedido
+        <span id="deleteOrderId" style="font-weight: bold; color: #dc2626;"></span>?
+      </p>
+      <p class="delete-warning">Esta ação é irreversível.</p>
+      <div class="delete-buttons">
+        <button class="btn-modal btn-cancel-modal" onclick="fecharDeleteModal()">Cancelar</button>
+        <button class="btn-confirm-delete" onclick="confirmarExclusao()">Sim, Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="statusModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Gerenciar Pedido</h3>
+        <p class="modal-subtitle">Editando Pedido <span id="modalOrderId" style="font-weight: bold;">#...</span>
+        </p>
+      </div>
+
+      <p style="font-weight: 600; margin-bottom: 12px; font-size: 0.9rem; color:#64748b;">Alterar Status:</p>
+      <div class="status-options-grid">
+        <button class="status-option-btn" onclick="selecionarOpcaoModal('PENDENTE')" id="opt-pendente">
+          <span><i class="bi bi-hourglass-split"></i> Pendente</span>
+          <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
+        </button>
+        <button class="status-option-btn" onclick="selecionarOpcaoModal('CONFIRMADO')" id="opt-confirmado">
+          <span><i class="bi bi-check-lg"></i> Confirmado</span>
+          <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
+        </button>
+        <button class="status-option-btn" onclick="selecionarOpcaoModal('CANCELADO')" id="opt-cancelado">
+          <span><i class="bi bi-x-circle"></i> Cancelado</span>
+          <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-delete-modal" onclick="excluirPedido()"><i class="bi bi-trash"></i> Excluir</button>
+        <div class="action-group">
+          <button class="btn-modal btn-cancel-modal" onclick="fecharModal()">Cancelar</button>
+          <button class="btn-modal btn-save" onclick="salvarAlteracaoModal()">Salvar</button>
+        </div>
       </div>
     </div>
   </div>
