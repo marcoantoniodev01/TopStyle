@@ -10,10 +10,13 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/cupons.css">
-  <link rel="stylesheet" href="assets/css/mediaquery-header.css">
+
   <link rel="stylesheet" href="assets/css/style-header.css">
+
   <link rel="stylesheet" href="assets/css/dashboard.css">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/mediaquerydash.css">
+  <link rel="stylesheet" href="assets/css/mediaquery-header.css">
   <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
 </head>
 
@@ -229,8 +232,17 @@
   </header>
 
   <main>
+    <div class="mobile-dash-trigger-container">
+      <button id="btn-dash-menu" class="btn-dash-trigger" onclick="toggleDashSidebar()">
+        <i class="ri-menu-2-line"></i> Menu Admin
+      </button>
+    </div>
+
     <section class="body-admin">
       <section class="body-left">
+        <button class="sidebar-close-btn" onclick="toggleDashSidebar()">
+          <i class="ri-close-line"></i>
+        </button>
         <div class="block-left">
           <div class="sidebar-profile-header">
             <div class="sidebar-avatar-wrapper" id="sidebar-avatar-wrapper">
@@ -1203,5 +1215,3 @@
 </body>
 
 </html>
-
-
