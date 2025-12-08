@@ -6,10 +6,7 @@
 @media (max-width: 1024px) {
 
     /* --- AJUSTES PÁGINA PAGAMENTO --- */
-    .pagamento {
-        top: 10vh;
-        padding-bottom: 10rem;
-    }
+
 
     .pagamento-content {
         width: 95%;
@@ -56,7 +53,9 @@
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         border-top: none;
+        align-items: center;
     }
+
 
     .title-endereco-pagamento h2 {
         font-size: 1.3rem;
@@ -65,8 +64,17 @@
     /* --- Bloco de Endereço --- */
     .pagamento-endereco-bottom {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: center; /* Centraliza tudo */
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .pagamento-endereco-data {
+        padding-top: 0.5rem;
+    }
+
+    .pagamento-endereco-bottom .text-endereco-pagamanto {
+        display: none; 
     }
 
     .pagamento-endereco-bottom .text-endereco-pagamanto,
@@ -75,6 +83,19 @@
         width: 100%;
         justify-content: flex-start;
         text-align: left;
+    }
+
+    .pagamento-endereco-bottom .pagamento-endereco-data {
+        width: 100%;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+
+    /* Botões (Padrão/Trocar) centralizados */
+    .pagamento-botao {
+        width: 100%;
+        justify-content: center;
+        margin-top: 5px;
     }
 
     /* --- Bloco de Cupom --- */
@@ -121,6 +142,32 @@
 
     .pagamento-detalhe {
         font-size: 0.85rem;
+    }
+
+
+    /* --- 2. AJUSTE DE PRODUTOS (Detalhes organizados) --- */
+    .checkout-product-details {
+        display: flex;
+        flex-direction: column; /* Empilha as informações */
+        align-items: flex-start;
+        gap: 4px; /* Espaço entre as linhas */
+        margin-top: 5px;
+        font-size: 0.85rem;
+        color: #555;
+    }
+
+    /* Remove o separador "|" que era feito via CSS */
+    .checkout-product-details span + span::before {
+        content: none; 
+        display: none;
+    }
+
+    /* Garante que cada item tenha destaque sutil */
+    .checkout-product-details span {
+        background: #f5f5f5;
+        padding: 2px 8px;
+        border-radius: 4px;
+        width: fit-content;
     }
 
     .cartao-salvo-opcao label {
@@ -188,6 +235,107 @@
 
     #telefone-input {
         width: 100%;
+    }
+
+    .pagamento-cupom {
+        flex-direction: column;
+        align-items: center; /* Centraliza Título e Inputs */
+        justify-content: center;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    /* Título Centralizado */
+    .pagamento-cupom h2 {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .cupom-container {
+        width: 100%;
+        max-width: 400px; /* Evita que estique demais */
+    }
+
+    /* Estilização do Input (Arredondado igual carrinho) */
+    .cupom {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .cupom input {
+        border-radius: 50px; /* Borda redonda total */
+        border: 1px solid #ddd;
+        padding-left: 20px;
+        background-color: #f9f9f9;
+        flex-grow: 1;
+    }
+
+    .cupom button {
+        border-radius: 50px; /* Botão redondo */
+        padding: 0 25px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* --- ESTADO: CUPOM APLICADO --- */
+    .cupom-aplicado-car {
+        width: 100%;
+        display: flex;
+        flex-direction: column; /* Empilha: Badge em cima, Link embaixo */
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    /* O Link "Remover cupom" */
+    #trocar-cupom {
+        font-size: 0.85rem;
+        color: #e74c3c; /* Vermelho para indicar remoção */
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    /* --- 4. AJUSTE RESUMO (Texto longo de cupom) --- */
+    
+    .resumo-linha {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start; /* Alinha no topo caso o texto quebre */
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Texto da esquerda (Ex: Economia no frete...) */
+    .resumo-linha span:first-child {
+        max-width: 65%; /* Limita a largura para sobrar espaço pro preço */
+        text-align: left;
+        
+        /* Opcional: Se quiser reticências (...) use isso: */
+        /* white-space: nowrap; 
+           overflow: hidden; 
+           text-overflow: ellipsis; */
+           
+        /* Se preferir que quebre linha (melhor para leitura): */
+        word-wrap: break-word;
+        line-height: 1.3;
+    }
+
+    /* Texto da direita (Preço) */
+    .resumo-linha span:last-child {
+        flex: 1;
+        text-align: right;
+        white-space: nowrap; /* Preço nunca deve quebrar linha */
+        font-weight: 600;
+    }
+    
+    /* Cor específica para desconto */
+    .resumo-linha.desconto span:first-child {
+        color: #00bfa5;
+        font-size: 0.9rem;
     }
 }
 
