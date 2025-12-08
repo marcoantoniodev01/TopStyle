@@ -359,32 +359,6 @@
 
         <div class="page active" id="graficos">
           <section class="graficos-body">
-            <!-- <header class="grafico-header">
-            <div class="texto-de-mostrar">
-              <i class="bi bi-house"></i>
-              <label for="">Dashboard &gt; Gráficos principais</label>
-            </div>
-            <div class="grafico-header-left">
-              <input type="text" placeholder="Pesquisar...">
-              <i class="bi bi-search"></i>
-            </div>
-            <div class="grafico-header-center">
-              <label class="notificacoes-header">
-                <span class="noti-text">Notificações</span>
-                <i class="bi bi-bell-fill">
-                  <span class="noti-count">0</span>
-                </i>
-              </label>
-
-            </div>
-            <div class="grafico-header-right">
-              <img src="redondo.png" alt="" class="icone-pais" width="1vw">
-              <label for="">
-                Bryan henrique
-              </label>
-              <img src="" alt="" class="perfil-img">
-            </div>
-          </header> -->
 
             <section class="graficos-center">
               <div class="center-block-vendidos">
@@ -605,49 +579,6 @@
               <div id="cat-empty-state" class="hidden">
                 <i class="bi bi-inbox" style="font-size: 40px; margin-bottom: 10px;"></i>
                 <p>Nenhuma categoria encontrada.</p>
-              </div>
-            </div>
-          </div>
-
-          <div id="cat-modal-form" class="cat-modal-overlay">
-            <div class="cat-modal-content">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <h2 id="cat-form-title" style="margin: 0; font-size: 1.25rem;">Categoria</h2>
-                <button onclick="catCloseModals()" class="cat-close-btn"><i class="bi bi-x-lg"></i></button>
-              </div>
-              <label style="font-size: 0.9rem; font-weight: 500;">Nome da Categoria</label>
-              <input type="text" id="cat-input-name" class="cat-form-input" placeholder="Ex: Eletrônicos">
-
-              <input type="hidden" id="cat-input-old-name">
-              <input type="hidden" id="cat-input-mode">
-              <input type="hidden" id="cat-input-id">
-
-              <div class="cat-modal-footer">
-                <button onclick="catCloseModals()" class="cat-btn cat-btn-secondary">Cancelar</button>
-                <button onclick="catHandleSave()" id="cat-btn-save" class="cat-btn cat-btn-primary">Salvar</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="cat-modal-delete" class="cat-modal-overlay">
-            <div class="cat-modal-content">
-              <div class="cat-delete-icon-wrapper">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-              </div>
-
-              <h2 class="cat-modal-title">Excluir Categoria?</h2>
-
-              <p class="cat-modal-desc">
-                Você está prestes a excluir a categoria <strong id="cat-delete-target-name"
-                  style="color: #1e293b;"></strong>.
-                <br><br>
-                <span id="cat-delete-count-warning"></span> produtos deixarão de ter essa categoria.
-              </p>
-
-              <div class="cat-modal-footer">
-                <button onclick="catCloseModals()" class="cat-btn cat-btn-secondary">Cancelar</button>
-                <button onclick="catConfirmDelete()" id="cat-btn-confirm-delete" class="cat-btn cat-btn-danger">Sim,
-                  excluir</button>
               </div>
             </div>
           </div>
@@ -1196,7 +1127,47 @@
     </div>
   </div>
 
+  <div id="cat-modal-form" class="cat-modal-overlay">
+    <div class="cat-modal-content">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <h2 id="cat-form-title" style="margin: 0; font-size: 1.25rem;">Categoria</h2>
+        <button onclick="catCloseModals()" class="cat-close-btn"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <label style="font-size: 0.9rem; font-weight: 500;">Nome da Categoria</label>
+      <input type="text" id="cat-input-name" class="cat-form-input" placeholder="Ex: Eletrônicos">
 
+      <input type="hidden" id="cat-input-old-name">
+      <input type="hidden" id="cat-input-mode">
+      <input type="hidden" id="cat-input-id">
+
+      <div class="cat-modal-footer">
+        <button onclick="catCloseModals()" class="cat-btn cat-btn-secondary">Cancelar</button>
+        <button onclick="catHandleSave()" id="cat-btn-save" class="cat-btn cat-btn-primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cat-modal-delete" class="cat-modal-overlay">
+    <div class="cat-modal-content">
+      <div class="cat-delete-icon-wrapper">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+
+      <h2 class="cat-modal-title">Excluir Categoria?</h2>
+
+      <p class="cat-modal-desc">
+        Você está prestes a excluir a categoria <strong id="cat-delete-target-name" style="color: #1e293b;"></strong>.
+        <br><br>
+        <span id="cat-delete-count-warning"></span> produtos deixarão de ter essa categoria.
+      </p>
+
+      <div class="cat-modal-footer">
+        <button onclick="catCloseModals()" class="cat-btn cat-btn-secondary">Cancelar</button>
+        <button onclick="catConfirmDelete()" id="cat-btn-confirm-delete" class="cat-btn cat-btn-danger">Sim,
+          excluir</button>
+      </div>
+    </div>
+  </div>
 
   <script src="assets/js/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
