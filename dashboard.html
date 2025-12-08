@@ -293,7 +293,7 @@
               </li>
               <ul class="submenu">
                 <li data-content="cupom">Histórico de cupons</li>
-                <li data-content="status-transicao">Status de cada transação</li>
+                <li data-content="status-pedido">Status de cada pedido</li>
               </ul>
 
               <li class="menu-item">
@@ -708,6 +708,107 @@
             </div>
           </section>
         </div>
+
+        <div class="page" id="status-pedido">
+          <div id="deleteModal">
+            <div class="delete-card">
+              <div class="delete-icon">
+                <i class="bi bi-trash-fill"></i>
+              </div>
+              <h2 class="delete-title">Excluir Pedido</h2>
+              <p class="delete-text">
+                Tem certeza de que deseja excluir o pedido
+                <span id="deleteOrderId" style="font-weight: bold; color: #dc2626;"></span>?
+              </p>
+              <p class="delete-warning">Esta ação é irreversível.</p>
+              <div class="delete-buttons">
+                <button class="btn-modal btn-cancel-modal" onclick="fecharDeleteModal()">Cancelar</button>
+                <button class="btn-confirm-delete" onclick="confirmarExclusao()">Sim, Excluir</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-overlay" id="statusModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h3 class="modal-title">Gerenciar Pedido</h3>
+                <p class="modal-subtitle">Editando Pedido <span id="modalOrderId" style="font-weight: bold;">#...</span>
+                </p>
+              </div>
+
+              <p style="font-weight: 600; margin-bottom: 12px; font-size: 0.9rem; color:#64748b;">Alterar Status:</p>
+              <div class="status-options-grid">
+                <button class="status-option-btn" onclick="selecionarOpcaoModal('PENDENTE')" id="opt-pendente">
+                  <span><i class="bi bi-hourglass-split"></i> Pendente</span>
+                  <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
+                </button>
+                <button class="status-option-btn" onclick="selecionarOpcaoModal('CONFIRMADO')" id="opt-confirmado">
+                  <span><i class="bi bi-check-lg"></i> Confirmado</span>
+                  <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
+                </button>
+                <button class="status-option-btn" onclick="selecionarOpcaoModal('CANCELADO')" id="opt-cancelado">
+                  <span><i class="bi bi-x-circle"></i> Cancelado</span>
+                  <i class="bi bi-check-circle-fill check-icon" style="display:none"></i>
+                </button>
+              </div>
+
+              <div class="modal-actions">
+                <button class="btn-delete-modal" onclick="excluirPedido()"><i class="bi bi-trash"></i> Excluir</button>
+                <div class="action-group">
+                  <button class="btn-modal btn-cancel-modal" onclick="fecharModal()">Cancelar</button>
+                  <button class="btn-modal btn-save" onclick="salvarAlteracaoModal()">Salvar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="content-wrapper">
+
+            <div class="page-header-internal">
+              <h1 class="page-title">
+                Gerenciamento de Pedidos
+              </h1>
+              <p class="page-subtitle">Acompanhe e atualize o status das vendas recentes.</p>
+            </div>
+
+            <div class="kpi-grid" id="kpi-container">
+            </div>
+
+            <div class="toolbar">
+              <div class="filter-group">
+                <button class="btn-filter active" onclick="filtrarPedidos('TODOS')" id="btn-todos">Todos</button>
+                <button class="btn-filter" onclick="filtrarPedidos('PENDENTE')" id="btn-pendente">Pendentes</button>
+                <button class="btn-filter" onclick="filtrarPedidos('CONFIRMADO')"
+                  id="btn-confirmado">Confirmados</button>
+                <button class="btn-filter" onclick="filtrarPedidos('CANCELADO')" id="btn-cancelado">Cancelados</button>
+              </div>
+
+              <div style="position: relative;">
+                <button class="btn-config" onclick="toggleDropdown()">
+                  <i class="bi bi-layout-three-columns"></i> Colunas
+                </button>
+                <div class="dropdown-menu" id="colunas-menu"></div>
+              </div>
+            </div>
+
+            <div class="table-wrapper-master">
+              <div class="top-scroll-container" id="topScroll">
+                <div class="top-scroll-content" id="topScrollContent"></div>
+              </div>
+
+              <div class="table-container" id="tableContainer">
+                <table class="custom-table" id="tabela-pedidos">
+                  <thead>
+                    <tr id="table-head"></tr>
+                  </thead>
+                  <tbody id="table-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
     </section>
   </main>
@@ -1083,7 +1184,10 @@
     </div>
   </div>
 
+
+
   <script src="assets/js/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script type="module" src="assets/js/supabase-client.js"></script>
   <script src="assets/js/main.js"></script>
@@ -1093,9 +1197,9 @@
   <script src="assets/js/header-control.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+  <script src="assets/js/status-pedido-dash.js"></script>
   <script src="assets/js/colecao.js"></script>
   <script src="assets/js/collection-linker.js"></script>
 </body>
 
 </html>
-
