@@ -26,7 +26,7 @@
 :root {
     --cart-padding-mobile: 1.25rem;
     --cart-radius: 12px;
-    --cart-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    --cart-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     --primary-color: #191d28;
     --danger-color: #e74c3c;
     --success-bg: #e6fffa;
@@ -39,18 +39,144 @@
    ========================================================================== */
 @media screen and (max-width: 1366px) {
     .cart-page {
-        padding: 6rem 4rem 3rem;
         max-width: 1200px;
         margin: 0 auto;
     }
-    
+
     .carrinho-content {
         gap: 2rem;
     }
 
-    .cart-item {
+
+
+    /* 4.5. CARRINHO VAZIO (CORREÇÃO DE BUGS) */
+    .carrinho-vazio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 2rem 1rem;
+        gap: 3rem;
+        min-height: 60vh;
+        width: 100%;
+    }
+
+    .vazio-info {
+        width: 100%;
         height: auto;
-        min-height: 160px;
+        /* Remove altura fixa que quebrava */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        text-align: center;
+        padding: 2rem 0;
+    }
+
+    /* Corrige a imagem do emoji triste */
+    .vazio-info img {
+        width: 180px;
+        /* Tamanho fixo em px para não sumir */
+        height: auto;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    /* Texto "Você ainda não..." */
+    .vazio-info p {
+        font-size: 1.5rem;
+        color: #666;
+        max-width: 80%;
+        line-height: 1.5;
+    }
+
+    /* BOTÃO "IR AS COMPRAS" - CORREÇÃO CRÍTICA */
+    .vazio-info a {
+        width: auto;
+        /* Remove o 10vw que quebrava */
+        min-width: 200px;
+        height: auto;
+        padding: 20px 32px;
+        background-color: #191D28;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        /* Impede quebra de linha interna */
+    }
+
+    /* ==========================================================================
+       CORREÇÃO TABLET: SWIPER ESTÁVEL (Sem quebra de linha)
+       ========================================================================== */
+    .recomendações-carrinho {
+        width: 100%;
+        overflow: hidden;
+        padding-bottom: 20px;
+    }
+
+    .products-content-carrinho {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .recomendações-carrinho .product-row {
+        display: flex;
+        flex-wrap: nowrap !important; /* FORÇA linha única (Swiper) */
+        gap: 1.5rem;
+        padding: 0 10px;
+        justify-content: flex-start;
+        align-items: stretch; /* Garante altura igual para todos */
+        
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .recomendações-carrinho .product-slot {
+        flex: 0 0 auto;
+        width: 240px; /* Largura fixa Tablet */
+        min-width: 240px;
+        scroll-snap-align: start;
+        
+        /* SOLUÇÃO DO ESPAÇO VAZIO */
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto;
+        background: #fff;
+        border: 1px solid #eee;
+        overflow: hidden;
+    }
+
+    /* Imagem Fixa */
+    .recomendações-carrinho .product-link {
+        width: 100%;
+        height: 240px; 
+        flex-shrink: 0;
+        display: block;
+    }
+    
+    .recomendações-carrinho .product-link img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* O PULO DO GATO: A div de texto preenche o buraco */
+    /* Seleciona a div que contém title/price e força ela a crescer */
+    .recomendações-carrinho .product-slot > div:last-child {
+        flex-grow: 1; /* Ocupa todo o espaço sobrando */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Empurra preço pro fundo */
+        width: 100%;
+        background: #fff;
     }
 }
 
@@ -73,7 +199,7 @@
 
     /* Card Híbrido */
     .cart-item {
-        height: auto; 
+        height: auto;
         min-height: 140px;
         padding: 1.5rem;
     }
@@ -88,9 +214,139 @@
         justify-content: flex-start;
         gap: 15px;
     }
-    
+
     .product-slot {
         min-width: 30%;
+    }
+
+    /* 4.5. CARRINHO VAZIO (CORREÇÃO DE BUGS) */
+    .carrinho-vazio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 2rem 1rem;
+        gap: 3rem;
+        min-height: 60vh;
+        width: 100%;
+    }
+
+    .vazio-info {
+        width: 100%;
+        height: auto;
+        /* Remove altura fixa que quebrava */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        text-align: center;
+        padding: 2rem 0;
+    }
+
+    /* Corrige a imagem do emoji triste */
+    .vazio-info img {
+        width: 150px;
+        /* Tamanho fixo em px para não sumir */
+        height: auto;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    /* Texto "Você ainda não..." */
+    .vazio-info p {
+        font-size: 1.3rem;
+        color: #666;
+        max-width: 80%;
+        line-height: 1.5;
+    }
+
+    /* BOTÃO "IR AS COMPRAS" - CORREÇÃO CRÍTICA */
+    .vazio-info a {
+        width: auto;
+        /* Remove o 10vw que quebrava */
+        min-width: 200px;
+        height: auto;
+        padding: 18px 30px;
+        background-color: #191D28;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        /* Impede quebra de linha interna */
+    }
+
+    /* ==========================================================================
+       CORREÇÃO TABLET: SWIPER ESTÁVEL (Sem quebra de linha)
+       ========================================================================== */
+    .recomendações-carrinho {
+        width: 100%;
+        overflow: hidden;
+        padding-bottom: 20px;
+    }
+
+    .products-content-carrinho {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .recomendações-carrinho .product-row {
+        display: flex;
+        flex-wrap: nowrap !important; /* FORÇA linha única (Swiper) */
+        gap: 1.5rem;
+        padding: 0 10px;
+        justify-content: flex-start;
+        align-items: stretch; /* Garante altura igual para todos */
+        
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .recomendações-carrinho .product-slot {
+        flex: 0 0 auto;
+        width: 240px; /* Largura fixa Tablet */
+        min-width: 240px;
+        scroll-snap-align: start;
+        
+        /* SOLUÇÃO DO ESPAÇO VAZIO */
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto;
+        background: #fff;
+        border: 1px solid #eee;
+        overflow: hidden;
+    }
+
+    /* Imagem Fixa */
+    .recomendações-carrinho .product-link {
+        width: 100%;
+        height: 240px; 
+        flex-shrink: 0;
+        display: block;
+    }
+    
+    .recomendações-carrinho .product-link img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* O PULO DO GATO: A div de texto preenche o buraco */
+    /* Seleciona a div que contém title/price e força ela a crescer */
+    .recomendações-carrinho .product-slot > div:last-child {
+        flex-grow: 1; /* Ocupa todo o espaço sobrando */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Empurra preço pro fundo */
+        width: 100%;
+        background: #fff;
     }
 }
 
@@ -99,34 +355,30 @@
    Transformação completa da interface.
    ========================================================================== */
 @media screen and (max-width: 767px) {
-    
+
     /* 4.1. ESTRUTURA GERAL DO APP */
     body {
-        background-color: #f8f9fa; /* Fundo levemente cinza para destacar cards */
+        background-color: #f8f9fa;
+        /* Fundo levemente cinza para destacar cards */
         overflow-x: hidden;
     }
 
     main {
-        overflow: visible; /* Permite sombras passarem */
+        overflow: visible;
+        /* Permite sombras passarem */
     }
 
     .cart-page {
-        padding: 0; /* Remove padding global para controle total */
-        padding-top: 80px; /* Espaço do header fixo */
-        padding-bottom: 40px;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        min-height: calc(100vh - 80px);
+        /* Ajuste fino para o mobile (Header costuma ser menor aqui) */
+        padding-top: 110px;
+        padding-left: 15px;
+        padding-right: 15px;
+        align-items: flex-start;
     }
 
     .carrinho-content {
-        width: 100%;
-        padding: 0 var(--cart-padding-mobile);
-        gap: 1.5rem;
-        display: flex;
-        flex-direction: column;
+        padding: 0;
+        gap: 1rem;
     }
 
     /* 4.2. CARD DO PRODUTO (LAYOUT INTELIGENTE) */
@@ -134,16 +386,17 @@
         position: relative;
         display: grid;
         /* Grid: Imagem (90px) | Conteúdo (Auto) */
-        grid-template-columns: 90px 1fr; 
+        grid-template-columns: 90px 1fr;
         grid-template-rows: auto auto;
-        
+
         background: #ffffff;
-        border: 1px solid rgba(0,0,0,0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
         border-radius: var(--cart-radius);
         padding: 12px;
         gap: 15px;
         margin-bottom: 15px;
-        height: auto; /* IMPORTANTE: Sobrescreve altura fixa */
+        height: auto;
+        /* IMPORTANTE: Sobrescreve altura fixa */
         min-height: 120px;
         box-shadow: var(--cart-shadow);
         transition: transform 0.2s ease;
@@ -151,9 +404,10 @@
 
     /* Imagem do Produto */
     .cart-item-left {
-        grid-row: 1 / 3; 
+        grid-row: 1 / 3;
         width: 100%;
-        height: 120px; /* Altura fixa para alinhar */
+        height: 120px;
+        /* Altura fixa para alinhar */
         border-radius: 8px;
         overflow: hidden;
         background-color: #f0f0f0;
@@ -170,7 +424,8 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding-right: 35px; /* Espaço para o ícone de lixeira */
+        padding-right: 35px;
+        /* Espaço para o ícone de lixeira */
         width: 100%;
     }
 
@@ -181,7 +436,7 @@
         line-height: 1.35;
         color: var(--primary-color);
         margin-bottom: 4px;
-        
+
         /* Limitar texto a 2 linhas */
         display: -webkit-box;
 
@@ -195,7 +450,7 @@
         margin: 0;
         line-height: 1.4;
     }
-    
+
     /* Preço no Card */
     .cart-item-info p:last-of-type {
         font-weight: 700;
@@ -223,17 +478,17 @@
         border-radius: 6px;
         font-size: 1rem;
         color: #333;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         display: flex;
         align-items: center;
         justify-content: center;
     }
-    
+
     .quantity-controls button:active {
         background: #ebebeb;
         transform: scale(0.95);
     }
-    
+
     .quantity-controls span {
         font-weight: 600;
         min-width: 20px;
@@ -252,7 +507,8 @@
         border: none !important;
         padding: 0 !important;
         margin: 0 !important;
-        font-size: 0 !important; /* Esconde texto */
+        font-size: 0 !important;
+        /* Esconde texto */
         color: transparent !important;
         cursor: pointer;
         z-index: 10;
@@ -269,7 +525,7 @@
         background-position: center;
         background-size: 20px;
     }
-    
+
     .remove:active {
         transform: scale(0.9);
         opacity: 1;
@@ -281,7 +537,7 @@
         padding: 1.5rem;
         height: auto;
         border-radius: 16px;
-        box-shadow: 0 -2px 15px rgba(0,0,0,0.03);
+        box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.03);
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
@@ -301,14 +557,15 @@
         width: 100%;
         flex: 1;
         height: 100%;
-        font-size: 16px; /* Evita zoom iOS */
+        font-size: 16px;
+        /* Evita zoom iOS */
         border-radius: 8px;
         padding-left: 15px;
         background: #f9f9f9;
         border: 1px solid #e0e0e0;
         color: #333;
     }
-    
+
     .cupom input:focus {
         background: #fff;
         border-color: #000;
@@ -326,39 +583,51 @@
 
     /* --- CUPOM APLICADO (LAYOUT SOLICITADO) --- */
     /* Badge em cima, Link embaixo */
+    /* 2. CUPOM: SELO COMO BOTÃO */
     .cupom-aplicado-car {
-        display: flex;
-        flex-direction: column !important; /* Força coluna */
-        justify-content: center !important;
-        align-items: center !important;
         width: 100%;
-        padding: 0.5rem 0;
-        gap: 6px; /* Espaço entre o badge e o link */
-        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0;
     }
 
     /* Estilo do Badge */
     .badge-cupom {
         font-size: 0.9rem;
-        padding: 6px 12px;
+        padding: 9px 15px;
         border-radius: 6px;
         display: inline-block;
         text-align: center;
         width: fit-content;
     }
 
+    .badge-cupom::after {
+        font-size: 0.8rem;
+        margin-left: 5px;
+        opacity: 0.6;
+    }
+
+    .badge-cupom:active {
+        transform: scale(0.95);
+        background-color: #ffebee !important;
+        /* Feedback visual vermelho claro */
+        border-color: #ffcdd2 !important;
+        color: #c62828 !important;
+    }
+
     /* Link Remover */
     #trocar-div {
-        width: fit-content;
+        display: none !important;
     }
-    
+
     #trocar-cupom {
         font-size: 0.8rem;
         color: #666;
         text-decoration: underline;
         padding: 5px;
     }
-    
+
     #trocar-cupom:hover {
         color: #e74c3c;
     }
@@ -378,7 +647,8 @@
         width: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: flex-end; /* Alinha na base do preço */
+        align-items: flex-end;
+        /* Alinha na base do preço */
         margin-bottom: 0.5rem;
     }
 
@@ -401,15 +671,16 @@
 
     .button-cont-littlecar button {
         width: 100%;
-        height: 58px; /* Botão grande e fácil de clicar */
+        height: 58px;
+        /* Botão grande e fácil de clicar */
         font-size: 1.1rem;
         border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         background: #000;
         color: #fff;
         font-weight: 600;
     }
-    
+
     .button-cont-littlecar button:active {
         transform: scale(0.98);
         background: #1a1a1a;
@@ -429,7 +700,8 @@
 
     .vazio-info {
         width: 100%;
-        height: auto; /* Remove altura fixa que quebrava */
+        height: auto;
+        /* Remove altura fixa que quebrava */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -441,7 +713,8 @@
 
     /* Corrige a imagem do emoji triste */
     .vazio-info img {
-        width: 100px; /* Tamanho fixo em px para não sumir */
+        width: 100px;
+        /* Tamanho fixo em px para não sumir */
         height: auto;
         opacity: 0.8;
         margin-bottom: 10px;
@@ -457,7 +730,8 @@
 
     /* BOTÃO "IR AS COMPRAS" - CORREÇÃO CRÍTICA */
     .vazio-info a {
-        width: auto; /* Remove o 10vw que quebrava */
+        width: auto;
+        /* Remove o 10vw que quebrava */
         min-width: 200px;
         height: auto;
         padding: 14px 28px;
@@ -470,58 +744,63 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        white-space: nowrap; /* Impede quebra de linha interna */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        /* Impede quebra de linha interna */
     }
 
-    /* 4.6. RECOMENDAÇÕES (CARROSSEL SWIPE STYLE) */
+    /* ==========================================================================
+   4.6. RECOMENDAÇÕES (CARROSSEL NATURAIS - ESTILO ORIGINAL)
+   ========================================================================== */
     .recomendações-carrinho {
         width: 100%;
-        padding: 1rem 0 2rem 0;
-        gap: 1.5rem;
-        border-top: 1px solid #eee;
-        background: #fff; /* Destaca a seção */
-        margin-top: 2rem;
+        padding: 2rem 0;
+        margin-top: 1rem;
+        background: transparent;
+        /* Remove o fundo branco */
+        border: none;
+        /* Remove a borda */
     }
 
     .recomendações-carrinho h1 {
         font-size: 1.4rem;
-        text-align: left;
-        padding-left: var(--cart-padding-mobile); /* Alinha com o conteúdo */
-        margin-bottom: 10px;
+        text-align: center;
+        /* Volta ao centro como no original */
+        margin-bottom: 1.5rem;
         color: #191d28;
         font-weight: 700;
     }
 
-    /* Container do Scroll (Simulando Swiper) */
+    /* Área de Rolagem (Swiper via CSS) */
     .products-content-carrinho {
         width: 100%;
-        overflow: hidden; /* Evita scroll duplo */
     }
 
-    /* A linha de produtos vira o "track" do slider */
     .recomendações-carrinho .product-row {
         display: flex;
-        flex-wrap: nowrap !important; /* Força linha única */
-        overflow-x: auto; /* Scroll horizontal nativo */
-        scroll-snap-type: x mandatory; /* Efeito magnético */
-        -webkit-overflow-scrolling: touch; /* Fluidez no iOS */
-        gap: 16px; /* Espaço entre cards */
-        
-        /* Padding lateral para o primeiro e último item não colarem na borda */
-        padding: 10px var(--cart-padding-mobile) 30px var(--cart-padding-mobile);
-        
+        flex-wrap: nowrap !important;
+        /* Impede quebra de linha */
+        overflow-x: auto;
+        /* Ativa o scroll lateral */
+        scroll-snap-type: x mandatory;
+        /* Efeito magnético ao rolar */
+        -webkit-overflow-scrolling: touch;
+        gap: 15px;
+        /* Espaço entre os produtos */
+
+        /* Padding lateral para o primeiro item não colar na borda da tela */
+        padding: 0 1.25rem 2rem 1.25rem;
+
         width: 100%;
         justify-content: flex-start;
-        align-items: stretch;
     }
 
-    /* Card de Recomendação */
+    /* O SLOT DO PRODUTO (Ajuste de tamanho e limpeza de altura) */
     .recomendações-carrinho .product-slot {
-        flex: 0 0 auto; /* Não encolhe nem cresce */
-        width: 180px; /* Largura fixa ideal para ver 1.5 produtos */
-        min-width: 180px;
-        scroll-snap-align: start; /* Alinha à esquerda ao soltar */
+        flex: 0 0 auto; 
+        width: 220px; /* Aumentado de 180px para 220px */
+        min-width: 220px;
+        scroll-snap-align: start; 
         
         /* Reset de estilos para garantir visual limpo */
         display: flex;
@@ -529,40 +808,58 @@
         height: auto;
         min-height: 280px;
         background: #fff;
-        border-radius: 8px;
         overflow: hidden;
         border: 1px solid #eee;
     }
 
-    /* Ajuste da imagem dentro da recomendação */
+    /* A IMAGEM (Mantendo proporção original) */
     .recomendações-carrinho .product-link {
-        height: 200px; /* Altura fixa da imagem */
-        max-height: 200px;
+        height: 240px; /* Aumentado de 200px para 240px para manter proporção */
+        max-height: 240px;
     }
 
+    .recomendações-carrinho .product-link img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        /* Remove linha fantasma de imagens inline */
+    }
+
+    /* A PARTE AZUL COM TEXTO (Seu estilo original preservado) */
+    .recomendações-carrinho .product-text {
+        width: 100%;
+        min-height: auto;
+        /* Ajusta conforme o conteúdo */
+        padding: 10px 5px;
+        background-color: #304878;
+        /* O azul original do seu style.css */
+        color: #ffffff;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    /* Ajuste de fonte para caber no mobile */
     .recomendações-carrinho .product-title {
         font-size: 0.9rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: 0 5px;
+        text-align: center;
+        margin: 0;
+        color: #fff;
     }
 
     .recomendações-carrinho .product-price {
         font-size: 1rem;
         font-weight: bold;
+        color: #fff;
     }
 
-    /* Esconder scrollbar feia, manter funcionalidade */
+    /* Esconde a barra de rolagem mas mantém funcional */
     .recomendações-carrinho .product-row::-webkit-scrollbar {
-        height: 4px; /* Barra fina */
-    }
-    .recomendações-carrinho .product-row::-webkit-scrollbar-thumb {
-        background: #ddd;
-        border-radius: 10px;
-    }
-    .recomendações-carrinho .product-row::-webkit-scrollbar-track {
-        background: transparent;
+        display: none;
     }
 }
 
@@ -599,20 +896,20 @@
     .text-price-litlecar span {
         font-size: 1.5rem;
     }
-    
+
     /* Botão "Ir as compras" menor */
     .vazio-info a {
         min-width: 160px;
         padding: 10px 20px;
         font-size: 0.9rem;
     }
-    
+
     /* Recomendações menores */
     .recomendações-carrinho .product-slot {
         width: 150px;
         min-width: 150px;
     }
-    
+
     .recomendações-carrinho .product-link {
         height: 160px;
     }
@@ -624,13 +921,14 @@
 
 /* Fade In ao carregar itens */
 @keyframes fadeInUp {
-    from { 
-        opacity: 0; 
-        transform: translateY(10px); 
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -639,18 +937,32 @@
 }
 
 /* Delay escalonado para itens (até 5 itens) */
-.cart-item:nth-child(1) { animation-delay: 0.05s; }
-.cart-item:nth-child(2) { animation-delay: 0.1s; }
-.cart-item:nth-child(3) { animation-delay: 0.15s; }
-.cart-item:nth-child(4) { animation-delay: 0.2s; }
-.cart-item:nth-child(5) { animation-delay: 0.25s; }
+.cart-item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.cart-item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.cart-item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.cart-item:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.cart-item:nth-child(5) {
+    animation-delay: 0.25s;
+}
 
 /* Ajustes Finais de Header e Nav (Prevenção de sobreposição) */
 @media screen and (max-width: 768px) {
     .nav__menu {
         z-index: 10000;
     }
-    
+
     .cart-count {
         top: -6px;
         right: -8px;
@@ -659,7 +971,7 @@
         font-size: 10px;
         line-height: 18px;
     }
-    
+
     /* Garante que o toast apareça acima de tudo no mobile */
     #topstyle-toast {
         top: 10px !important;
