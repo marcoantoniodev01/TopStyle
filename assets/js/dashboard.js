@@ -72,6 +72,20 @@ document.querySelectorAll('.submenu li').forEach(li => {
         const target = li.getAttribute('data-content');
         if (!target) return;
 
+        // --- NOVO: Fecha o menu lateral automaticamente no Mobile ---
+        if (window.innerWidth <= 1430) {
+            const sidebar = document.querySelector('.body-left');
+            if (sidebar.classList.contains('dash-open')) {
+                toggleDashSidebar(); // Chama sua função existente que fecha e remove o overlay
+            }
+        }
+        // -----------------------------------------------------------
+
+        // Se for a página de categorias, carrega a lógica
+        if (target === 'categoria-produto') {
+            initCategoryPage();
+        }
+
         // Marca item ativo
         document.querySelectorAll('.submenu li').forEach(i => i.classList.remove('active'));
         li.classList.add('active');
@@ -80,7 +94,7 @@ document.querySelectorAll('.submenu li').forEach(li => {
         const currentPage = document.querySelector('.page.active');
         const newPage = document.getElementById(target);
 
-        if (currentPage === newPage) return; // evita recarregar a mesma
+        if (currentPage === newPage) return; 
 
         if (currentPage) {
             currentPage.style.opacity = 0;
@@ -1912,3 +1926,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+/* CONTROLE DA SIDEBAR RESPONSIVA (NOVO) */
+function toggleDashSidebar() {
+    const sidebar = document.querySelector('.body-left');
+    const overlay = document.getElementById('dash-overlay');
+    
+    // Cria o overlay se não existir
+    if (!overlay) {
+        const newOverlay = document.createElement('div');
+        newOverlay.id = 'dash-overlay';
+        newOverlay.className = 'dash-backdrop';
+        newOverlay.onclick = toggleDashSidebar; // Clicar fora fecha
+        document.body.appendChild(newOverlay);
+        setTimeout(() => newOverlay.classList.add('active'), 10);
+    } else {
+        // Se já existe, alterna estado ou remove
+        if (sidebar.classList.contains('dash-open')) {
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.remove(), 300);
+        }
+    }
+
+    sidebar.classList.toggle('dash-open');
+    document.body.classList.toggle('no-scroll');
+}
