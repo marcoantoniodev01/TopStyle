@@ -395,6 +395,10 @@
         /* Oculta a barra para IE e Edge antigo */
         -ms-overflow-style: none;
     }
+
+    .bottom-center {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
