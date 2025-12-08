@@ -264,7 +264,7 @@
     .body-right {
         width: 100%;
         margin: 0;
-        padding: 10px 20px 80px 20px;
+        padding: 10px 20px 250px 20px;
         /* Padding reduzido no topo */
     }
 
@@ -330,7 +330,7 @@
     .chart-tabs {
         width: 100%;
         overflow-x: auto;
-        padding-bottom: 5px;
+
     }
 
     .chart-tabs button {
@@ -338,11 +338,6 @@
     }
 
     /* Coloque isso dentro de @media (max-width: 1024px) ou no final do arquivo */
-
-    .graficos-body {
-        /* O padding-bottom cria o espaço entre o último gráfico e o fim da tela */
-        padding-bottom: 60px !important;
-    }
 
     /* Opcional: Garante que os cards não colem nas bordas laterais */
     .graficos-center,
@@ -533,7 +528,7 @@
    Foco: Largura total, scroll interno e botões empilhados.
    ========================================================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { 
     
     /* Regra Geral para Conteúdo dos Modais */
     .details-modal-pro,
@@ -696,16 +691,16 @@
     /* Cabeçalho da Lista de Produtos */
     .Proh1 {
         flex-direction: column; /* Empilha Título e Botão */
-        align-items: flex-start;
-        gap: 15px;
+        align-items: center;
+        gap: 25px;
         margin-bottom: 25px;
     }
 
     /* Botão Adicionar Produto */
     .ProAddBtn {
-        width: 100%; /* Botão largura total */
+        width: 95%; /* Botão largura total */
         justify-content: center;
-        padding: 14px;
+        padding: 10px;
         font-size: 1rem;
     }
 
@@ -809,3 +804,215 @@
     }
 }
 
+/* ==========================================================================
+   RESPONSIVIDADE: GESTÃO DE CATEGORIAS (#categoria-produto)
+   Foco: Transformação Tabela -> Cards, Botões Full-Width e Modais Seguros
+   ========================================================================== */
+
+/* --- Ajuste Geral do Container --- */
+
+/* 1. TABLET E NOTEBOOKS PEQUENOS (max-width: 1024px) */
+@media (max-width: 1024px) {
+    
+    /* Header: Ajusta espaçamento */
+    .cat-header-section {
+        padding-bottom: 2rem !important; /* Corrige o 30rem do CSS original */
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* Stats: Grid mais flexível */
+    .cat-stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 por linha no tablet */
+        gap: 15px;
+    }
+}
+
+/* 2. MOBILE (max-width: 768px) */
+@media (max-width: 768px) {
+
+    /* --- Header (Título + Botão) --- */
+    .cat-header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding-bottom: 20px !important;
+    }
+
+    .cat-header-section > div {
+        width: 100%;
+    }
+
+    .cat-header-section h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .cat-subtitle {
+        text-align: center;
+    }
+
+    .cat-header-section .cat-btn-primary {
+        width: 100%; /* Botão full width */
+        justify-content: center;
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    /* --- Stats (Cards de Contagem) --- */
+    .cat-stats-grid {
+        grid-template-columns: 1fr; /* 1 por linha no celular */
+    }
+
+    .cat-stat-card {
+        padding: 15px;
+    }
+
+    /* --- TABELA TRANSFORMADA EM CARDS (A Mágica) --- */
+    
+    /* Esconde o cabeçalho da tabela */
+    .cat-table thead {
+        display: none;
+    }
+
+    .cat-table-wrapper {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow: visible; /* Remove scroll interno, deixa a página rolar */
+        max-height: none;
+    }
+
+    .cat-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cat-table tr {
+        display: flex;
+        flex-direction: column; /* Empilha o conteúdo da linha */
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+
+    .cat-table td {
+        display: flex;
+        padding: 5px 0;
+        border-bottom: none;
+        width: 100%;
+    }
+
+    /* Ajuste da primeira coluna (Nome + Ícone) */
+    .cat-table td:nth-child(1) {
+        order: 1;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 10px;
+    }
+    
+    .cat-table td:nth-child(1) > div {
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    .cat-table td:nth-child(1) span {
+        font-size: 1.1rem;
+        font-weight: 700 !important;
+        color: #1e293b;
+    }
+
+    /* Ajuste da segunda coluna (Badge de Quantidade) */
+    .cat-table td:nth-child(2) {
+        order: 2;
+        justify-content: flex-start; /* Alinha a esquerda */
+        margin-bottom: 10px;
+    }
+
+    /* Ajuste da terceira coluna (Ações) */
+    .cat-table td:nth-child(3) {
+        order: 3;
+        justify-content: space-between; /* Botões separados */
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    /* Botões de Ação Grandes para Touch */
+    .cat-action-btn {
+        flex: 1; /* Ocupa metade cada */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    /* Adiciona texto aos botões que só tinham ícones para melhor UX */
+    .cat-action-btn::after {
+        font-size: 0.85rem;
+        margin-left: 8px;
+        font-weight: 600;
+    }
+    
+    /* Hack CSS para adicionar texto via CSS no mobile */
+    button[title="Editar"].cat-action-btn::after {
+        content: "Editar";
+    }
+    button[title="Excluir"].cat-action-btn::after {
+        content: "Excluir";
+    }
+
+    /* --- MODAIS DE CATEGORIA --- */
+    .cat-modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .cat-modal-footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cat-modal-footer .cat-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+    }
+}
+
+/* 3. IPHONE SE / TELAS MUITO PEQUENAS (max-width: 375px) */
+@media (max-width: 375px) {
+    .cat-stat-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .cat-stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .cat-stat-info h3 {
+        font-size: 1.3rem;
+    }
+    
+    .cat-header-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .cat-table tr {
+        padding: 12px;
+    }
+}
