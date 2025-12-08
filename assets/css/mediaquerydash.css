@@ -1016,3 +1016,515 @@
         padding: 12px;
     }
 }
+
+/* ==========================================================================
+   RESPONSIVIDADE: GESTÃO DE CUPONS (#cupom) - VERSÃO FINAL CORRIGIDA
+   Foco: Centralização total, Modal limpo sem scroll horizontal e UX Touch
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TABLETS E NOTEBOOKS MENORES (max-width: 1024px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    .coupon-card-row {
+        padding: 1.2rem;
+        gap: 1.5rem;
+    }
+
+    .modal-content.modal-lg {
+        width: 95%;
+        max-width: 95%;
+        height: 85vh; /* Altura segura */
+    }
+
+    .coupon-modal-grid {
+        grid-template-columns: 1fr 1fr; 
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. MOBILE GRANDE / TABLET PORTRAIT (max-width: 768px)
+   Aqui acontece a mágica da centralização e correção do modal
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+
+    /* --- LAYOUT DA PÁGINA PRINCIPAL --- */
+    .coupons-list {
+        gap: 15px;
+    }
+
+    /* Botão Gigante de Adicionar */
+    .big-add-btn {
+        padding: 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* --- CARD DO CUPOM (LISTAGEM SALVA) --- */
+    .coupon-card-row {
+        flex-direction: column;
+        align-items: center; /* CENTRALIZA TUDO HORIZONTALMENTE */
+        text-align: center;  /* CENTRALIZA O TEXTO */
+        gap: 20px;
+        padding: 25px 20px;
+        position: relative;
+    }
+
+    .coupon-info-group {
+        width: 100%;
+        flex-direction: column; /* Empilha Thumb em cima do Texto */
+        align-items: center;    /* Garante alinhamento ao centro */
+        gap: 15px;
+    }
+
+    /* Miniatura do Cupom (Selo) */
+    .coupon-thumb {
+        width: 100px;
+        height: 55px;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        margin: 0 auto; /* Reforço para centralizar */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Um charme extra */
+    }
+
+    .coupon-meta {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centraliza itens internos */
+    }
+
+    .coupon-code-title {
+        font-size: 1.25rem; /* Um pouco maior para destaque */
+        margin-bottom: 5px;
+        word-break: break-all;
+    }
+
+    .coupon-creator {
+        justify-content: center; /* Centraliza o ícone e texto do criador */
+        font-size: 0.8rem;
+    }
+
+    /* Ações (Botões Editar/Excluir) */
+    .coupon-actions {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 20px;
+    }
+
+    .coupon-actions .action-btn {
+        flex: 1; 
+        max-width: 120px; /* Não deixa botões ficarem gigantes */
+        justify-content: center;
+        padding: 10px;
+    }
+
+    /* --- MODAL DE CRIAR/EDITAR CUPOM (CORREÇÃO DO VÍDEO) --- */
+    
+    .modal-content.modal-lg {
+        height: auto;
+        max-height: 92vh; /* Aproveita bem a tela */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; 
+    }
+
+    .modal-content h2 {
+        text-align: center;
+        font-size: 1.2rem;
+        padding: 15px;
+        background: #fff;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Grid vira Coluna Inversa (Preview no topo, Form em baixo) */
+    .coupon-modal-grid {
+        display: flex;
+        flex-direction: column-reverse; 
+        overflow-y: auto; /* Scroll APENAS aqui dentro */
+        overflow-x: hidden; /* Remove scroll lateral fantasma */
+        flex: 1;
+        background: #fff;
+    }
+
+    /* --- LADO DO FORMULÁRIO (EMBAIXO) --- */
+    .coupon-form-side {
+        padding: 20px 20px 80px 20px; /* Padding extra embaixo pro scroll não cortar */
+        border-right: none;
+    }
+
+    /* --- LADO DO PREVIEW (NO TOPO - CORREÇÃO VISUAL) --- */
+    .coupon-preview-side {
+        padding: 25px 20px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        flex-shrink: 0; 
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centraliza tudo */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .preview-container {
+        width: 100%;
+        max-width: 300px; /* Limita largura pra ficar bonito */
+        height: 110px;
+        margin-bottom: 20px;
+        background: #e2e8f0; /* Fundo mais escuro pro ticket destacar */
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Ticket Visual */
+    .coupon-ticket {
+        width: 180px;
+        height: 80px;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    /* --- CONTROLES DE ESTILO (AQUI ESTAVA O BUG) --- */
+    .style-controls {
+        width: 100%;
+        display: flex;
+        flex-direction: column; /* Empilha as opções verticalmente */
+        gap: 20px; /* Espaço entre Cor Principal, Cor Fundo e Borda */
+        align-items: center;
+    }
+
+    .style-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .style-group label {
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+    }
+
+    /* Container das Bolinhas de Cor */
+    .color-picker-row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /* PERMITE QUEBRA DE LINHA SE FALTAR ESPAÇO */
+        gap: 12px;
+        width: 100%;
+    }
+
+    .color-dot {
+        width: 36px;
+        height: 36px;
+        /* Garante toque fácil */
+    }
+
+    /* Dropdown de Borda no Mobile */
+    #select-border-wrapper {
+        width: 100%;
+        max-width: 280px; /* Não deixa ficar largo demais */
+    }
+
+    /* Rodapé do Modal (Botões Salvar/Cancelar) */
+    .modal-actions {
+        padding: 15px 20px;
+        background: #fff;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column; /* Um em cima do outro é melhor pra toque */
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .btn-principal, .btn-cancelar {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. TELAS MUITO PEQUENAS (iPhone SE, Galaxy Fold - max-width: 380px)
+   Ajustes críticos para não gerar scroll lateral
+   -------------------------------------------------------------------------- */
+@media (max-width: 380px) {
+    
+    /* Lista */
+    .coupon-card-row {
+        padding: 15px;
+    }
+
+    .coupon-thumb {
+        width: 90px; 
+    }
+
+    .coupon-code-title {
+        font-size: 1.1rem;
+    }
+
+    /* Modal - Preview */
+    .coupon-preview-side {
+        padding: 15px 10px; /* Reduz padding lateral */
+    }
+
+    .preview-container {
+        height: 100px;
+    }
+
+    .coupon-ticket {
+        width: 150px;
+        height: 70px;
+        font-size: 1rem;
+    }
+
+    /* Garante que as bolinhas caibam */
+    .color-picker-row {
+        gap: 8px;
+    }
+    
+    .color-dot {
+        width: 32px;
+        height: 32px;
+    }
+    
+    /* Grid de porcentagem (Formulário) */
+    .percent-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 colunas em vez de 4 */
+    }
+}
+
+/* ==========================================================================
+   CORREÇÃO DEFINITIVA MODAL CUPOM (ZERO BUGS, 1 SCROLL)
+   ========================================================================== */
+
+/* 1. RESET GERAL DO MODAL (Desktop e Mobile) */
+.modal-content.modal-lg {
+    /* Define altura máxima baseada na tela e deixa O MODAL rolar, não o conteúdo */
+    max-height: 90vh; 
+    overflow-y: auto !important; /* ÚNICO SCROLL PERMITIDO */
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 95% !important;
+    max-width: 1000px;
+    padding: 0;
+}
+
+/* Remove alturas fixas que causavam scroll duplo e buracos */
+.coupon-modal-grid {
+    display: flex;
+    height: auto !important; /* Crucial: Deixa crescer conforme o conteúdo */
+    overflow: visible !important;
+}
+
+.coupon-form-side,
+.coupon-preview-side {
+    overflow: visible !important; /* Remove scrolls internos */
+    height: auto !important;      /* Remove altura fixa */
+    flex: none;                   /* Não tenta esticar para preencher espaço vazio */
+}
+
+/* --------------------------------------------------------------------------
+   2. DESKTOP (Lado a Lado)
+   -------------------------------------------------------------------------- */
+@media (min-width: 769px) {
+    .coupon-modal-grid {
+        flex-direction: row;
+        align-items: flex-start; /* Alinha no topo */
+    }
+
+    .coupon-form-side {
+        flex: 1.2; /* Lado esquerdo um pouco maior */
+        padding: 2rem;
+        border-right: 1px solid #eee;
+    }
+
+    .coupon-preview-side {
+        flex: 0.8;
+        padding: 2rem;
+        background: #fafafa;
+        position: sticky; /* Mantém o preview visível enquanto rola o form */
+        top: 0;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. MOBILE (Empilhado, Sem Buracos)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    
+    /* Zera a altura para remover o espaço em branco gigante */
+    .coupon-modal-grid {
+        flex-direction: column-reverse; /* Preview no topo, Form embaixo */
+        display: block; /* Garante fluxo normal */
+    }
+
+    /* PREVIEW (Topo) */
+    .coupon-preview-side {
+        width: 100%;
+        padding: 20px 15px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Container do Ticket (Visualização) */
+    .preview-container {
+        width: 100%;
+        max-width: 300px;
+        height: 100px; /* Altura fixa apenas para o ticket */
+        margin: 0; /* Remove margens extras */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e2e8f0;
+        border-radius: 12px;
+    }
+
+    /* Ticket em si */
+    .coupon-ticket {
+        width: 180px;
+        height: 70px;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* CORREÇÃO DA PERSONALIZAÇÃO BUGADA */
+    .style-controls {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .style-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .style-group label {
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    /* Cores (Flex Wrap para não vazar a tela) */
+    .color-picker-row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /* Permite quebrar linha se não couber */
+        gap: 12px;
+        width: 100%;
+    }
+
+    .color-dot {
+        width: 38px; /* Tamanho bom pro dedo */
+        height: 38px;
+        margin: 0;
+    }
+
+    /* Dropdown de Borda */
+    #select-border-wrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* FORMULÁRIO (Embaixo) */
+    .coupon-form-side {
+        width: 100%;
+        padding: 20px;
+        background: #fff;
+    }
+
+    /* Ajuste de inputs mobile */
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+        font-size: 16px; /* Evita zoom no iPhone */
+        padding: 12px;
+    }
+
+    /* Botões de Porcentagem (Grid Ajustado) */
+    .percent-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 por linha */
+        gap: 8px;
+    }
+    
+    /* iPhone SE / Telas Mínimas */
+    @media (max-width: 380px) {
+        .percent-grid {
+            grid-template-columns: repeat(3, 1fr); /* 3 por linha se for muito pequeno */
+        }
+        .color-dot {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    /* AÇÕES DO MODAL (Fixo ou no fim) */
+    .modal-actions {
+        padding: 15px 20px;
+        background: #fff;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-principal, .btn-cancelar {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+}
+
+/* 4. LISTA DE CUPONS (Centralizada conforme pedido) */
+@media (max-width: 768px) {
+    .coupons-list { gap: 15px; }
+    
+    .coupon-card-row {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .coupon-info-group {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .coupon-thumb {
+        margin: 0 auto 10px auto;
+        width: 100px;
+        height: 50px;
+    }
+
+    .coupon-actions {
+        justify-content: center;
+        width: 100%;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        margin-top: 10px;
+    }
+}
