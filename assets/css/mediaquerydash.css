@@ -1,0 +1,811 @@
+/* ==========================================================================
+   DASHBOARD ADMIN - MEDIA QUERIES (CORRIGIDO)
+   Foco: Layout Mobile Otimizado, Gráficos Empilhados e Botão Próximo
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. BOTÃO TRIGGER MOBILE (Aproximando do conteúdo)
+   -------------------------------------------------------------------------- */
+.mobile-dash-trigger-container {
+    display: none;
+    /* Invisível no Desktop */
+    margin-top: 6vh;
+    /* REDUZIDO de 4vh para 10px */
+    padding: 0 20px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.btn-dash-trigger {
+    background: #eeeeee;
+    /* Alterado para escuro para destaque (opcional) */
+    color: #000000;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Centraliza texto */
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    /* Botão full width no mobile */
+}
+
+.btn-dash-trigger:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 1430px) {
+    .mobile-dash-trigger-container {
+        display: flex;
+        /* Mostra o botão */
+    }
+
+    .body-admin {
+        display: block;
+        /* Remove o flex lateral */
+        position: relative;
+        padding-top: 5vh;
+        /* Ajuste fino do topo */
+    }
+
+    /* === SIDEBAR (GAVETA) === */
+    .body-left {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        /* Escondido */
+        width: 50vw;
+        /* Largura fixa confortável */
+        height: 100vh;
+        z-index: 9999;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+    }
+
+    .body-left.dash-open {
+        left: 0;
+        /* Aberto */
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Ajuste visual do perfil DENTRO da gaveta mobile */
+    .sidebar-profile-header {
+        padding: 30px 20px;
+    }
+
+    .sidebar-avatar-wrapper {
+        width: 70px !important;
+        /* Volta a ser grande no mobile pois tem espaço */
+        height: 70px !important;
+    }
+
+    /* === CONTEÚDO PRINCIPAL === */
+    .body-right {
+        width: 100%;
+        margin: 0;
+        padding: 10px 20px 80px 20px;
+        /* Padding reduzido no topo */
+    }
+
+    /* === GRÁFICOS MOBILE: Pilha Total === */
+    .graficos-center {
+        grid-template-columns: 1fr;
+        /* 1 card por linha */
+    }
+
+    /* Estilo "Card Horizontal" para economizar altura no mobile */
+    .center-block-vendidos,
+    .center-block-criados,
+    .center-block-produtos,
+    .center-block-faturamento {
+        flex-direction: row;
+        padding: 15px;
+        min-height: auto;
+    }
+
+    /* Ajustes na parte inferior */
+    .bottom-left {
+        display: flex;
+        /* Volta para flex column */
+        flex-direction: column;
+        grid-template-columns: 1fr;
+    }
+
+    .block-overall,
+    .block-Earnings,
+    .block-Revenue,
+    .block-Customers {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .block-overall p,
+    .block-Earnings p,
+    .block-Revenue p,
+    .block-Customers p {
+        font-size: 1.1rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. TABLET / LAPTOP PEQUENO (1024px a 1300px)
+   Aqui arrumamos a sidebar que estava quebrando
+   -------------------------------------------------------------------------- */
+@media (max-width: 1300px) {
+
+    /* Reduz o Avatar para caber na sidebar estreita */
+    .sidebar-avatar-wrapper {
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        border-radius: 10px;
+    }
+
+    .sidebar-user-info h3 {
+        font-size: 0.9rem;
+    }
+
+    /* === GRÁFICOS: Layout Tablet (2 colunas em cima, pilha embaixo) === */
+    .graficos-center {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 cards por linha */
+        gap: 15px;
+    }
+
+    .graficos-bottom {
+        display: flex;
+        flex-direction: column;
+        /* Empilha: Totais > Gráfico > Lateral */
+        gap: 20px;
+    }
+
+    /* Transforma a área de totais (esquerda) em uma linha horizontal */
+    .bottom-left {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        /* 4 itens lado a lado */
+        gap: 15px;
+        width: 100%;
+        min-height: auto;
+    }
+
+    /* O botão de relatórios ocupa a linha inteira abaixo */
+    .block-button-reports {
+        grid-column: 1 / -1;
+    }
+
+    /* Remove as bolinhas/estilos verticais para caber na horizontal */
+    .block-overall,
+    .block-Earnings,
+    .block-Revenue,
+    .block-Customers {
+        margin-bottom: 0;
+        text-align: center;
+        border-right: 1px solid #eee;
+    }
+
+    .block-Customers {
+        border-right: none;
+    }
+
+    .block-overall p,
+    .block-Earnings p,
+    .block-Revenue p,
+    .block-Customers p {
+        padding-left: 0;
+        font-size: 1.2rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. MOBILE / TABLET PORTRAIT (Abaixo de 1024px)
+   Aqui entra o Menu Off-Canvas (Gaveta)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+
+    .mobile-dash-trigger-container {
+        display: flex;
+        /* Mostra o botão */
+    }
+
+    .body-admin {
+        display: block;
+        /* Remove o flex lateral */
+        position: relative;
+        padding-top: 5vh;
+        /* Ajuste fino do topo */
+    }
+
+    /* === SIDEBAR (GAVETA) === */
+    .body-left {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        /* Escondido */
+        width: 40vw;
+        /* Largura fixa confortável */
+        height: 100vh;
+        z-index: 9999;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+    }
+
+    .body-left.dash-open {
+        left: 0;
+        /* Aberto */
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Ajuste visual do perfil DENTRO da gaveta mobile */
+    .sidebar-profile-header {
+        padding: 30px 20px;
+    }
+
+    .sidebar-avatar-wrapper {
+        width: 70px !important;
+        /* Volta a ser grande no mobile pois tem espaço */
+        height: 70px !important;
+    }
+
+    /* === CONTEÚDO PRINCIPAL === */
+    .body-right {
+        width: 100%;
+        margin: 0;
+        padding: 10px 20px 80px 20px;
+        /* Padding reduzido no topo */
+    }
+
+    /* === GRÁFICOS MOBILE: Pilha Total === */
+    .graficos-center {
+        grid-template-columns: 1fr;
+        /* 1 card por linha */
+    }
+
+    /* Estilo "Card Horizontal" para economizar altura no mobile */
+    .center-block-vendidos,
+    .center-block-criados,
+    .center-block-produtos,
+    .center-block-faturamento {
+        flex-direction: row;
+        padding: 15px;
+        min-height: auto;
+    }
+
+    /* Ajustes na parte inferior */
+    .bottom-left {
+        display: flex;
+        /* Volta para flex column */
+        flex-direction: column;
+        grid-template-columns: 1fr;
+    }
+
+    .block-overall,
+    .block-Earnings,
+    .block-Revenue,
+    .block-Customers {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .block-overall p,
+    .block-Earnings p,
+    .block-Revenue p,
+    .block-Customers p {
+        font-size: 1.1rem;
+    }
+
+    /* Ajuste dos Gráficos */
+    .main-chart,
+    .bottom-right,
+    .side-card {
+        padding: 15px;
+        width: 100% !important;
+    }
+
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .chart-tabs {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+
+    .chart-tabs button {
+        flex-shrink: 0;
+    }
+
+    /* Coloque isso dentro de @media (max-width: 1024px) ou no final do arquivo */
+
+    .graficos-body {
+        /* O padding-bottom cria o espaço entre o último gráfico e o fim da tela */
+        padding-bottom: 60px !important;
+    }
+
+    /* Opcional: Garante que os cards não colem nas bordas laterais */
+    .graficos-center,
+    .graficos-bottom {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   4. BACKDROP (Fundo escuro ao abrir menu)
+   -------------------------------------------------------------------------- */
+.dash-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.dash-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (max-width: 750px) {
+    .body-left {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        /* Escondido */
+        width: 60vw;
+        /* Largura fixa confortável */
+        height: 100vh;
+        z-index: 9999;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+    }
+
+    .chart-tabs {
+
+        /* Oculta a barra para navegadores baseados em WebKit (Chrome, Safari, Edge) */
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Oculta a barra para Firefox */
+        scrollbar-width: none;
+        /* Oculta a barra para IE e Edge antigo */
+        -ms-overflow-style: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .body-left {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        /* Escondido */
+        width: 100vw;
+        /* Largura fixa confortável */
+        height: 100vh;
+        z-index: 9999;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+    }
+}
+
+
+/* ==========================================================================
+   RESPONSIVIDADE: ABA DE USUÁRIOS (PERFEITO)
+   Foco: Card empilhado, textos que não estouram e botões alinhados.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    /* 1. Container do Card */
+    .user-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 20px;
+        width: 100%;
+    }
+
+    /* 2. Área Superior (Avatar + Texto) */
+    .user-card-left {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start; 
+        gap: 15px;
+    }
+
+    .user-avatar {
+        width: 55px !important;
+        height: 55px !important;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .user-info-col {
+        flex: 1;
+        min-width: 0; 
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%; /* Garante que a coluna ocupe tudo */
+    }
+
+    .user-name {
+        font-size: 1.1rem;
+        line-height: 1.2;
+    }
+
+    .user-email {
+        font-size: 0.85rem;
+        color: #64748b;
+        white-space: normal; 
+        word-break: break-word; 
+        line-height: 1.4;
+    }
+
+    /* --- CORREÇÃO DO ID (OCUPANDO 100%) --- */
+    .user-id-pill {
+        display: block; /* Comporta-se como bloco para aceitar width */
+        width: 100%;    /* Ocupa 100% da coluna de texto */
+        text-align: center; /* Texto centralizado */
+        background-color: #f1f5f9;
+        padding: 8px;
+        border-radius: 8px;
+        margin-top: 8px; /* Afasta um pouco do email */
+        font-size: 0.75rem;
+        
+        /* Tratamento de texto longo */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* 3. Área de Ações */
+    .user-card-actions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .btn-action-user {
+        flex: 1;
+        justify-content: center;
+        padding: 12px;
+    }
+
+    .btn-icon-secondary {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+    }
+}
+
+/* Ajuste Ultra-Fino para telas muito pequenas (iPhone SE / Fold) */
+@media (max-width: 380px) {
+    .user-avatar {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1rem;
+    }
+    
+    .user-name {
+        font-size: 1rem;
+    }
+    
+    .user-card {
+        padding: 15px; /* Ganha espaço reduzindo padding */
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE: MODAIS (USUÁRIOS E BANIMENTO)
+   Foco: Largura total, scroll interno e botões empilhados.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    
+    /* Regra Geral para Conteúdo dos Modais */
+    .details-modal-pro,
+    .ban-modal-pro,
+    .custom-modal-content {
+        width: 95% !important;     /* Quase a largura total da tela */
+        max-width: 95% !important; /* Força a não respeitar limites de desktop */
+        max-height: 90vh;          /* Máximo de 90% da altura da tela */
+        overflow-y: auto;          /* Habilita scroll se o conteúdo for grande */
+        padding: 20px !important;  /* Reduz padding interno */
+        border-radius: 16px;       /* Borda um pouco menor */
+    }
+
+    /* --- MODAL DE DETALHES (FICHA) --- */
+    
+    /* Header do Modal */
+    .details-header-pro {
+        padding: 0 0 15px 0; /* Remove padding lateral */
+    }
+
+    /* Avatar Grande no Modal */
+    .avatar-large-wrapper {
+        width: 120px;   /* Reduzido de 180px */
+        height: 120px;
+        font-size: 2rem;
+    }
+
+    .user-fullname-pro {
+        font-size: 1.2rem; /* Fonte menor */
+    }
+
+    /* Grid de Informações (Vira 1 Coluna) */
+    .details-info-grid {
+        grid-template-columns: 1fr; /* Empilha as informações */
+        gap: 12px;
+        padding: 15px;
+    }
+
+    /* Rodapé com Botões (Empilhar) */
+    .details-footer-pro,
+    .ban-footer-pro {
+        flex-direction: column; /* Botões um embaixo do outro */
+        padding: 15px 0 0 0;    /* Remove padding lateral */
+        gap: 10px;
+    }
+
+    /* --- MODAL DE BANIMENTO --- */
+    
+    .ban-header-pro {
+        padding: 0 0 15px 0;
+    }
+
+    .ban-body-pro {
+        padding: 0; /* Remove padding extra do corpo */
+    }
+
+    /* Ícone de Alerta */
+    .icon-warning-wrapper {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    /* Inputs e Selects */
+    .admin-custom-select .select-trigger,
+    .textarea-pro,
+    .input-pro {
+        font-size: 1rem; /* Fonte legível (evita zoom no iPhone) */
+        padding: 12px;
+    }
+
+    /* Botões Grandes */
+    .btn-pro-black, 
+    .btn-pro-danger, 
+    .btn-pro-secondary,
+    .btn-unban {
+        width: 100%; /* Garante largura total */
+        padding: 14px;
+    }
+}
+
+/* Ajuste para telas muito pequenas (iPhone SE) */
+@media (max-width: 380px) {
+    .details-modal-pro,
+    .ban-modal-pro {
+        padding: 15px !important;
+    }
+    
+    .avatar-large-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+/* ==========================================================================
+   ATUALIZAÇÕES FINAIS (COPIAR E COLAR NO FINAL DO ARQUIVO)
+   ========================================================================== */
+
+/* --- 1. BOTÃO "X" DO MENU LATERAL --- */
+
+/* Padrão: Escondido no Desktop */
+.sidebar-close-btn {
+    display: none;
+}
+
+/* Aparece apenas quando o menu vira gaveta (conforme sua regra de 1430px) */
+@media (max-width: 1430px) {
+    .sidebar-close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        color: #64748b;
+        font-size: 1.8rem;
+        cursor: pointer;
+        z-index: 1000; /* Acima do perfil */
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+
+    .sidebar-close-btn:hover {
+        background-color: #f1f5f9;
+        color: #032b75;
+    }
+    
+    /* Ajuste para o padding do perfil não ficar em cima do X */
+    .sidebar-profile-header {
+        padding-top: 50px !important; /* Espaço para o botão */
+    }
+}
+
+/* --- 2. CORREÇÃO ID DO USUÁRIO (100% LARGURA) --- */
+
+@media (max-width: 768px) {
+    .user-info-col {
+        width: 100%; /* Garante que a coluna ocupe todo espaço disponível */
+    }
+
+    .user-id-pill {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center;
+        margin-top: 10px;
+        box-sizing: border-box; /* Garante que o padding não estoure a largura */
+    }
+}
+
+
+/* --- 3. RESPONSIVIDADE COMPLETA DA ABA PRODUTOS --- */
+
+@media (max-width: 768px) {
+    
+    /* Cabeçalho da Lista de Produtos */
+    .Proh1 {
+        flex-direction: column; /* Empilha Título e Botão */
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    /* Botão Adicionar Produto */
+    .ProAddBtn {
+        width: 100%; /* Botão largura total */
+        justify-content: center;
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    /* Grid de Produtos (1 Coluna no celular) */
+    .ProGrid {
+        grid-template-columns: 1fr; 
+        gap: 20px;
+    }
+
+    /* Card do Produto */
+    .ProCard {
+        padding: 15px;
+    }
+
+    .ProImgBox {
+        height: 180px; /* Altura um pouco menor para economizar tela */
+    }
+
+    /* Botões de Ação do Card (Editar, Ver, Excluir) */
+    .ProRow:last-child {
+        flex-direction: column; /* Botões empilhados */
+        gap: 8px;
+    }
+
+    .ProEdit, .ProView, .ProDelete {
+        width: 100%;
+        padding: 12px 0;
+        border-radius: 8px;
+    }
+    
+    /* MODAL DE DETALHES DO PRODUTO (Visualização) */
+    #modal-product-details-view .details-body-pro {
+        padding: 20px;
+    }
+    
+    #modal-product-details-view .details-info-grid {
+        grid-template-columns: 1fr; /* Informações empilhadas */
+    }
+    
+    #modal-product-details-view .details-footer-pro {
+        flex-direction: column;
+    }
+
+    /* MODAL HISTÓRICO DE VENDAS */
+    #modal-product-sales-history .custom-modal-content {
+        height: 85vh !important; /* Altura fixa segura */
+    }
+    
+    /* Filtros de tempo (Dia, Semana, Mês) */
+    .filter-group-time {
+        width: 100%;
+        display: flex;
+        padding: 4px;
+        background: #f3f4f6;
+        border-radius: 8px;
+    }
+    
+    .filter-group-time .filter-btn {
+        flex: 1; /* Distribui botões igualmente */
+        padding: 8px 4px;
+        font-size: 0.8rem; /* Fonte menor para caber */
+    }
+    
+    /* Lista de Vendas */
+    #sales-history-list {
+        padding: 15px !important;
+    }
+    
+    /* Item da Lista de Vendas */
+    #sales-history-list > div {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    
+    #sales-history-list > div > div:first-child {
+        width: 100%;
+    }
+    
+    /* Badge de quantidade no histórico */
+    #sales-history-list > div > div:last-child {
+        width: 100%;
+        text-align: left !important;
+        padding-top: 8px;
+        border-top: 1px solid #f1f5f9;
+    }
+}
+
+/* Ajustes finos para telas muito pequenas (iPhone SE / Galaxy Fold) */
+@media (max-width: 380px) {
+    .ProImgBox {
+        height: 150px;
+    }
+    
+    .ProName {
+        font-size: 1rem;
+    }
+    
+    .ProPrice {
+        font-size: 1.1rem;
+    }
+}
+
