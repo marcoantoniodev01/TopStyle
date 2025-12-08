@@ -991,7 +991,6 @@ main {
 /* HEADER & STATS */
 .cat-header-section {
     display: flex;
-    padding-bottom: 30rem;
     justify-content: space-between;
     align-items: center;
 }
@@ -3698,3 +3697,4 @@ a.profile-link.admin-mode:hover i {
         /* Reduz o padding interno do modal */
     }
 }
+
