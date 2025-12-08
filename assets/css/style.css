@@ -1556,24 +1556,25 @@ hr {
 
 
 .carrinho-content {
-    min-height: 50vh;
+    /* Removemos altura fixa/min-height rígida que causava espaços estranhos */
     width: 100%;
+    max-width: 1200px; /* Limita largura em telas grandes */
     height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-
+    gap: 2rem; /* Espaçamento consistente entre itens e resumo */
 }
 
 .cart-page {
-    padding: 5rem;
-    height: auto;
-    min-height: 80vh;
-    width: 100%;
+    /* MUDANÇA: Removemos align-items: center para evitar corte no topo */
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin-top: 5vh;
+    align-items: flex-start; /* Alinha no topo, permitindo scroll natural */
+    width: 100%;
+    min-height: 60vh; /* Garante altura total */
+    padding-top: 140px; /* Espaço seguro para o Header fixo + Carrossel */
+    padding-bottom: 50px;
+    box-sizing: border-box;
 }
 
 .cart-item {
@@ -1586,6 +1587,13 @@ hr {
     margin-bottom: 1rem;
     background-color: #fff;
     height: 30vh;
+}
+
+#cart-items {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .cart-item-left {
