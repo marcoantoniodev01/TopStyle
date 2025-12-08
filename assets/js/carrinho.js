@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- SELETORES DO DOM ---
     const cartItemsContainer = document.getElementById('cart-items');
     const cartTotalEl = document.getElementById('cart-total');
-    
+
     // Seletores de Visualização
     const emptyCartView = document.querySelector('.carrinho-vazio');
     const cartContentView = document.querySelector('.carrinho-content'); // Corrigido seletor direto
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentCartItems = [];
             renderCart(); // Vai renderizar o vazio
             updateCartCountUI(0);
-            return; 
+            return;
         }
 
         // Busca itens do banco
@@ -58,10 +58,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             currentCartItems = data || [];
         }
-        
+
         // 2. RENDERIZAR A TELA CORRETA
         renderCart();
-        
+
         // Atualiza contador
         const totalCount = currentCartItems.reduce((acc, item) => acc + item.quantity, 0);
         updateCartCountUI(totalCount);
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const cartItem = document.createElement('div');
             cartItem.className = 'cart-item';
-            
+
             cartItem.innerHTML = `
             <div class="cart-item-left">
                 <img src="${item.img || 'https://placehold.co/150x200'}" alt="${item.nome}">
@@ -130,26 +130,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Cálculo do Total com Cupom
         const appliedCoupon = getAppliedCoupon();
         let total = subtotal;
-        
+
         if (appliedCoupon) {
             if (cupomForm) cupomForm.style.display = 'none';
             if (cupomAplicadoView) {
                 cupomAplicadoView.style.display = 'flex';
-                // Atualiza o badge do cupom com estilo
+
                 const badge = cupomAplicadoView.querySelector('.badge-cupom');
                 if (badge) {
                     badge.textContent = window.CouponManager.getCouponDisplayText(appliedCoupon) || 'CUPOM';
-                    // Aplica estilos do cupom
+
+                    // Estilos dinâmicos do cupom
                     badge.style.border = `2px ${appliedCoupon.style?.borderStyle || 'dashed'} ${appliedCoupon.style?.primaryColor || '#000'}`;
                     badge.style.backgroundColor = appliedCoupon.style?.secondaryColor || '#eee';
                     badge.style.color = appliedCoupon.style?.primaryColor || '#000';
+
+                    // --- NOVA LÓGICA: Clique no Badge remove o cupom ---
+                    badge.title = "Clique para remover o cupom";
+                    badge.onclick = async () => {
+                        const confirmed = await window.showConfirmationModal(
+                            'Deseja remover este cupom de desconto?',
+                            { okText: 'Sim, remover', cancelText: 'Manter' }
+                        );
+                        if (confirmed) {
+                            window.CouponManager.removeCoupon();
+                            renderCart();
+                        }
+                    };
                 }
             }
-            
-            // Calcula desconto usando o gerenciador
+
+            // Link de texto antigo (mantido visível apenas no Desktop via CSS)
+            const trocarLink = document.getElementById('trocar-cupom');
+            if (trocarLink) {
+                trocarLink.onclick = async (e) => {
+                    e.preventDefault();
+                    // Mesma lógica do clique no badge
+                    const confirmed = await window.showConfirmationModal(
+                        'Deseja remover o cupom?',
+                        { okText: 'Sim', cancelText: 'Não' }
+                    );
+                    if (confirmed) {
+                        window.CouponManager.removeCoupon();
+                        renderCart();
+                    }
+                };
+            }
+
             const result = window.CouponManager.calculateDiscount(appliedCoupon, subtotal, 0);
             total = result.total;
         } else {
+            // ... resto do código (sem cupom)
             if (cupomForm) cupomForm.style.display = 'flex';
             if (cupomAplicadoView) cupomAplicadoView.style.display = 'none';
             if (cupomInput) cupomInput.value = '';
@@ -163,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.updateItemQty = async (itemId, newQty) => {
         if (newQty < 1) {
             const item = currentCartItems.find(i => i.id == itemId);
-            if(item) deleteCartItem(itemId, item.nome);
+            if (item) deleteCartItem(itemId, item.nome);
             return;
         }
 
@@ -178,7 +209,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Erro ao atualizar:', error);
             if (window.showToast) window.showToast('Erro ao atualizar quantidade.');
         } else {
-            fetchCart(); 
+            fetchCart();
         }
     };
 
@@ -205,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // --- EVENT LISTENERS DE CUPOM E BOTOES ---
-    
+
     if (cupomBtn) {
         cupomBtn.addEventListener('click', async () => {
             const code = cupomInput.value.trim().toUpperCase();
@@ -246,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (continuarBtn) {
         continuarBtn.addEventListener('click', () => {
-            if(currentCartItems.length > 0) {
+            if (currentCartItems.length > 0) {
                 window.location.href = 'pagamento.html';
             } else {
                 if (window.showToast) window.showToast('Seu carrinho está vazio.');
