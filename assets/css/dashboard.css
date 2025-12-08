@@ -311,6 +311,7 @@ main {
     overflow-y: auto;
     /* Scroll principal apenas aqui */
     position: relative;
+    padding-bottom: 2rem;
 }
 
 /* Animação suave entre abas */
@@ -740,7 +741,6 @@ main {
    ========================================================= */
 .list-product {
     width: 100%;
-    padding-bottom: 50px;
     padding-top: 10px;
 }
 
@@ -989,8 +989,8 @@ main {
 /* ========================================================= */
 
 .cat-container {
-    padding-top: 10rem;
     max-width: 100%;
+    
 }
 
 .cat-hidden {
@@ -1000,9 +1000,10 @@ main {
 /* HEADER & STATS */
 .cat-header-section {
     display: flex;
-    padding-bottom: 30rem;
     justify-content: space-between;
     align-items: center;
+    position: static;
+    height: auto;
 }
 
 .cat-subtitle {
@@ -1072,6 +1073,7 @@ main {
     max-height: 72.2vh;
     /* Define a altura máxima (ajuste 65vh conforme sua necessidade) */
     /* -------------------------------- */
+    z-index: 10000;
 }
 
 /* (OPCIONAL) CABEÇALHO FIXO AO ROLAR */
@@ -1981,7 +1983,6 @@ a.profile-link.admin-mode:hover i {
     flex-direction: column;
     gap: 16px;
     /* Espaço extra no final para o último item não colar no chão */
-    padding-bottom: 40px; 
 
 }
 
