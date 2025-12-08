@@ -3017,3 +3017,684 @@ a.profile-link.admin-mode:hover i {
     color: #2563eb;
 }
 
+/* =========================================================
+           STS. ESTILOS ESPECÍFICOS DA PÁGINA DE PEDIDOS (Adaptados)
+           ========================================================= */
+
+/* Variáveis locais para o conteúdo */
+.content-wrapper {
+    --primary: #3b82f6;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+    --status-pendente-bg: #fff7ed;
+    --status-pendente-text: #c2410c;
+    --status-confirmado-bg: #f0fdf4;
+    --status-confirmado-text: #15803d;
+    --status-cancelado-bg: #fef2f2;
+    --status-cancelado-text: #b91c1c;
+
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Cabeçalho da Página Interna */
+.page-header-internal {
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: #64748b;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+/* KPIs */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.kpi-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.kpi-meta {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+/* Cores KPI */
+.card-orange .kpi-icon {
+    background: #ffedd5;
+    color: #ea580c;
+}
+
+.card-green .kpi-icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.card-red .kpi-icon {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.card-blue .kpi-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+/* Toolbar e Filtros */
+.toolbar {
+    background: var(--white);
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 8px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.btn-filter {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-filter:hover {
+    color: #191D28;
+    background: #e2e8f0;
+}
+
+.btn-filter.active {
+    background: var(--white);
+    color: var(--primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-config {
+    background: white;
+    border: 1px solid #cbd5e1;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: #334155;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-config:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+/* Tabela */
+.table-wrapper-master {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 2vh;
+}
+
+.top-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    height: 15px;
+    background: #f8fafc;
+    border-radius: 12px 12px 0 0;
+}
+
+.top-scroll-content {
+    height: 1px;
+}
+
+.table-container {
+    overflow-x: auto;
+    user-select: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    font-size: 0.9rem;
+}
+
+.custom-table th {
+    background: #f8fafc;
+    text-align: left;
+    padding: 16px;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.custom-table td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Badges e Botões da Tabela */
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: 110px;
+    justify-content: center;
+}
+
+.badge-pendente {
+    background: var(--status-pendente-bg);
+    color: var(--status-pendente-text);
+}
+
+.badge-confirmado {
+    background: var(--status-confirmado-bg);
+    color: var(--status-confirmado-text);
+}
+
+.badge-cancelado {
+    background: var(--status-cancelado-bg);
+    color: var(--status-cancelado-text);
+}
+
+.btn-action-status {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    transition: 0.2s;
+}
+
+.btn-action-status:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Dropdown Colunas */
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 110%;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    width: 200px;
+    padding: 8px;
+    z-index: 50;
+    display: none;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.column-option {
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.column-option:hover {
+    background: #f1f5f9;
+}
+
+
+/* ============================================================
+           STS. MODAL DE AÇÕES (STATUS)
+           ============================================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-card {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.open .modal-card {
+    transform: scale(1);
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.status-options-grid {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.status-option-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    transition: 0.2s;
+}
+
+.status-option-btn:hover {
+    background: #f8fafc;
+}
+
+.status-option-btn.active-pendente {
+    border-color: #f59e0b;
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.status-option-btn.active-confirmado {
+    border-color: #10b981;
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status-option-btn.active-cancelado {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+}
+
+.action-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-modal {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.btn-save {
+    background: #0f172a;
+    color: white;
+}
+
+.btn-save:hover {
+    background: #334155;
+}
+
+.btn-cancel-modal {
+    background: white;
+    border: 1px solid #cbd5e1;
+    color: #64748b;
+}
+
+.btn-delete-modal {
+    background: #ef4444;
+    color: white;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.btn-delete-modal:hover {
+    background: #dc2626;
+}
+
+/* ============================================================
+           STS. MODAL DE EXCLUSÃO (PREMIUM GLASS)
+           ============================================================= */
+#deleteModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10001;
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+
+#deleteModal.open {
+    display: flex;
+    opacity: 1;
+}
+
+.delete-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    animation: modalPop .25s ease forwards;
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.delete-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 36px;
+}
+
+.delete-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.delete-text {
+    color: #4b5563;
+    margin-bottom: 4px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.delete-warning {
+    color: #dc2626;
+    font-weight: 600;
+    font-size: .85rem;
+    margin-top: 8px;
+}
+
+.delete-buttons {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.btn-confirm-delete {
+    padding: 10px 20px;
+    background: #dc2626;
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-confirm-delete:hover {
+    background: #b91c1c;
+}
+
+/* =========================================================
+   5. AJUSTES DE RESPONSIVIDADE (MOBILE & TABLET)
+   ========================================================= */
+
+/* --- Tablet/Pequenos Desktops (Máximo 1024px) --- */
+@media (max-width: 1024px) {
+
+    /* Diminui o padding geral da página para telas menores */
+    .content-wrapper {
+        padding: 0 15px;
+    }
+}
+
+/* --- Mobile (Máximo 600px) --- */
+@media (max-width: 600px) {
+
+    /* 1. Títulos e Margens */
+    .page-header-internal {
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        /* Reduz o tamanho do título principal */
+    }
+
+    /* 2. KPIs */
+    .kpi-grid {
+        gap: 12px;
+        /* Reduz o espaço entre os cards */
+        margin-bottom: 24px;
+        /* O auto-fit/minmax já garante que os cards fiquem em 1 coluna se a tela for muito estreita */
+    }
+
+    .kpi-card {
+        padding: 18px;
+        /* Reduz o padding interno dos cards */
+    }
+
+    .kpi-value {
+        font-size: 1.75rem;
+        /* Reduz o tamanho do valor principal */
+    }
+
+    /* 3. Toolbar (Filtros e Configurações) */
+    .toolbar {
+        flex-direction: column;
+        /* Coloca a toolbar em coluna no celular */
+        align-items: stretch;
+        /* Estica os elementos para 100% da largura */
+        padding: 12px;
+    }
+
+    .filter-group {
+        /* Permite que os botões de filtro quebrem a linha se necessário */
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .btn-filter,
+    .btn-config {
+        /* Garante que os botões de filtro e config tenham bom toque e largura */
+        flex-grow: 1;
+        /* Permite que os botões dentro do filter-group cresçam */
+        padding: 10px 12px;
+        text-align: center;
+    }
+
+    /* 4. Tabela */
+    /* A tabela já está com overflow-x: auto; e min-width: 900px; */
+    /* Isso garante que ela seja rolada horizontalmente, o que é a melhor solução para tabelas grandes em mobile. */
+    .table-container {
+        /* Garante que o usuário veja a borda do scroll */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .custom-table {
+        font-size: 0.8rem;
+        /* Reduz levemente a fonte da tabela */
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 12px 10px;
+    }
+
+    .badge {
+        width: 90px;
+        /* Ajusta a largura do badge para caber melhor */
+        font-size: 0.7rem;
+    }
+
+    .btn-action-status {
+        width: 28px;
+        height: 28px;
+        margin-left: 4px;
+    }
+
+    /* 5. Modais */
+    .modal-card {
+        padding: 24px 18px;
+        /* Reduz o padding interno do modal */
+    }
+}
