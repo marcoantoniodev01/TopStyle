@@ -594,6 +594,7 @@ main {
     align-items: center;
     position: relative;
     bottom: 40px;
+    margin: 80px 0px;
 }
 
 .marquee-track {
@@ -4030,3 +4031,4 @@ hr {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
+
