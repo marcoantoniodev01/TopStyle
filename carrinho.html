@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
     <title>Seu Carrinho - TopStyle</title>
 </head>
@@ -265,14 +266,24 @@
 
                 <div class="recomendações-carrinho">
                     <h1>Recomendações</h1>
-                    <div class="products-content-carrinho">
+                    <div class="products-content-carrinho" style="width: 90%; overflow: hidden;">
 
-                        <div class="product-row">
-                            <!-- Slots serão preenchidos pelo JavaScript -->
-                            <div class="product-slot"></div>
-                            <div class="product-slot"></div>
-                            <div class="product-slot"></div>
-                            <div class="product-slot"></div>
+                        <div class="swiper cartSwiper">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <div class="product-slot" data-slot="1"></div>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="product-slot" data-slot="2"></div>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="product-slot" data-slot="3"></div>
+                                </div>
+                                <div class="swiper-slide">
+                                    <div class="product-slot" data-slot="4"></div>
+                                </div>
+                            </div>
+                            <div class="swiper-pagination"></div>
                         </div>
 
                     </div>
@@ -372,6 +383,105 @@
     </footer>
 
     <!-- Scripts -->
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <style>
+        /* Estilos Gerais do Swiper no Carrinho */
+        .cartSwiper {
+            width: 100%;
+            padding-bottom: 40px;
+        }
+
+        .cartSwiper .swiper-slide {
+            display: flex;
+            justify-content: center;
+            height: auto;
+        }
+
+        /* Força o slot a ocupar 100% do slide */
+        .cartSwiper .product-slot {
+            min-width: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            min-height: auto !important;
+            /* Reseta altura mínima rígida */
+        }
+
+        /* === CORREÇÃO DO BUG (Telas <= 374px) === */
+        @media (max-width: 374px) {
+
+            /* Ajusta o container da imagem para respeitar a proporção */
+            .cartSwiper .product-link {
+                height: auto !important;
+                /* Remove a altura fixa de 60vh */
+                aspect-ratio: 3 / 4;
+                /* Mantém o formato retangular correto */
+                max-height: 45vh;
+                /* Limita para não ficar muito alto */
+            }
+
+            /* O PULO DO GATO: Alinha a imagem no TOPO para não cortar a cabeça */
+            .cartSwiper .product-link img {
+                object-fit: cover;
+                object-position: top center;
+                /* Foca no rosto/topo da imagem */
+            }
+
+            /* Ajuste fino nos textos para não quebrar linha */
+            .cartSwiper .product-title {
+                font-size: 0.9rem !important;
+            }
+
+            .cartSwiper .product-price {
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Estilo da paginação (bolinhas) */
+        .swiper-pagination-bullet-active {
+            background: #000 !important;
+        }
+    </style>
+
+    <script>
+        var swiperCart = new Swiper(".cartSwiper", {
+            // Mobile (Padrão) - 1 item
+            slidesPerView: 1,
+            spaceBetween: 15, // Espaço levemente menor no mobile
+            grabCursor: true,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+                dynamicBullets: true,
+            },
+
+            // Breakpoints Responsivos
+            breakpoints: {
+                // Celulares maiores (Horizontal)
+                500: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                // Tablet / Notebook Pequeno (A quebra que você pediu)
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                },
+                // Notebook Padrão
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+                // Desktop Grande (PC)
+                1366: {
+                    slidesPerView: 4,
+                    spaceBetween: 30,
+                }
+            },
+        });
+    </script>
+
     <script src="assets/js/admiconedash.js"></script>
     <script src="assets/js/loader.js"></script>
     <script src="assets/js/coupon-manager.js"></script>
@@ -385,10 +495,9 @@
     <script src="assets/js/header-control.js"></script>
     <script src="assets/js/menu-hamburger.js"></script>
     <script src="assets/js/colecao.js"></script>
-  <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/collection-linker.js"></script>
 </body>
 
 
 
 </html>
-
