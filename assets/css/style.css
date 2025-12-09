@@ -478,6 +478,7 @@ main {
     width: 100%;
     height: 85vh;
     margin-top: 8vh;
+    margin-bottom: 100px;
 }
 
 .inicio__left {
@@ -496,6 +497,7 @@ main {
     font-size: 9rem;
     width: 100%;
     text-transform: uppercase;
+    pointer-events: none;
 }
 
 .creat__cloth span {
@@ -506,6 +508,7 @@ main {
     width: 70%;
     padding: 0px 10px;
     margin-left: 150px;
+    pointer-events: none;
 }
 
 .buttons__inicio {
@@ -4465,5 +4468,6 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
