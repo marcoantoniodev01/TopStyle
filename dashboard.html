@@ -360,31 +360,42 @@
 
             <section class="graficos-center">
               <div class="center-block-vendidos">
-                <div class="icon-center-block-vendidos"><i class="bi bi-receipt"></i></div>
+                <div class="icon-center-block-vendidos">
+                  <i class="bi bi-people-fill"></i>
+                </div>
                 <div class="vendidos-text">
-                  <h2>0</h2>
+                  <h2 id="total-usuarios">0</h2>
                   <p>Usuários</p>
                 </div>
               </div>
+
               <div class="center-block-criados">
-                <div class="icon-center-block-criados"><i class="bi bi-hammer"></i></div>
+                <div class="icon-center-block-criados">
+                  <i class="bi bi-hammer"></i>
+                </div>
                 <div class="criados-text">
                   <h2>0 m</h2>
                   <p>Criados</p>
                 </div>
               </div>
+
               <div class="center-block-produtos">
-                <div class="icon-center-block-produtos"><i class="bi bi-box-seam"></i></div>
+                <div class="icon-center-block-produtos">
+                  <i class="bi bi-box-seam"></i>
+                </div>
                 <div class="produtos-text">
-                  <h2 id="total-produtos">0 m</h2>
+                  <h2 id="total-produtos">0</h2>
                   <p>Produtos</p>
                 </div>
               </div>
+
               <div class="center-block-faturamento">
-                <div class="icon-center-block-faturamento"><i class="bi bi-cash-coin"></i></div>
+                <div class="icon-center-block-faturamento">
+                  <i class="bi bi-truck"></i>
+                </div>
                 <div class="faturamento-text">
-                  <h2>0 m</h2>
-                  <p>faturamento</p>
+                  <h2 id="total-fornecedores">0</h2>
+                  <p>Fornecedores</p>
                 </div>
               </div>
             </section>
@@ -430,14 +441,51 @@
               </section>
               <section class="bottom-right">
                 <!-- ====== GRÁFICO DE BARRAS ====== -->
-                <div class="side-card">
-                  <h3>Top 5 Clientes</h3>
-                  <div id="barChart"></div>
-                  <h2>2100</h2>
-                  <p>12% higher than last month</p>
+                <div class="side-card"
+                  style="min-height: 400px; display: flex; flex-direction: column; position: relative;">
+                  <h3 style="margin-bottom: 20px; z-index: 10;">Top 5 Clientes</h3>
+
+                  <div id="podium-container" class="podium-stage">
+                    <div class="podium-loading">Carregando ranking...</div>
+                  </div>
+
+                  <div id="podium-tooltip" class="podium-tooltip hidden">
+                    <div class="tooltip-header">
+                      <img id="tooltip-img" src="" alt="Avatar">
+                    </div>
+                    <div class="tooltip-body">
+                      <h4 id="tooltip-name">Nome</h4>
+                      <span id="tooltip-user">@usuario</span>
+                      <p id="tooltip-email">email@exemplo.com</p>
+                      <div class="tooltip-stats">
+                        <span id="tooltip-total">R$ 0,00</span> em compras
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
             </section>
+
+            <section class="graficos-footer fade-in">
+              <div class="highlight-wrapper">
+
+                <div class="highlight-header-row">
+                  <h3><i class="bi bi-trophy" style="color: #f59e0b;"></i> Produto Campeão de Vendas</h3>
+                  <span class="live-badge"><span class="blink-dot"></span> Em tempo real</span>
+                </div>
+
+                <div id="dashboard-best-seller-card" class="best-seller-wide-card">
+                  <div class="skeleton-wide">Carregando destaque...</div>
+                </div>
+
+                <div class="highlight-footer-action">
+                  <button onclick="navigateToReports()" class="btn-show-more-dash">
+                    Ver Ranking Completo <i class="bi bi-arrow-right-short"></i>
+                  </button>
+                </div>
+              </div>
+            </section>
+
           </section>
         </div>
 
@@ -1321,4 +1369,3 @@
 </body>
 
 </html>
-
