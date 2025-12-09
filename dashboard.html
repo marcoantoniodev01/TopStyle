@@ -321,7 +321,7 @@
                 <span class="arrow">▶</span>
               </li>
               <ul class="submenu">
-                <li>Toda as Notificações</li>
+                <li data-content="notificacao-geral">Toda as Notificações</li>
                 <li>Mensagens de usuários</li>
                 <li>Logs de erro ou atividades (se tiver como)</li>
               </ul>
@@ -582,6 +582,45 @@
             </div>
           </div>
         </div>
+
+        <div class="page" id="notificacao-geral">
+          <div class="notificacao-geral-wrapper">
+            <h1 class="notificacao-geral-title"> Notificação do sistema</h1>
+            <p class="notificacao-geral-subtitle">Log de Auditoria com Filtros Avançados</p>
+
+            <div class="notificacao-geral-filter-container">
+              <div class="notificacao-geral-filter-row">
+                <div class="notificacao-geral-search-box">
+                  <i class="fa-solid fa-search"></i>
+                  <input type="text" id="notificacao-geral-input-search" class="notificacao-geral-input-control"
+                    placeholder="Pesquisar por nome, ID, valor..." onkeyup="notificacaoGeralFilterLogs()">
+                </div>
+
+                <select id="notificacao-geral-select-table" class="notificacao-geral-select-control"
+                  onchange="notificacaoGeralFilterLogs()">
+                  <option value="all">Todas as Tabelas</option>
+                </select>
+              </div>
+
+              <div class="notificacao-geral-filter-types">
+                <div id="notificacao-geral-type-buttons">
+                  <button class="notificacao-geral-type-btn notificacao-geral-active notificacao-geral-all"
+                    onclick="notificacaoGeralSetEventType('all')">Todos</button>
+                  <button class="notificacao-geral-type-btn notificacao-geral-insert"
+                    onclick="notificacaoGeralSetEventType('INSERT')">Criados (Insert)</button>
+                  <button class="notificacao-geral-type-btn notificacao-geral-update"
+                    onclick="notificacaoGeralSetEventType('UPDATE')">Editados (Update)</button>
+                  <button class="notificacao-geral-type-btn notificacao-geral-delete"
+                    onclick="notificacaoGeralSetEventType('DELETE')">Apagados (Delete)</button>
+                </div>
+                <span class="notificacao-geral-results-count" id="notificacao-geral-results-count">Carregando...</span>
+              </div>
+            </div>
+
+            <div id="notificacao-geral-log-container"></div>
+          </div>
+        </div>
+
         <div class="page" id="controle-header">
 
           <section class="header-link-section">
@@ -1167,6 +1206,26 @@
     </div>
   </div>
 
+  <div id="notificacao-geral-detail-modal" class="notificacao-geral-modal-overlay">
+    <div class="notificacao-geral-modal-content">
+      <div class="notificacao-geral-modal-header">
+        <span class="notificacao-geral-modal-title" id="notificacao-geral-modal-title-text"></span>
+        <button class="notificacao-geral-close-btn" onclick="notificacaoGeralCloseModal()">&times;</button>
+      </div>
+
+      <div class="notificacao-geral-view-controls">
+        <button class="notificacao-geral-view-btn notificacao-geral-active"
+          onclick="notificacaoGeralSwitchView('visual')" id="notificacao-geral-btn-visual"><i
+            class="fa-regular fa-eye"></i> Visual Cliente</button>
+        <button class="notificacao-geral-view-btn" onclick="notificacaoGeralSwitchView('code')"
+          id="notificacao-geral-btn-code"><i class="fa-solid fa-code"></i>
+          Dados Técnicos</button>
+      </div>
+
+      <div class="notificacao-geral-modal-body" id="notificacao-geral-modal-body-content"></div>
+    </div>
+  </div>
+
   <script src="assets/js/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
@@ -1181,6 +1240,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <script src="assets/js/status-pedido-dash.js"></script>
+  <script src="assets/js/notificacao-geral.js"></script>
   <script src="assets/js/colecao.js"></script>
   <script src="assets/js/collection-linker.js"></script>
 </body>
