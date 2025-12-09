@@ -251,71 +251,65 @@ main {
 
     /* MUDANÇA 1: Transição 'linear' para um derretimento constante */
     transition: transform 2s linear,
-        opacity 2s linear,
-        clip-path 2s linear;
-
-    /* ESTADO INICIAL: Um polígono reto com 23 pontos (IDÊNTICO AO SEU ARQUIVO ORIGINAL) */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 100%, 90% 100%, 85% 100%, 80% 100%, 75% 100%,
-            70% 100%, 65% 100%, 60% 100%, 55% 100%, 50% 100%, 45% 100%, 40% 100%,
-            35% 100%, 30% 100%, 25% 100%, 20% 100%, 15% 100%, 10% 100%, 5% 100%, 0 100%);
+        opacity 2s linear;
 }
 
-/* CLASSE DE TRANSIÇÃO: Define o estado final do "derretimento" */
-#intro.is-melting {
+/* ============ SAÍDA SUAVE (BOTÃO PULAR) ============ */
+#intro.simple-fade-out {
+    opacity: 0;
+    visibility: hidden;
+    /* Transição simples de opacidade */
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    
+    /* Anula o efeito de derretimento para o botão pular */
+    clip-path: none !important; 
+    transform: none !important;
+}
 
-    /* MUDANÇA 2: O novo clip-path de "gotas arredondadas" (simuladas) */
-    /* Ele usa os mesmos 23 pontos, mas variando a altura (Y) */
-    clip-path: polygon(0 0, 100% 0,
-            /* Pontos 1, 2 (Topo) */
-            100% 90%,
-            /* Ponto 3 (Vão) */
-            95% 98%,
-            /* Ponto 4 (Curva descendo) */
-            90% 100%,
-            /* Ponto 5 (Ponta da Gota) */
-            85% 98%,
-            /* Ponto 6 (Curva subindo) */
-            80% 90%,
-            /* Ponto 7 (Vão) */
-            75% 96%,
-            /* Ponto 8 (Curva descendo) */
-            70% 100%,
-            /* Ponto 9 (Ponta da Gota) */
-            65% 96%,
-            /* Ponto 10 (Curva subindo) */
-            60% 92%,
-            /* Ponto 11 (Vão) */
-            55% 99%,
-            /* Ponto 12 (Curva descendo) */
-            50% 100%,
-            /* Ponto 13 (Ponta da Gota) */
-            45% 99%,
-            /* Ponto 14 (Curva subindo) */
-            40% 92%,
-            /* Ponto 15 (Vão) */
-            35% 96%,
-            /* Ponto 16 (Curva descendo) */
-            30% 100%,
-            /* Ponto 17 (Ponta da Gota) */
-            25% 96%,
-            /* Ponto 18 (Curva subindo) */
-            20% 90%,
-            /* Ponto 19 (Vão) */
-            15% 98%,
-            /* Ponto 20 (Curva descendo) */
-            10% 100%,
-            /* Ponto 21 (Ponta da Gota) */
-            5% 98%,
-            /* Ponto 22 (Curva subindo) */
-            0% 90%
-            /* Ponto 23 (Vão final) */
-        );
+/* ============ RESPONSIVIDADE DOS TEXTOS DA INTRO ============ */
+/* Configuração Base (Desktop Grande) */
+.intro-text,
+.intro-text-top {
+    font-size: 10rem;
+    font-weight: bold;
+    color: #000;
+    transform: translateY(100%);
+    opacity: 0;
+    position: absolute;
+    white-space: nowrap; /* Evita quebra de linha indesejada */
+}
 
-    /* ESTADO FINAL: Mover para cima */
-    transform: translateY(-100%);
+/* Notebooks e Telas Médias (até 1440px) */
+@media (max-width: 1440px) {
+    .intro-text,
+    .intro-text-top {
+        font-size: 7rem; 
+    }
+}
 
-    /* MUDANÇA 3: A 'opacity' foi REMOVIDA para não dar fade */
-    /* opacity: 0.5; */
+/* Tablets (até 1024px) */
+@media (max-width: 1024px) {
+    .intro-text,
+    .intro-text-top {
+        font-size: 5rem;
+    }
+}
+
+/* Celulares (até 767px) */
+@media (max-width: 767px) {
+    .intro-text,
+    .intro-text-top {
+        /* Usa VW (Viewport Width) para escalar proporcionalmente à largura da tela */
+        font-size: 15vw; 
+    }
+}
+
+/* Celulares Pequenos (iPhone SE, Galaxy antigos - até 374px) */
+@media (max-width: 374px) {
+    .intro-text,
+    .intro-text-top {
+        font-size: 13vw; /* Levemente menor para não cortar nas bordas */
+    }
 }
 
 
@@ -594,7 +588,6 @@ main {
     align-items: center;
     position: relative;
     bottom: 40px;
-    margin: 80px 0px;
 }
 
 .marquee-track {
@@ -1559,21 +1552,26 @@ hr {
 .carrinho-content {
     /* Removemos altura fixa/min-height rígida que causava espaços estranhos */
     width: 100%;
-    max-width: 1200px; /* Limita largura em telas grandes */
+    max-width: 1200px;
+    /* Limita largura em telas grandes */
     height: auto;
     display: flex;
     flex-direction: column;
-    gap: 2rem; /* Espaçamento consistente entre itens e resumo */
+    gap: 2rem;
+    /* Espaçamento consistente entre itens e resumo */
 }
 
 .cart-page {
     /* MUDANÇA: Removemos align-items: center para evitar corte no topo */
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinha no topo, permitindo scroll natural */
+    align-items: flex-start;
+    /* Alinha no topo, permitindo scroll natural */
     width: 100%;
-    min-height: 60vh; /* Garante altura total */
-    padding-top: 140px; /* Espaço seguro para o Header fixo + Carrossel */
+    min-height: 60vh;
+    /* Garante altura total */
+    padding-top: 140px;
+    /* Espaço seguro para o Header fixo + Carrossel */
     padding-bottom: 50px;
     box-sizing: border-box;
 }
@@ -1752,10 +1750,13 @@ hr {
 .cupom-aplicado-car {
     display: flex;
     /* ALTERAÇÃO CRUCIAL AQUI: Layout de COLUNA para empilhar */
-    flex-direction: column; 
-    align-items: flex-end; /* Alinha o conteúdo interno à direita */
-    gap: 5px; /* Espaço menor entre o selo e o botão */
-    height: auto; /* Deixa a altura se ajustar ao conteúdo */
+    flex-direction: column;
+    align-items: flex-end;
+    /* Alinha o conteúdo interno à direita */
+    gap: 5px;
+    /* Espaço menor entre o selo e o botão */
+    height: auto;
+    /* Deixa a altura se ajustar ao conteúdo */
     align-items: center;
     padding: 1rem;
 }
@@ -2075,30 +2076,34 @@ hr {
 /* style.css (Linha 2017) - SUBSTITUA A REGRA ANTIGA POR ESTA */
 
 .admin-edit-btn {
-    position: absolute;       /* Flutua sobre o conteúdo */
-    inset: 0;               /* Cobre 100% (top, left, right, bottom = 0) */
+    position: absolute;
+    /* Flutua sobre o conteúdo */
+    inset: 0;
+    /* Cobre 100% (top, left, right, bottom = 0) */
     width: 100%;
     height: 100%;
-    
+
     /* Aparência */
-    background-color: transparent; /* Fundo transparente (como pedido) */
+    background-color: transparent;
+    /* Fundo transparente (como pedido) */
     color: white;
     border: none;
     font-size: 1.4rem;
     font-weight: bold;
     cursor: pointer;
-    
+
     /* Centraliza o texto "Editar" */
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     /* Efeito de hover (opcional, mas recomendado) */
     transition: background-color 0.3s ease;
 }
 
 .admin-edit-btn:hover {
-    background-color: rgba(0, 0, 0, 0.2); /* Fica levemente escuro no hover */
+    background-color: rgba(0, 0, 0, 0.2);
+    /* Fica levemente escuro no hover */
 }
 
 /* O fundo escurecido com blur, igual seu header */
@@ -2289,10 +2294,11 @@ hr {
 .modal-actions {
     position: sticky;
     bottom: 0;
-    background: #fafafa; /* Cor de fundo do seu modal */
+    background: #fafafa;
+    /* Cor de fundo do seu modal */
     display: flex;
     justify-content: flex-end;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
     gap: 10px;
     border-top: 1px solid #eee;
     padding-top: 1.5rem;
@@ -2510,7 +2516,8 @@ hr {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* A mágica acontece aqui */
+    justify-content: space-between;
+    /* A mágica acontece aqui */
     height: auto;
     padding-bottom: 1rem;
     gap: 1rem;
@@ -2519,7 +2526,8 @@ hr {
 .text-endereco-pagamanto {
     width: 30%;
     display: flex;
-    justify-content: flex-start; /* Nome na esquerda */
+    justify-content: flex-start;
+    /* Nome na esquerda */
     text-align: left;
     font-weight: bold;
 }
@@ -2527,7 +2535,8 @@ hr {
 .pagamento-endereco-data {
     width: 40%;
     display: flex;
-    justify-content: center; /* Endereço no centro */
+    justify-content: center;
+    /* Endereço no centro */
     text-align: center;
     font-size: 0.95rem;
     color: #555;
@@ -2537,7 +2546,8 @@ hr {
 .pagamento-botao {
     width: 30%;
     display: flex;
-    justify-content: flex-end; /* Botões na direita */
+    justify-content: flex-end;
+    /* Botões na direita */
     align-items: center;
     gap: 10px;
 }
@@ -2553,7 +2563,7 @@ hr {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    
+
 }
 
 .pagamento-produtos {
@@ -2565,8 +2575,10 @@ hr {
 }
 
 .checkout-product-details {
-    font-size: 0.85rem; /* Um pouco menor que o nome */
-    color: #666;        /* Cinza para hierarquia visual */
+    font-size: 0.85rem;
+    /* Um pouco menor que o nome */
+    color: #666;
+    /* Cinza para hierarquia visual */
     margin-top: 4px;
     font-weight: 500;
     display: flex;
@@ -2574,7 +2586,7 @@ hr {
     align-items: center;
 }
 
-.checkout-product-details span + span::before {
+.checkout-product-details span+span::before {
     content: "|";
     margin-right: 8px;
     color: #ccc;
@@ -2594,8 +2606,9 @@ hr {
     min-height: 15vh;
     background-color: white;
     display: flex;
-    align-items: center; 
-    justify-content: space-between; /* Título na esquerda, Bloco de ação na direita */
+    align-items: center;
+    justify-content: space-between;
+    /* Título na esquerda, Bloco de ação na direita */
     padding: 1.5rem 2rem;
 }
 
@@ -2694,8 +2707,9 @@ hr {
 
 .cupom-container {
     display: flex;
-    justify-content: flex-end; /* Garante que o bloco fique na direita */
-    width: auto; 
+    justify-content: flex-end;
+    /* Garante que o bloco fique na direita */
+    width: auto;
 }
 
 .pagamento-total-do-pedido {
@@ -2742,8 +2756,9 @@ hr {
     gap: 15px;
     padding: 15px;
     /* Usamos borda transparente no estado normal para ocupar espaço e não "pular" */
-    border: 2px solid transparent; 
-    background-color: #f9f9f9; /* Fundo levemente cinza */
+    border: 2px solid transparent;
+    background-color: #f9f9f9;
+    /* Fundo levemente cinza */
     border-radius: 8px;
     margin-bottom: 10px;
     cursor: pointer;
@@ -2754,14 +2769,16 @@ hr {
 /* Hover */
 .frete-opcao:hover {
     background-color: #fff;
-    border-color: #ccc; /* Borda cinza no hover */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-color: #ccc;
+    /* Borda cinza no hover */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* Estado SELECIONADO (Adicionado via JS) */
 .frete-opcao.selecionado {
     background-color: #fff;
-    border-color: #272e41; /* Borda preta quando selecionado */
+    border-color: #272e41;
+    /* Borda preta quando selecionado */
 }
 
 /* Oculta o input radio visualmente ou deixa ele bonito */
@@ -2769,7 +2786,8 @@ hr {
     accent-color: #272e41;
     transform: scale(1.2);
     cursor: pointer;
-    pointer-events: none; /* O clique é controlado pela DIV pai */
+    pointer-events: none;
+    /* O clique é controlado pela DIV pai */
 }
 
 .frete-opcao label {
@@ -2778,7 +2796,8 @@ hr {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    pointer-events: none; /* O clique é controlado pela DIV pai */
+    pointer-events: none;
+    /* O clique é controlado pela DIV pai */
 }
 
 #resumo-compra {
@@ -3059,7 +3078,7 @@ hr {
     align-items: center;
     gap: 15px;
     padding: 15px;
-    border: 2px solid transparent; 
+    border: 2px solid transparent;
     background-color: #f9f9f9;
     border-radius: 8px;
     cursor: pointer;
@@ -3070,12 +3089,13 @@ hr {
 .pagamento-opcao:hover {
     background-color: #fff;
     border-color: #ccc;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .pagamento-opcao.selecionado {
     background-color: #fff;
-    border-color: #272e41; /* Borda escura */
+    border-color: #272e41;
+    /* Borda escura */
 }
 
 .pagamento-opcao input[type="radio"] {
@@ -3098,9 +3118,11 @@ hr {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 30px; /* Espaço para o radio escondido */
+    padding-left: 30px;
+    /* Espaço para o radio escondido */
     font-size: 1.1rem;
-    pointer-events: none; /* O clique é na DIV pai */
+    pointer-events: none;
+    /* O clique é na DIV pai */
 }
 
 .pagamento-opcao-info {
@@ -3139,10 +3161,12 @@ hr {
     padding: 1rem 1.5rem;
     border: 2px solid #272e41;
     border-top: none;
-    margin-top: -8px; /* Puxa para baixo do header */
+    margin-top: -8px;
+    /* Puxa para baixo do header */
     border-radius: 0 0 8px 8px;
     background: #fff;
-    display: flex; /* Alterado de 'none' para 'flex' no JS */
+    display: flex;
+    /* Alterado de 'none' para 'flex' no JS */
     flex-direction: column;
     gap: 1rem;
 }
@@ -3159,7 +3183,8 @@ hr {
     margin-bottom: 5px;
     cursor: pointer;
     transition: all 0.2s ease;
-    position: relative; /* Para o input radio */
+    position: relative;
+    /* Para o input radio */
 }
 
 .cartao-salvo-opcao.selecionado {
@@ -3187,8 +3212,10 @@ hr {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 30px; /* Espaço para o radio */
-    pointer-events: none; /* O clique é na DIV pai */
+    padding-left: 30px;
+    /* Espaço para o radio */
+    pointer-events: none;
+    /* O clique é na DIV pai */
 }
 
 .cartao-salvo-info {
@@ -3206,6 +3233,7 @@ hr {
     color: #333;
     line-height: 1.3;
 }
+
 .cartao-salvo-info p b {
     font-size: 1rem;
     color: #000;
@@ -3257,35 +3285,40 @@ hr {
 
 #cartao-accordion-content {
     /* MANTÉM O DISPLAY, MAS ESCONDE COM OUTRAS PROPRIEDADES */
-    display: flex; 
-    overflow: hidden; /* ESSENCIAL para a transição de max-height */
-    
+    display: flex;
+    overflow: hidden;
+    /* ESSENCIAL para a transição de max-height */
+
     /* ESTADO FECHADO (padrão) */
     max-height: 0;
     opacity: 0;
     padding-top: 0;
     padding-bottom: 0;
     border-top: none;
-    border-bottom-width: 0; /* Anima a borda */
-    margin-top: -8px; /* Mantém o alinhamento */
-    
+    border-bottom-width: 0;
+    /* Anima a borda */
+    margin-top: -8px;
+    /* Mantém o alinhamento */
+
     /* A TRANSIÇÃO SUAVE */
-    transition: max-height 0.4s ease-in-out, 
-                opacity 0.3s ease-in-out, 
-                padding 0.4s ease-in-out,
-                border-width 0.4s ease-in-out;
+    transition: max-height 0.4s ease-in-out,
+        opacity 0.3s ease-in-out,
+        padding 0.4s ease-in-out,
+        border-width 0.4s ease-in-out;
 }
 
 /* ESTADO ABERTO (quando .open está no PAI) */
 #cartao-accordion.open #cartao-accordion-content {
-    max-height: 500px; /* Um valor alto para caber o conteúdo */
+    max-height: 500px;
+    /* Um valor alto para caber o conteúdo */
     opacity: 1;
-    
+
     /* Restaura os valores originais do seu CSS */
     padding-top: 1rem;
     padding-bottom: 1rem;
     border-top: none;
-    border-bottom-width: 2px; /* Restaura a borda */
+    border-bottom-width: 2px;
+    /* Restaura a borda */
 }
 
 /* ============================================= */
@@ -3346,10 +3379,11 @@ hr {
     right: 0;
     background: #fff;
     border-radius: 6px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    z-index: 10001; /* Acima do modal */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 10001;
+    /* Acima do modal */
     overflow: hidden;
-    
+
     /* Animação */
     max-height: 0;
     opacity: 0;
@@ -3358,7 +3392,8 @@ hr {
 }
 
 .custom-select-wrapper.open .custom-select-options {
-    max-height: 200px; /* Altura máxima */
+    max-height: 200px;
+    /* Altura máxima */
     opacity: 1;
     visibility: visible;
 }
@@ -3389,7 +3424,8 @@ hr {
 .btn-delete-card {
     background: transparent;
     border: none;
-    color: #999; /* Cor cinza sutil */
+    color: #999;
+    /* Cor cinza sutil */
     font-size: 1.3rem;
     cursor: pointer;
     padding: 5px;
@@ -3399,7 +3435,8 @@ hr {
 }
 
 .btn-delete-card:hover {
-    color: #dc3545; /* Vermelho no hover */
+    color: #dc3545;
+    /* Vermelho no hover */
 }
 
 
@@ -3410,7 +3447,7 @@ hr {
     align-items: center;
     width: 100%;
     /* Remove o pointer-events para o botão funcionar */
-    /* pointer-events: none; */ 
+    /* pointer-events: none; */
 }
 
 /* ... (todo o seu CSS existente) ... */
@@ -3422,7 +3459,8 @@ hr {
 .sucesso-content {
     text-align: center;
     position: relative;
-    padding: 2.5rem; /* Espaço para o botão de fechar */
+    padding: 2.5rem;
+    /* Espaço para o botão de fechar */
 
 }
 
@@ -3444,6 +3482,7 @@ hr {
     transition: all 0.3s ease;
     text-decoration: none;
 }
+
 .sucesso-close-btn:hover {
     background: #e0e0e0;
 }
@@ -3464,10 +3503,12 @@ hr {
     align-items: center;
     justify-content: center;
 }
+
 .sucesso-icon-wrapper.check {
     background-color: #e6fffa;
     border: 3px solid #00bfa5;
 }
+
 .sucesso-icon-wrapper.check i {
     font-size: 4rem;
     color: #00bfa5;
@@ -3481,6 +3522,7 @@ hr {
     width: auto;
     height: auto;
 }
+
 .sucesso-icon-wrapper.qr img {
     width: 150px;
     height: 150px;
@@ -3503,6 +3545,7 @@ hr {
     width: 90%;
     margin-top: 0.5rem;
 }
+
 .pix-copia-cola input {
     flex-grow: 1;
     padding: 10px;
@@ -3515,6 +3558,7 @@ hr {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .pix-copia-cola button {
     padding: 10px 15px;
     border: 1px solid #000;
@@ -3528,6 +3572,7 @@ hr {
     gap: 5px;
     transition: background-color 0.3s;
 }
+
 .pix-copia-cola button:hover {
     background: #333;
 }
@@ -3538,12 +3583,14 @@ hr {
     gap: 0.8rem;
     width: 100%;
 }
+
 .btn-whats {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
 }
+
 .btn-whats i {
     font-size: 1.4rem;
 }
@@ -3562,6 +3609,7 @@ hr {
     border-radius: 50%;
     transition: all 0.3s ease;
 }
+
 .actions .btn-excluir-telefone:hover {
     color: #dc3545;
 }
@@ -3576,7 +3624,8 @@ hr {
     gap: 10px;
     width: 100%;
     padding: 14px;
-    background-color: #25D366; /* Verde Oficial WhatsApp */
+    background-color: #25D366;
+    /* Verde Oficial WhatsApp */
     color: white;
     border: none;
     border-radius: 8px;
@@ -3626,7 +3675,8 @@ hr {
 /* Wrapper do Select Customizado */
 .country-select-wrapper {
     position: relative;
-    width: 110px; /* Largura fixa para o código */
+    width: 110px;
+    /* Largura fixa para o código */
     flex-shrink: 0;
 }
 
@@ -3639,7 +3689,8 @@ hr {
     border: 2px solid transparent;
     border-radius: 6px;
     cursor: pointer;
-    height: 46px; /* Altura para alinhar com input */
+    height: 46px;
+    /* Altura para alinhar com input */
     transition: all 0.3s;
 }
 
@@ -3665,10 +3716,11 @@ hr {
     position: absolute;
     top: 110%;
     left: 0;
-    width: 200px; /* Mais largo para mostrar o nome do país */
+    width: 200px;
+    /* Mais largo para mostrar o nome do país */
     background: white;
     border-radius: 6px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     z-index: 100;
     opacity: 0;
     visibility: hidden;
@@ -3731,6 +3783,7 @@ hr {
     margin-top: 5px;
     margin-left: 2px;
 }
+
 /* ========================================================= */
 /* ===== ESTILOS DEFINITIVOS DA PÁGINA DE CATEGORIA ===== */
 /* ========================================================= */
@@ -3773,7 +3826,7 @@ hr {
     flex-shrink: 0;
 }
 
-.bi-filter{
+.bi-filter {
     display: none;
 }
 
@@ -3955,7 +4008,8 @@ hr {
     /* 'transform' REMOVIDO */
     /* 'position: absolute' REMOVIDO (Este era o culpado do 'pulo') */
 }
-.construcao{
+
+.construcao {
     width: 100%;
     height: 80vh;
     margin: 100px 0px;
@@ -3965,23 +4019,23 @@ hr {
     align-items: center;
 }
 
-.construcao-top img{
+.construcao-top img {
     width: 40vh;
 }
 
-.construcao-text{
+.construcao-text {
     width: 80%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.construcao-text p{
+.construcao-text p {
     font-size: 3vh;
 }
 
-@media (max-width: 500px){
-    .construcao-top img{
+@media (max-width: 500px) {
+    .construcao-top img {
         width: 30vh;
     }
 }
@@ -3995,20 +4049,24 @@ hr {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #ffffff; /* Fundo branco para cobrir a "bugada" */
+    background-color: #ffffff;
+    /* Fundo branco para cobrir a "bugada" */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 99999; /* Acima de tudo */
+    z-index: 99999;
+    /* Acima de tudo */
     transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
 .spinner {
     width: 50px;
     height: 50px;
-    border: 5px solid #f3f3f3; /* Cinza claro */
-    border-top: 5px solid #000; /* Preto girando */
+    border: 5px solid #f3f3f3;
+    /* Cinza claro */
+    border-top: 5px solid #000;
+    /* Preto girando */
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 15px;
@@ -4023,12 +4081,23 @@ hr {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes pulseText {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
 
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
