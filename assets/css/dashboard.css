@@ -3899,6 +3899,12 @@ a.profile-link.admin-mode:hover i {
     border: 1px solid #00000010;
 }
 
+@media (max-width: 700px){
+    .notificacao-geral-notification-card{
+        flex-direction: column;
+    }
+}
+
 .notificacao-geral-event-INSERT {
     border-left-color: var(--ng-insert-color);
 }
@@ -4211,4 +4217,5 @@ a.profile-link.admin-mode:hover i {
     .notificacao-geral-modal-title { 
         font-size: 0.5rem;
     }
+
 }
