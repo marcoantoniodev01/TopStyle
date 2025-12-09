@@ -1769,3 +1769,189 @@
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   >>> RESPONSIVIDADE: CARD DESTAQUE (BEST SELLER) <<<
+   Cole isso no final do arquivo mediaquerydash.css
+   ========================================================================== */
+
+/* 1. NOTEBOOKS E TELAS MÉDIAS (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .best-seller-wide-card {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .bsw-img-box {
+        width: 100px; /* Reduz um pouco mais a imagem */
+        height: 100px;
+    }
+
+    .bsw-title {
+        font-size: 1.3rem; /* Fonte um pouco menor */
+    }
+
+    .bsw-stat-value {
+        font-size: 1rem;
+    }
+}
+
+/* 2. TABLETS PORTRAIT E MOBILE GRANDE (max-width: 768px) */
+@media (max-width: 768px) {
+    
+    /* Header do bloco (Título + Badge "Em tempo real") */
+    .highlight-header-row {
+        flex-direction: row; /* Mantém na linha */
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .highlight-header-row h3 {
+        font-size: 1.1rem; /* Ajusta tamanho do título */
+    }
+
+    /* O Card vira layout vertical (Imagem topo, texto baixo) ou Card Compacto */
+    .best-seller-wide-card {
+        flex-direction: column; /* Empilha */
+        align-items: flex-start;
+        height: auto;
+        min-height: auto;
+        text-align: left;
+        padding: 20px;
+    }
+
+    /* Imagem ganha destaque horizontal */
+    .bsw-img-box {
+        width: 100%;       /* Ocupa largura total */
+        height: 160px;     /* Altura fixa */
+        margin-bottom: 10px;
+        background: #fff;
+    }
+    
+    .bsw-img-box img {
+        max-height: 100%;
+        width: auto; /* Mantém proporção */
+    }
+
+    /* Conteúdo */
+    .bsw-content {
+        width: 100%;
+        gap: 8px;
+    }
+
+    .bsw-meta {
+        justify-content: flex-start;
+        font-size: 0.85rem;
+    }
+
+    .bsw-title {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+
+    /* Estatísticas em Grid */
+    .bsw-stats-row {
+        width: 100%;
+        justify-content: space-between;
+        background: #f8fafc;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #f1f5f9;
+    }
+
+    /* Esconde a seta chevron da direita no mobile (já que o card todo é clicável) */
+    .best-seller-wide-card > div:last-child i {
+        display: none;
+    }
+
+    /* Reposiciona o Fogo (Badge) */
+    .bsw-badge-fire {
+        top: 15px;
+        left: 15px; /* Move para a esquerda para não cobrir imagem */
+        right: auto;
+        width: 45px;
+        height: 45px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .bsw-badge-fire span { display: none; } /* Esconde o texto "#1 Top" no mobile, deixa só o ícone */
+
+    /* Botão "Ver Ranking Completo" */
+    .highlight-footer-action {
+        width: 100%;
+    }
+    
+    .btn-show-more-dash {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        background: #f1f5f9; /* Leve fundo para parecer botão de app */
+        border-color: transparent;
+    }
+}
+
+/* 3. MOBILE PEQUENO (max-width: 480px) */
+@media (max-width: 480px) {
+    .highlight-wrapper {
+        padding: 15px; /* Menos padding no container branco */
+    }
+
+    .highlight-header-row {
+        flex-direction: column; /* Empilha Título e Badge Live */
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .bsw-img-box {
+        height: 140px; /* Um pouco menor */
+    }
+
+    .bsw-title {
+        font-size: 1.2rem;
+        line-height: 1.3;
+    }
+
+    .bsw-stats-row {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .bsw-stat-item {
+        align-items: flex-start;
+    }
+    
+    .bsw-stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .bsw-stat-value {
+        font-size: 0.95rem;
+    }
+}
+
+/* 4. IPHONE SE / FOLD (max-width: 375px) - Ajustes Críticos */
+@media (max-width: 375px) {
+    .bsw-meta {
+        flex-wrap: wrap; /* Permite quebrar linha se ID for longo */
+        gap: 8px;
+    }
+
+    .bsw-img-box {
+        height: 120px; /* Bem compacto */
+    }
+
+    /* Badge de fogo bem pequena no canto */
+    .bsw-badge-fire {
+        width: 36px;
+        height: 36px;
+        top: 10px;
+        left: 10px;
+    }
+    
+    .bsw-badge-fire i {
+        font-size: 1rem;
+    }
+
+    .btn-show-more-dash {
+        font-size: 0.85rem;
+    }
+}
