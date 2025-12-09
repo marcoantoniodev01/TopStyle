@@ -4232,7 +4232,6 @@ hr {
     border: 1px solid #eee;
     transition: transform 0.3s;
     max-width: 450px;
-    padding: 50px 20px;
 }
 
 .product:hover {
@@ -4468,6 +4467,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
