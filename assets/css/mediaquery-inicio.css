@@ -204,7 +204,7 @@
         transform: translateY(-5px);
     }
 
-      .inicio__img {
+    .inicio__img {
         position: absolute;
         left: 0;
         top: 0;
@@ -214,20 +214,17 @@
         align-items: center;
         z-index: -1;
         filter: blur(3px);
-        width: 100%;
     }
 
     .inicio__img img {
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
+        width: 80vh;
         position: absolute;
     }
 
     /*marquee*/
 
     .marquee {
-        margin: 50px 0px;
+        margin: 100px 0px;
     }
 
     /*seleção de roupa*/
@@ -358,26 +355,23 @@
         position: absolute;
         left: 0;
         top: 0;
-        height: 80vh;
+        height: 40vh;
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: -1;
         filter: blur(3px);
-        width: 100%;
     }
 
     .inicio__img img {
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
+        width: 120vh;
         position: absolute;
     }
 
     /*marquee*/
 
     .marquee {
-        margin: 80px 0px;
+        margin: 100px 0px;
     }
 
     /*seleção de roupa*/
@@ -508,19 +502,16 @@
         position: absolute;
         left: 0;
         top: 0;
-        height: 50vh;
+        height: 66vh;
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: -1;
         filter: blur(3px);
-        width: 100%;
     }
 
     .inicio__img img {
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
+        width: 160vh;
         position: absolute;
     }
 
@@ -660,26 +651,23 @@
         position: absolute;
         left: 0;
         top: 0;
-        height: 80vh;
+        height: 32vh;
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: -1;
         filter: blur(3px);
-        width: 100%;
     }
 
     .inicio__img img {
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
+        width: 240vh;
         position: absolute;
     }
 
     /*marquee*/
 
     .marquee {
-        margin: 100px 0px;
+        margin: 150px 0px;
     }
 
     /*seleção de roupa*/
@@ -735,7 +723,6 @@
    TV / TELAS GRANDES (1920px+)
    =========================== */
 @media (min-width: 1920px) {}
-
 
 
 
