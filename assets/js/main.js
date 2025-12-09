@@ -254,7 +254,16 @@ function prepareProductHoverAndOptions() {
     const optionsContainer = product.querySelector('.product-options');
     const originalImgSrc = imgEl ? imgEl.src : '';
 
+    // --- EVENTO DE MOUSE ENTRANDO ---
     product.addEventListener('mouseenter', () => {
+      
+      // === AQUI ESTÁ A CORREÇÃO ===
+      // Verifica se o dispositivo NÃO tem cursor preciso (mouse).
+      // Se for touch (celular/tablet), encerra a função aqui.
+      // O clique vai direto para o link do produto.
+      if (window.matchMedia('(hover: none)').matches) return;
+      // ============================
+
       const role = localStorage.getItem('userRole') || 'cliente';
       const meta = product.__productMeta || {};
 
@@ -277,13 +286,13 @@ function prepareProductHoverAndOptions() {
 
       const colorsDiv = optionsContainer.querySelector('.colors');
       const sizesDiv = optionsContainer.querySelector('.sizes');
-      colorsDiv.innerHTML = '';
-      sizesDiv.innerHTML = '';
+      if(colorsDiv) colorsDiv.innerHTML = '';
+      if(sizesDiv) sizesDiv.innerHTML = '';
 
       const cores = meta.cores || [];
       let selectedColorMeta = product.__selectedColorMeta || (cores.length > 0 ? cores[0] : { img1: originalImgSrc });
 
-      if (cores.length > 0) {
+      if (cores.length > 0 && colorsDiv) {
         cores.forEach(cor => {
           const sw = document.createElement('button');
           sw.type = 'button';
@@ -314,7 +323,7 @@ function prepareProductHoverAndOptions() {
       }
 
       const tamanhos = (meta.tamanhos || '').split(',').map(s => s.trim()).filter(Boolean);
-      if (tamanhos.length > 0) {
+      if (tamanhos.length > 0 && sizesDiv) {
         tamanhos.forEach(size => {
           const btn = document.createElement('button');
           btn.type = 'button';
@@ -340,7 +349,12 @@ function prepareProductHoverAndOptions() {
       if (imgEl && hoverImg) imgEl.src = hoverImg;
     });
 
+    // --- EVENTO DE MOUSE SAINDO ---
     product.addEventListener('mouseleave', () => {
+      // Opcional: também bloqueia o mouseleave em touch para economizar processamento,
+      // embora não seja estritamente necessário pois o style não foi alterado.
+      if (window.matchMedia('(hover: none)').matches) return;
+
       const role = localStorage.getItem('userRole') || 'cliente';
       if (role === 'admin') {
         if (textEl && textEl.dataset.originalHtml) {
