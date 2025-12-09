@@ -4234,11 +4234,6 @@ hr {
     max-width: 450px;
 }
 
-.product:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
 .product-link-selecao img {
     width: 100%;
     aspect-ratio: 3 / 4;
@@ -4467,6 +4462,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
