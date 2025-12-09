@@ -4219,3 +4219,332 @@ a.profile-link.admin-mode:hover i {
     }
 
 }
+
+
+/* AVALIAÇÃO PRODUTOS */
+/* ============ BASE ============ */
+.avaliacao-dash-container {
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+.avaliacao-dash-header {
+    margin-bottom: 25px;
+}
+
+.avaliacao-dash-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: #111;
+}
+
+.avaliacao-dash-header p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* ============ KPIs (Indicadores) ============ */
+.avaliacao-dash-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.avaliacao-dash-kpi-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.avaliacao-dash-kpi-card.highlight {
+    border-left: 4px solid #000;
+}
+
+.avaliacao-dash-kpi-icon {
+    width: 45px;
+    height: 45px;
+    background: #f4f4f4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.avaliacao-dash-kpi-info h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #777;
+    font-weight: 500;
+}
+
+.avaliacao-dash-kpi-info span {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.avaliacao-dash-kpi-info small {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+/* ============ FILTROS ============ */
+.avaliacao-dash-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.avaliacao-dash-search-group {
+    flex: 2;
+    position: relative;
+    min-width: 250px;
+}
+
+.avaliacao-dash-search-group input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.avaliacao-dash-search-group input:focus {
+    border-color: #000;
+}
+
+.avaliacao-dash-search-group i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.avaliacao-dash-filter-group select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+/* ============ TABELA (Desktop) ============ */
+.avaliacao-dash-table-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.avaliacao-dash-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.avaliacao-dash-table th,
+.avaliacao-dash-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.avaliacao-dash-table th {
+    background: #f9f9f9;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+/* Elementos Internos da Tabela */
+.avaliacao-dash-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avaliacao-dash-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+}
+
+.avaliacao-dash-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.avaliacao-dash-username {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #000;
+}
+
+.avaliacao-dash-date {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.avaliacao-dash-product-badge {
+    background: #f0f0f0;
+    color: #444;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: inline-block;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.avaliacao-dash-stars {
+    color: #ffc107;
+    letter-spacing: 1px;
+    font-size: 1rem;
+}
+
+.avaliacao-dash-comment h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+}
+
+.avaliacao-dash-comment p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+.avaliacao-dash-btn-delete {
+    background: white;
+    border: 1px solid #ffcccc;
+    color: #e74c3c;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.avaliacao-dash-btn-delete:hover {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+}
+
+.avaliacao-dash-no-data {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.avaliacao-dash-no-data i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    display: block;
+    opacity: 0.5;
+}
+
+/* ============ RESPONSIVIDADE (CARD MOBILE) ============ */
+@media (max-width: 900px) {
+    .avaliacao-dash-table thead {
+        display: none;
+    }
+
+    .avaliacao-dash-table,
+    .avaliacao-dash-table tbody,
+    .avaliacao-dash-table tr,
+    .avaliacao-dash-table td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .avaliacao-dash-table tr {
+        background: #fff;
+        margin-bottom: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f0f0f0;
+        padding: 20px;
+        position: relative;
+    }
+
+    .avaliacao-dash-table td {
+        padding: 0;
+        border: none;
+        margin-bottom: 12px;
+    }
+
+    /* 1. TOPO DO CARD: Avatar e Nome e Data */
+    .avaliacao-dash-table td:nth-child(1) {
+        /* Coluna User Info */
+        display: flex;
+        border-bottom: 1px solid #f5f5f5;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+    }
+
+    /* 2. MEIO DO CARD: Estrelas, Produto e Comentário */
+    .avaliacao-dash-table td:nth-child(2) {
+        /* Produto */
+        order: 3;
+        margin-top: 10px;
+    }
+
+    .avaliacao-dash-product-badge {
+        background: #333;
+        color: #fff;
+        /* Destaque no mobile */
+        font-size: 0.75rem;
+    }
+
+    .avaliacao-dash-table td:nth-child(3) {
+        /* Estrelas */
+        top: 20px;
+        right: 20px;
+        margin: 0;
+    }
+
+    .avaliacao-dash-table td:nth-child(4) {
+        /* Comentário */
+        order: 2;
+        background: #fbfbfb;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    /* 3. RODAPÉ DO CARD: Botão */
+    .avaliacao-dash-table td:nth-child(5) {
+        /* Ações */
+        order: 4;
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 10px;
+        border-top: 1px solid #f5f5f5;
+    }
+
+    .avaliacao-dash-btn-delete {
+        width: 100%;
+        justify-content: center;
+    }
+}
