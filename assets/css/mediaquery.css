@@ -22,18 +22,6 @@
     gap: 1.5rem;
   }
 
-  .product-slot {
-    /* Reseta o flex-basis para não tentar preencher a linha */
-    flex-basis: auto;
-    /* Não deixa o item crescer para preencher espaço */
-    flex-grow: 0;
-    /* Define uma largura fixa ou baseada na tela */
-    width: 30vw;
-    /* Garante um tamanho mínimo */
-    min-width: 250px;
-    /* Reduz um pouco a altura mínima */
-    min-height: 50vh;
-  }
 }
 
 @media screen and (max-width: 768px) {
@@ -70,12 +58,7 @@
   }
 
   /* Recomendações (horizontal scroll) */
-  .product-slot {
-    /* No mobile, os cards ficam maiores para facilitar o scroll */
-    width: 60vw;
-    min-width: 220px;
-    max-width: 280px;
-  }
+
 
   /* --- Visão de Carrinho com Itens --- */
   .carrinho-content {
@@ -164,8 +147,10 @@
   }
 
   .product-slot {
-    width: 70vw; /* Cards maiores para facilitar a visualização */
+    width: 100%; /* Cards maiores para facilitar a visualização */
     min-width: 200px;
+    height: auto;
+    padding: 10px;
   }
 
   .cart-item-left {
