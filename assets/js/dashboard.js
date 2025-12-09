@@ -1,9 +1,12 @@
 // ===============================
 // 🔹 SUPABASE CLIENT
 // ===============================
-
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo";
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 🔹 SUPABASE ADMIN (Mova isso pra cá para funcionar o financeiro global)
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTMzNzUyNCwiZXhwIjoyMDc0OTEzNTI0fQ.FaXzLoO9WX4Kr6W01dF8LrfSuw1SkGSdLnyXUXYwDa8'; // A que estava lá embaixo
+const supabaseAdmin = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 
 // 🔹 Atualiza a contagem de produtos
@@ -183,99 +186,110 @@ const barChart = new ApexCharts(document.querySelector("#barChart"), barOptions)
 barChart.render();
 
 
-// ===========================
-//        DASHBOARD
-//============================
+// =========================================================
+//  DASHBOARD FINANCEIRO (VIA POLÍTICA RLS)
+// =========================================================
 
-// ===============================
-// DASHBOARD: métricas calculadas no JS
-// Usa a variável `client` que você já tem
-// ===============================
+let dashboardState = {
+    vendasTotais: 0,
+    lucroBruto: 0,
+    custoTotal: 0,
+    lucroLiquido: 0
+};
 
-function formatarMoeda(valor) {
-    return (Number(valor) || 0).toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-        minimumFractionDigits: 2
-    });
+// Função de Animação (Mantida igual)
+function animarValor(idElemento, valorFinal, isMoeda = true) {
+    const elemento = document.getElementById(idElemento);
+    if (!elemento) return;
+
+    let chaveEstado = '';
+    if (idElemento === 'valor-vendas-totais') chaveEstado = 'vendasTotais';
+    else if (idElemento === 'valor-lucro-bruto') chaveEstado = 'lucroBruto';
+    else if (idElemento === 'valor-custo-total') chaveEstado = 'custoTotal';
+    else if (idElemento === 'valor-lucro-liquido') chaveEstado = 'lucroLiquido';
+
+    const valorInicial = dashboardState[chaveEstado] || 0;
+    const duracao = 1500; 
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duracao, 1);
+        const ease = 1 - Math.pow(1 - progress, 4);
+        const valorAtual = valorInicial + (valorFinal - valorInicial) * ease;
+
+        if (isMoeda) {
+            elemento.innerText = valorAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        } else {
+            elemento.innerText = Math.floor(valorAtual) + " itens";
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            dashboardState[chaveEstado] = valorFinal;
+            if (isMoeda) {
+                elemento.innerText = valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            } else {
+                elemento.innerText = valorFinal + " itens";
+            }
+        }
+    }
+    requestAnimationFrame(update);
 }
 
-async function calcularMetricas() {
+// 🔹 AGORA USAMOS 'client' NORMAL
+// Como configuramos a política no SQL, o Supabase vai deixar o Admin ver tudo.
+async function atualizarMetricasFinanceiras() {
     try {
-        // pega todas as vendas registradas (comprados)
-        const { data: vendas, error: errVendas } = await client
-            .from('comprados')
-            .select('quantidade, preco_custo, lucro');
+        // Usa client normal. O RLS no banco vai liberar os dados se você for Admin.
+        const { data: itens, error } = await client 
+            .from('order_items')
+            .select('quantity, price');
 
-        if (errVendas) throw errVendas;
+        if (error) throw error;
 
-        let vendasTotais = 0;      // soma de quantidades (itens vendidos)
-        let receitaTotal = 0;      // soma do custo (preco_custo * quantidade)
-        let lucroTotal = 0;        // soma do campo lucro
+        let qtdTotal = 0;
+        let receitaBruta = 0;
 
-        (vendas || []).forEach(row => {
-            const qtd = Number(row.quantidade) || 0;
-            const custo = Number(row.preco_custo) || 0;
-            const lucro = Number(row.lucro) || 0;
+        itens.forEach(item => {
+            const qtd = Number(item.quantity) || 0;
+            const preco = Number(item.price) || 0;
 
-            vendasTotais += qtd;
-            receitaTotal += custo * qtd;   // conforme sua regra: receita = custo total
-            lucroTotal += lucro;
+            qtdTotal += qtd;
+            receitaBruta += (preco * qtd); 
         });
 
-        // conta fornecedores (novos clientes)
-        const { count: novosClientes, error: errFornecedores } = await client
-            .from('fornecedores')
-            .select('*', { count: 'exact', head: true });
+        const custoTotal = receitaBruta * 0.40;
+        const lucroLiquido = receitaBruta - custoTotal;
 
-        if (errFornecedores) throw errFornecedores;
+        animarValor('valor-vendas-totais', qtdTotal, false);
+        animarValor('valor-lucro-bruto', receitaBruta, true);
+        animarValor('valor-custo-total', custoTotal, true);
+        animarValor('valor-lucro-liquido', lucroLiquido, true);
 
-        return {
-            vendasTotais,
-            receitaTotal,
-            lucroTotal,
-            novosClientes: novosClientes || 0
-        };
     } catch (err) {
-        console.error('Erro ao calcular métricas:', err);
-        return {
-            vendasTotais: 0,
-            receitaTotal: 0,
-            lucroTotal: 0,
-            novosClientes: 0
-        };
+        console.error("Erro financeiro:", err);
     }
 }
 
-async function atualizarDashboard() {
-    const { vendasTotais, receitaTotal, lucroTotal, novosClientes } = await calcularMetricas();
-
-    // atualiza DOM com os ids que você mostrou
-    const elVendas = document.getElementById('vendas-totais');
-    const elLucro = document.getElementById('lucro-total');
-    const elReceita = document.getElementById('receita-total');
-    const elClientes = document.getElementById('novos-clientes');
-
-    if (elVendas) elVendas.textContent = `${vendasTotais} itens`;
-    if (elLucro) elLucro.textContent = formatarMoeda(lucroTotal);
-    if (elReceita) elReceita.textContent = formatarMoeda(receitaTotal);
-    if (elClientes) elClientes.textContent = String(novosClientes);
-}
-
-// ativa realtime: atualiza quando houver mudanças em comprados ou fornecedores
-function ativarRealtimeDashboard() {
+// O Realtime
+function iniciarRealtimeFinanceiro() {
     client
-        .channel('realtime:dashboard')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'comprados' }, () => atualizarDashboard())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'fornecedores' }, () => atualizarDashboard())
+        .channel('realtime:financeiro_geral')
+        .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'order_items' }, 
+            (payload) => {
+                console.log('Movimentação detectada:', payload);
+                atualizarMetricasFinanceiras();
+            }
+        )
         .subscribe();
 }
 
-// inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    atualizarDashboard();             // primeira carga
-    ativarRealtimeDashboard();        // ativa realtime
-    setInterval(atualizarDashboard, 30_000); // fallback: atualiza a cada 30s
+    atualizarMetricasFinanceiras();
+    iniciarRealtimeFinanceiro();
 });
 
 /* =========================================================
@@ -301,9 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const { createClient } = supabase;
 
 // 1. SUAS CHAVES (Mantenha as que você corrigiu)
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTMzNzUyNCwiZXhwIjoyMDc0OTEzNTI0fQ.FaXzLoO9WX4Kr6W01dF8LrfSuw1SkGSdLnyXUXYwDa8';
 
-const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 /* =========================================================
    GESTÃO DE USUÁRIOS (Atualizado)
