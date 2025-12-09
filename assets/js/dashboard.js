@@ -8,6 +8,65 @@ const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTMzNzUyNCwiZXhwIjoyMDc0OTEzNTI0fQ.FaXzLoO9WX4Kr6W01dF8LrfSuw1SkGSdLnyXUXYwDa8'; // A que estava lá embaixo
 const supabaseAdmin = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+// ===============================
+// 🔹 NOVAS KPI'S (USUÁRIOS E FORNECEDORES)
+// ===============================
+
+// 1. Atualizar contagem de Usuários (Profiles)
+async function atualizarTotalUsuarios() {
+    const el = document.getElementById('total-usuarios');
+    if (!el) return;
+
+    try {
+        const { count, error } = await client
+            .from('profiles')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+        el.textContent = count ?? 0;
+    } catch (err) {
+        console.error("Erro usuarios KPI:", err);
+    }
+}
+
+// 2. Atualizar contagem de Fornecedores
+async function atualizarTotalFornecedores() {
+    const el = document.getElementById('total-fornecedores');
+    if (!el) return;
+
+    try {
+        const { count, error } = await client
+            .from('fornecedores')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+        el.textContent = count ?? 0;
+    } catch (err) {
+        console.error("Erro fornecedores KPI:", err);
+    }
+}
+
+// 3. Listener Realtime Unificado para as KPIs
+function iniciarRealtimeKPIs() {
+    client.channel('realtime:dashboard_kpis')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+            console.log("Mudança em profiles detectada!");
+            atualizarTotalUsuarios();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'fornecedores' }, () => {
+            console.log("Mudança em fornecedores detectada!");
+            atualizarTotalFornecedores();
+        })
+        .subscribe();
+}
+
+// 4. Adicionar na Inicialização (IMPORTANTE: Adicione isso dentro do seu DOMContentLoaded existente)
+document.addEventListener("DOMContentLoaded", () => {
+    // ... suas chamadas existentes
+    atualizarTotalUsuarios();       // <--- NOVO
+    atualizarTotalFornecedores();   // <--- NOVO
+    iniciarRealtimeKPIs();          // <--- NOVO
+});
 
 // 🔹 Atualiza a contagem de produtos
 async function atualizarTotalProdutos() {
@@ -1962,4 +2021,345 @@ function toggleDashSidebar() {
 
     sidebar.classList.toggle('dash-open');
     document.body.classList.toggle('no-scroll');
+}
+
+// =========================================================
+//  PODIUM RACE: TOP 5 CLIENTES (BASEADO EM QUANTIDADE DE ITENS)
+// =========================================================
+
+const PODIUM_POSITIONS = {
+    1: { left: '41%', height: '240px', zIndex: 10, label: '1', class: 'rank-1' }, 
+    2: { left: '62%', height: '180px', zIndex: 8, label: '2', class: 'rank-2' }, 
+    3: { left: '20%', height: '140px', zIndex: 6, label: '3', class: 'rank-3' },  
+    4: { left: '82%', height: '100px', zIndex: 4, label: '4', class: 'rank-4' }, 
+    5: { left: '0%',  height: '70px',  zIndex: 2, label: '5', class: 'rank-5' }   
+};
+
+async function updateTopClientsPodium() {
+    const container = document.getElementById('podium-container');
+    if (!container) return;
+
+    try {
+        // 1. Busca dados (Mantido igual)
+        const { data: rankingData, error } = await client.rpc('get_top_clients_ranking');
+        if (error) throw error;
+
+        // Limpa loading se existir
+        const loading = container.querySelector('.podium-loading');
+        if (loading) loading.remove();
+
+        if (!rankingData || rankingData.length === 0) {
+            container.innerHTML = '<div class="podium-loading">Nenhuma venda registrada.</div>';
+            return;
+        }
+
+        // Completa array com 5 posições
+        const ranking = [...rankingData];
+        while (ranking.length < 5) {
+            ranking.push({ user_id: null, total_items: 0 });
+        }
+
+        // 2. Busca Perfis
+        const userIds = ranking.map(r => r.user_id).filter(id => id !== null);
+        let profileMap = {};
+        
+        if (userIds.length > 0) {
+            const { data: profiles, error: profError } = await client
+                .from('profiles')
+                .select('id, username, full_name, email, avatar_url')
+                .in('id', userIds);
+            
+            if (!profError && profiles) {
+                profiles.forEach(p => profileMap[p.id] = p);
+            }
+        }
+
+        // 3. RENDERIZAÇÃO INTELIGENTE (Para Animação)
+        // Lista de IDs processados nesta rodada para remover quem saiu do ranking depois
+        const processedElementIds = new Set();
+
+        ranking.forEach((rankData, index) => {
+            const userId = rankData.user_id;
+            const totalItems = rankData.total_items || 0;
+            const rankPosition = index + 1;
+            const profile = userId ? profileMap[userId] : null;
+            const posConfig = PODIUM_POSITIONS[rankPosition];
+
+            // GERA ID ÚNICO: 
+            // Se tem user, o ID é atrelado ao usuário (permite movimento). 
+            // Se é slot vazio, o ID é atrelado à posição (fica fixo).
+            const domId = userId ? `podium-user-${userId}` : `podium-empty-${rankPosition}`;
+            processedElementIds.add(domId);
+
+            let slot = document.getElementById(domId);
+
+            // Se o elemento não existe, cria (entra na tela)
+            if (!slot) {
+                slot = document.createElement('div');
+                slot.id = domId;
+                slot.className = 'podium-item';
+                container.appendChild(slot);
+            }
+
+            // --- APLICA POSIÇÃO (Isso dispara a animação CSS se o elemento já existia) ---
+            // O CSS transition fará o elemento deslizar suavemente para a nova posição
+            slot.style.left = posConfig.left;
+            slot.style.zIndex = posConfig.zIndex;
+
+            // Prepara dados visuais
+            let displayName = '---';
+            let avatarHtml = `<div style="width:100%;height:100%;background:#e2e8f0;opacity:0.3;"></div>`;
+            let barHeight = '15px';
+            let labelText = '';
+
+            if (profile) {
+                if (profile.full_name && profile.full_name !== 'null') {
+                    displayName = profile.full_name.split(' ')[0];
+                } else {
+                    displayName = profile.username || 'User';
+                }
+
+                const avatarUrl = profile.avatar_url;
+                const initials = profile.username?.substring(0, 2).toUpperCase() || '?';
+
+                if (avatarUrl && avatarUrl.length > 5) {
+                    avatarHtml = `<img src="${avatarUrl}" alt="${displayName}">`;
+                } else {
+                    avatarHtml = `<div style="width:100%;height:100%;background:#191D28;color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:bold;">${initials}</div>`;
+                }
+                
+                barHeight = posConfig.height; // Altura baseada no rank atual
+                labelText = posConfig.label;  // Número 1, 2, 3...
+            }
+
+            // Injeta HTML Interno
+            // Nota: Se o usuário mudar de 2 para 1, atualizamos o label da barra para "1" aqui
+            slot.innerHTML = `
+                <div class="podium-username" style="opacity: ${userId ? 1 : 0};">${displayName}</div>
+                <div class="podium-avatar" style="opacity: ${userId ? 1 : 0};">
+                    ${avatarHtml}
+                </div>
+                <div class="podium-bar" style="height: ${barHeight};">
+                    ${labelText}
+                </div>
+            `;
+
+            // Reatribui eventos
+            if (profile) {
+                slot.onmouseenter = (e) => showPodiumTooltip(e, profile, totalItems);
+                slot.onmouseleave = hidePodiumTooltip;
+                slot.onclick = () => goToUserProfile(profile);
+                slot.style.cursor = 'pointer';
+            } else {
+                slot.onmouseenter = null;
+                slot.onclick = null;
+                slot.style.cursor = 'default';
+            }
+        });
+
+        // 4. LIMPEZA: Remove quem saiu do Top 5
+        const allSlots = container.querySelectorAll('.podium-item');
+        allSlots.forEach(el => {
+            if (!processedElementIds.has(el.id)) {
+                // Anima saída (opcional, faz descer e sumir)
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => el.remove(), 500); // Remove do DOM após fade out
+            }
+        });
+
+    } catch (err) {
+        console.error("Erro Crítico Podium:", err);
+    }
+}
+
+// --- TOOLTIP (MANTIDO IGUAL) ---
+const tooltip = document.getElementById('podium-tooltip');
+
+function showPodiumTooltip(e, profile, count) {
+    if (!profile) return;
+    
+    const tName = document.getElementById('tooltip-name');
+    const tUser = document.getElementById('tooltip-user');
+    const tEmail = document.getElementById('tooltip-email');
+    const tTotal = document.getElementById('tooltip-total');
+    const tImg = document.getElementById('tooltip-img');
+
+    if(tName) tName.innerText = profile.full_name || profile.username;
+    if(tUser) tUser.innerText = '@' + profile.username;
+    if(tEmail) tEmail.innerText = profile.email;
+    if(tTotal) tTotal.innerText = count + ' itens comprados';
+    
+    if (tImg) {
+        if (profile.avatar_url) {
+            tImg.src = profile.avatar_url;
+            tImg.style.display = 'block';
+        } else {
+            tImg.style.display = 'none';
+        }
+    }
+
+    if(tooltip) tooltip.classList.add('visible');
+}
+
+function hidePodiumTooltip() {
+    if(tooltip) tooltip.classList.remove('visible');
+}
+
+// --- CLIQUE LEVA AO PERFIL ---
+function goToUserProfile(profile) {
+    if (!profile) return;
+    
+    // Clica na aba de usuários para carregar a lista
+    const menuUsers = document.querySelector('li[data-content="usuarios-cadastro"]');
+    if (menuUsers) menuUsers.click();
+
+    // Aguarda um pouco e abre o modal com os dados do perfil
+    setTimeout(() => {
+        if (window.openUserModal) {
+            window.openUserModal(
+                profile.id,
+                profile.username,
+                profile.full_name,
+                profile.email,
+                profile.cpf,
+                profile.created_at,
+                profile.is_admin,
+                false, 
+                profile.avatar_url
+            );
+        }
+    }, 600);
+}
+
+// --- INICIALIZAÇÃO REALTIME ---
+function initPodiumRealtime() {
+    updateTopClientsPodium();
+
+    // Escuta a tabela ORDERS (Insert ou Delete muda o ranking)
+    client.channel('realtime:podium_orders')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+            console.log("Nova compra detectada! Atualizando pódio...");
+            updateTopClientsPodium();
+        })
+        .subscribe();
+}
+
+// Adicionar ao DOMContentLoaded existente
+document.addEventListener('DOMContentLoaded', () => {
+    initPodiumRealtime();
+});
+
+/* =========================================================
+   CARREGAR DESTAQUE NA HOME (DASHBOARD)
+   ========================================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Carrega o destaque se estivermos na tela principal
+    if (document.getElementById('dashboard-best-seller-card')) {
+        loadDashboardBestSeller();
+    }
+});
+
+async function loadDashboardBestSeller() {
+    const cardContainer = document.getElementById('dashboard-best-seller-card');
+    if (!cardContainer) return;
+
+    try {
+        // Usa a mesma RPC do relatório, mas limitando a 1 e ordenando DESC
+        // Calculamos o período 'all' (desde 1970) para pegar o maior de todos os tempos, 
+        // ou você pode mudar para pegar o destaque do mês.
+        const startDate = new Date(0).toISOString(); 
+
+        const { data, error } = await client.rpc('get_best_sellers_report', {
+            period_start: startDate,
+            sort_asc: false,
+            page_limit: 1,
+            page_offset: 0
+        });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            cardContainer.innerHTML = '<div style="padding:20px; color:#64748b;">Nenhuma venda registrada ainda.</div>';
+            return;
+        }
+
+        const p = data[0]; // O Top 1
+
+        // Tratamento de dados
+        const safeName = p.nome ? p.nome.replace(/'/g, "\\'") : 'Produto sem nome';
+        const safeImg = p.img || '';
+        const safeId = p.product_id;
+        const totalSold = p.total_sold || 0;
+        
+        // Formata receita estimada (opcional, se sua RPC retornar revenue)
+        // Se não tiver revenue na RPC, podemos omitir ou calcular se tiver preço
+        const revenueText = "R$ ---"; 
+
+        cardContainer.innerHTML = `
+            <div class="bsw-badge-fire">
+                <i class="bi bi-fire"></i>
+                <span>#1 Top</span>
+            </div>
+
+            <div class="bsw-img-box">
+                ${safeImg ? `<img src="${safeImg}" alt="${safeName}">` : '<i class="bi bi-box-seam" style="font-size:3rem; color:#cbd5e1;"></i>'}
+            </div>
+
+            <div class="bsw-content">
+                <div class="bsw-meta">
+                   <span class="bsw-id-pill">ID: ${safeId}</span>
+                   <span><i class="bi bi-tag-fill"></i> Vestuário</span> </div>
+                
+                <h2 class="bsw-title">${p.nome}</h2>
+                
+                <div class="bsw-stats-row">
+                    <div class="bsw-stat-item">
+                        <span class="bsw-stat-label">Total Vendido</span>
+                        <span class="bsw-stat-value">${totalSold} un.</span>
+                    </div>
+                    <div class="bsw-stat-item">
+                         <span class="bsw-stat-label">Status</span>
+                         <span class="bsw-stat-value" style="color:#10b981;">Em Alta <i class="bi bi-graph-up-arrow"></i></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-left:auto; color:#cbd5e1;">
+                <i class="bi bi-chevron-right" style="font-size: 2rem;"></i>
+            </div>
+        `;
+
+        // Adiciona o clique no card inteiro
+        cardContainer.onclick = function() {
+            // Reutiliza sua função de modal existente!
+            openProductDetailsModal(safeId, safeName, safeImg, totalSold);
+        };
+
+    } catch (err) {
+        console.error("Erro ao carregar destaque dashboard:", err);
+        cardContainer.innerHTML = '<div style="padding:20px; color:red;">Erro ao carregar destaque.</div>';
+    }
+}
+
+// Função para o botão "Ver Mais" que navega para a aba de relatórios
+function navigateToReports() {
+    // 1. Encontra o item de menu Relatórios
+    const menuItems = document.querySelectorAll('.submenu li');
+    let reportItem = null;
+
+    menuItems.forEach(item => {
+        if (item.getAttribute('data-content') === 'relatorio-vendas') {
+            reportItem = item;
+        }
+    });
+
+    // 2. Simula o clique nele para ativar a lógica de troca de aba
+    if (reportItem) {
+        reportItem.click();
+        
+        // Opcional: Rola suavemente para o topo
+        document.querySelector('.body-right').scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
