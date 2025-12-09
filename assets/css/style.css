@@ -300,7 +300,7 @@ main {
     .intro-text,
     .intro-text-top {
         /* Usa VW (Viewport Width) para escalar proporcionalmente à largura da tela */
-        font-size: 3rem !important; 
+        font-size: 4rem !important; 
     }
 }
 
@@ -308,7 +308,7 @@ main {
 @media (max-width: 374px) {
     .intro-text,
     .intro-text-top {
-        font-size: 2rem; /* Levemente menor para não cortar nas bordas */
+        font-size: 3rem; /* Levemente menor para não cortar nas bordas */
     }
 }
 
@@ -4101,3 +4101,4 @@ hr {
         opacity: 0.5;
     }
 }
+
