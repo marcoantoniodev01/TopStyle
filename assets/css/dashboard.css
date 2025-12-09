@@ -13,7 +13,7 @@
 
 
 .header {
-    top: 0 !important; 
+    top: 0 !important;
     margin-top: 1vh;
     height: 8vh;
 }
@@ -68,29 +68,35 @@ main {
    ========================================================= */
 .sidebar-profile-header {
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     align-items: center;
-    gap: 12px; /* Reduzi um pouco o gap */
-    padding: 20px 15px; /* Padding lateral menor para caber em telas médias */
+    gap: 12px;
+    /* Reduzi um pouco o gap */
+    padding: 20px 15px;
+    /* Padding lateral menor para caber em telas médias */
     background-color: #ffffff;
     border-bottom: 1px solid #f1f5f9;
     flex-shrink: 0;
     width: 100%;
-    overflow: hidden; /* Garante que nada saia da caixa */
+    overflow: hidden;
+    /* Garante que nada saia da caixa */
 }
 
 .sidebar-avatar-wrapper {
     /* Tornando o avatar responsivo, ele vai encolher se faltar espaço */
-    width: 80px; /* Reduzido de 110px padrão para um tamanho mais seguro */
-    height: 80px; 
-    min-width: 60px; /* Tamanho mínimo para não sumir */
+    width: 80px;
+    /* Reduzido de 110px padrão para um tamanho mais seguro */
+    height: 80px;
+    min-width: 60px;
+    /* Tamanho mínimo para não sumir */
     border-radius: 16px;
     background-color: #191D28;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0; /* Impede amassar demais */
+    flex-shrink: 0;
+    /* Impede amassar demais */
     border: 2px solid #e2e6ff;
     position: relative;
 }
@@ -107,8 +113,10 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex: 1; /* Ocupa o espaço restante */
-    min-width: 0; /* OBRIGATÓRIO para o text-overflow funcionar em Flexbox */
+    flex: 1;
+    /* Ocupa o espaço restante */
+    min-width: 0;
+    /* OBRIGATÓRIO para o text-overflow funcionar em Flexbox */
 }
 
 /* Nome Principal */
@@ -146,7 +154,8 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 160px; /* Evita estourar a largura */
+    max-width: 160px;
+    /* Evita estourar a largura */
 }
 
 /* Badge de Admin e Data - Linha Final */
@@ -977,7 +986,8 @@ main {
     height: 100vh;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    z-index: 99999; /* ACIMA DE TUDO */
+    z-index: 99999;
+    /* ACIMA DE TUDO */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -990,7 +1000,7 @@ main {
 
 .cat-container {
     max-width: 100%;
-    
+
 }
 
 .cat-hidden {
@@ -1834,7 +1844,8 @@ a.profile-link.admin-mode:hover i {
 }
 
 #admin-modal {
-    z-index: 99999 !important; /* Garante que fique acima do menu lateral */
+    z-index: 99999 !important;
+    /* Garante que fique acima do menu lateral */
 }
 
 /* ============ SEÇÃO HEADER LINKS ============ */
@@ -1846,14 +1857,16 @@ a.profile-link.admin-mode:hover i {
     background: #fff;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     margin-top: 20px;
-    justify-content: flex-start; /* Alinha à esquerda como o menu original */
+    justify-content: flex-start;
+    /* Alinha à esquerda como o menu original */
 }
 
 .admin-menu-column {
     flex: 1;
-    min-width: 180px; /* Largura mínima para não quebrar */
+    min-width: 180px;
+    /* Largura mínima para não quebrar */
     border-right: 1px solid #eee;
     padding-right: 20px;
 }
@@ -1917,7 +1930,8 @@ a.profile-link.admin-mode:hover i {
 
 /* Se o link já estiver salvo no banco (classe adicionada via JS), fica verde */
 .link-configured {
-    border-left: 3px solid #10b981; /* Verde */
+    border-left: 3px solid #10b981;
+    /* Verde */
     background: #f0fdf4;
 }
 
@@ -1944,37 +1958,41 @@ a.profile-link.admin-mode:hover i {
 
 /* --- Barra de Busca --- */
 .search-bar-container {
-    position: relative; /* Essencial para o ícone ficar dentro */
+    position: relative;
+    /* Essencial para o ícone ficar dentro */
     width: 100%;
 }
 
 .search-input-styled {
     width: 100%;
     /* Padding ajustado: Esquerda normal, Direita com espaço pro ícone */
-    padding: 16px 50px 16px 20px; 
+    padding: 16px 50px 16px 20px;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     font-size: 1rem;
     background-color: #fff;
     color: #1e293b;
     outline: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
     transition: all 0.2s ease;
 }
 
 .search-input-styled:focus {
     border-color: #cbd5e1;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .search-icon {
     position: absolute;
-    right: 20px; /* Encostado na direita */
+    right: 20px;
+    /* Encostado na direita */
     top: 35%;
-    transform: translateY(-50%); /* Centraliza verticalmente exato */
+    transform: translateY(-50%);
+    /* Centraliza verticalmente exato */
     color: #94a3b8;
     font-size: 1.3rem;
-    pointer-events: none; /* O clique atravessa o ícone e vai pro input */
+    pointer-events: none;
+    /* O clique atravessa o ícone e vai pro input */
 }
 
 /* --- Lista de Cards --- */
@@ -2026,11 +2044,13 @@ a.profile-link.admin-mode:hover i {
 }
 
 .user-avatar.admin {
-    background-color: #0B1120; /* Azul Escuro Profundo (Foto 2) */
+    background-color: #0B1120;
+    /* Azul Escuro Profundo (Foto 2) */
 }
 
 .user-avatar.client {
-    background-color: #64748b; /* Cinza (Foto 2) */
+    background-color: #64748b;
+    /* Cinza (Foto 2) */
 }
 
 .user-info-col {
@@ -2091,7 +2111,8 @@ a.profile-link.admin-mode:hover i {
     font-weight: 600;
     margin-top: 6px;
     width: fit-content;
-    cursor: pointer; /* Mãozinha ao passar o mouse */
+    cursor: pointer;
+    /* Mãozinha ao passar o mouse */
     transition: all 0.2s;
     position: relative;
     border: 1px solid transparent;
@@ -2116,14 +2137,15 @@ a.profile-link.admin-mode:hover i {
 
 .btn-action-user {
     padding: 10px 24px;
-    border-radius: 50px; /* Pílula completa */
+    border-radius: 50px;
+    /* Pílula completa */
     font-weight: 600;
     font-size: 0.9rem;
     border: none;
     cursor: pointer;
     transition: filter 0.2s, transform 0.2s;
     color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-action-user:hover {
@@ -2132,11 +2154,13 @@ a.profile-link.admin-mode:hover i {
 }
 
 .btn-revoke {
-    background-color: #ef4444; /* Vermelho */
+    background-color: #ef4444;
+    /* Vermelho */
 }
 
 .btn-grant {
-    background-color: #10b981; /* Verde */
+    background-color: #10b981;
+    /* Verde */
 }
 
 /* Botão Redondo Secundário (Icone de Perfil) */
@@ -2168,10 +2192,12 @@ a.profile-link.admin-mode:hover i {
         align-items: flex-start;
         gap: 20px;
     }
+
     .user-card-actions {
         width: 100%;
         justify-content: space-between;
     }
+
     .btn-action-user {
         flex-grow: 1;
     }
@@ -2183,8 +2209,12 @@ a.profile-link.admin-mode:hover i {
 
 .custom-modal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.65); /* Fundo escuro */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    /* Fundo escuro */
     backdrop-filter: blur(2px);
     display: flex;
     justify-content: center;
@@ -2209,8 +2239,15 @@ a.profile-link.admin-mode:hover i {
     width: 90%;
 }
 
-.details-modal { max-width: 500px; text-align: center; }
-.ban-modal { max-width: 450px; text-align: left; }
+.details-modal {
+    max-width: 500px;
+    text-align: center;
+}
+
+.ban-modal {
+    max-width: 450px;
+    text-align: left;
+}
 
 /* Botão Fechar (X) */
 .close-modal-btn {
@@ -2237,7 +2274,8 @@ a.profile-link.admin-mode:hover i {
 .detail-avatar {
     width: 120px;
     height: 120px;
-    background-color: #cbd5e1; /* Cinza claro */
+    background-color: #cbd5e1;
+    /* Cinza claro */
     border-radius: 50%;
     margin: 0 auto 25px auto;
     display: flex;
@@ -2249,12 +2287,30 @@ a.profile-link.admin-mode:hover i {
     overflow: hidden;
 }
 
-.detail-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.detail-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-.detail-info-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 30px; }
+.detail-info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 30px;
+}
 
-.detail-label { font-size: 0.95rem; color: #1e293b; font-weight: 500; }
-.detail-value { font-weight: 400; color: #64748b; margin-left: 5px; }
+.detail-label {
+    font-size: 0.95rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-weight: 400;
+    color: #64748b;
+    margin-left: 5px;
+}
 
 .modal-footer-row {
     display: flex;
@@ -2265,7 +2321,8 @@ a.profile-link.admin-mode:hover i {
 
 /* Botões Customizados */
 .btn-modal-danger {
-    background-color: #ff5f5f; /* Vermelho Salmão do Figma */
+    background-color: #ff5f5f;
+    /* Vermelho Salmão do Figma */
     color: white;
     border: none;
     padding: 12px 24px;
@@ -2274,7 +2331,10 @@ a.profile-link.admin-mode:hover i {
     cursor: pointer;
     transition: background 0.2s;
 }
-.btn-modal-danger:hover { background-color: #e04f4f; }
+
+.btn-modal-danger:hover {
+    background-color: #e04f4f;
+}
 
 .btn-modal-black {
     background-color: #000;
@@ -2286,18 +2346,33 @@ a.profile-link.admin-mode:hover i {
     cursor: pointer;
     transition: background 0.2s;
 }
-.btn-modal-black:hover { background-color: #333; }
+
+.btn-modal-black:hover {
+    background-color: #333;
+}
 
 /* --- Estilos Modal Banir --- */
-.ban-header h3 { font-size: 1.3rem; font-weight: 700; color: #000; margin-bottom: 20px; }
+.ban-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 20px;
+}
 
-.ban-form label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 8px; color: #1e293b; }
+.ban-form label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
 
-.ban-form select, 
-.ban-form input, 
+.ban-form select,
+.ban-form input,
 .ban-form textarea {
     width: 100%;
-    background-color: #e2e2e2; /* Cinza do input Figma */
+    background-color: #e2e2e2;
+    /* Cinza do input Figma */
     border: none;
     padding: 12px;
     border-radius: 6px;
@@ -2317,9 +2392,15 @@ a.profile-link.admin-mode:hover i {
     margin-top: 25px;
 }
 
-.full-width { width: 50%; } /* Botão centralizado menor */
+.full-width {
+    width: 50%;
+}
 
-.hidden { display: none !important; }
+/* Botão centralizado menor */
+
+.hidden {
+    display: none !important;
+}
 
 /* =========================================================
    ESTILOS PARA USUÁRIOS BANIDOS
@@ -2333,7 +2414,8 @@ a.profile-link.admin-mode:hover i {
 
 /* Badge de Banido */
 .badge-role.banned {
-    background-color: #dc2626; /* Vermelho forte */
+    background-color: #dc2626;
+    /* Vermelho forte */
     color: #fff;
 }
 
@@ -2345,9 +2427,11 @@ a.profile-link.admin-mode:hover i {
 
 /* Botão de Remover Banimento (Verde/Azul para indicar restauração) */
 .btn-unban {
-    background-color: #2563eb; /* Azul */
+    background-color: #2563eb;
+    /* Azul */
     color: white;
 }
+
 .btn-unban:hover {
     background-color: #1d4ed8;
 }
@@ -2370,8 +2454,15 @@ a.profile-link.admin-mode:hover i {
 }
 
 @keyframes modalPopIn {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .ban-header-pro {
@@ -2395,7 +2486,7 @@ a.profile-link.admin-mode:hover i {
     font-size: 1.8rem;
     margin-bottom: 16px;
     border: 4px solid #fff;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .ban-header-pro h3 {
@@ -2417,7 +2508,9 @@ a.profile-link.admin-mode:hover i {
     transition: color 0.2s;
 }
 
-.close-modal-btn-pro:hover { color: #111827; }
+.close-modal-btn-pro:hover {
+    color: #111827;
+}
 
 .ban-body-pro {
     padding: 0 30px 30px 30px;
@@ -2449,6 +2542,7 @@ a.profile-link.admin-mode:hover i {
     display: flex;
     align-items: center;
 }
+
 .input-icon-wrapper-pro i {
     position: absolute;
     left: 14px;
@@ -2456,6 +2550,7 @@ a.profile-link.admin-mode:hover i {
     font-size: 1.1rem;
     pointer-events: none;
 }
+
 .input-pro {
     width: 100%;
     padding: 12px 12px 12px 42px;
@@ -2466,6 +2561,7 @@ a.profile-link.admin-mode:hover i {
     transition: all 0.2s;
     outline: none;
 }
+
 .input-pro:focus {
     border-color: #191D28;
     box-shadow: 0 0 0 3px rgba(25, 29, 40, 0.1);
@@ -2483,6 +2579,7 @@ a.profile-link.admin-mode:hover i {
     outline: none;
     transition: all 0.2s;
 }
+
 .textarea-pro:focus {
     border-color: #191D28;
     box-shadow: 0 0 0 3px rgba(25, 29, 40, 0.1);
@@ -2512,6 +2609,7 @@ a.profile-link.admin-mode:hover i {
     border-color: #e5e7eb;
     color: #374151;
 }
+
 .btn-pro-secondary:hover {
     background: #f3f4f6;
     border-color: #d1d5db;
@@ -2529,13 +2627,15 @@ a.profile-link.admin-mode:hover i {
     transform: translateY(-1px);
 }
 
-.fade-in { animation: fadeIn 0.3s ease forwards; }
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
 
 /* IMPORTANTE: Certifique-se de que as classes .admin-custom-select, .select-trigger e .select-options 
    (que já existem no cupons.css) estejam carregadas ou copie-as para cá se necessário. 
    O HTML assume que elas existem. */
 
-   /* =========================================================
+/* =========================================================
    NOVO MODAL DE DETALHES DO USUÁRIO (ESTILO PRO)
    ========================================================= */
 
@@ -2594,15 +2694,24 @@ a.profile-link.admin-mode:hover i {
     font-size: 2.5rem;
     font-weight: 700;
     color: #fff;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border: 4px solid #fff;
-    background-color: #cbd5e1; /* Cor padrão se não tiver foto */
+    background-color: #cbd5e1;
+    /* Cor padrão se não tiver foto */
 }
 
 /* Cores do Avatar Grande baseadas no status */
-.avatar-large-wrapper.admin { background-color: #0f172a; }
-.avatar-large-wrapper.client { background-color: #64748b; }
-.avatar-large-wrapper.banned { background-color: #ef4444; }
+.avatar-large-wrapper.admin {
+    background-color: #0f172a;
+}
+
+.avatar-large-wrapper.client {
+    background-color: #64748b;
+}
+
+.avatar-large-wrapper.banned {
+    background-color: #ef4444;
+}
 
 .avatar-large-wrapper img {
     width: 100%;
@@ -2681,7 +2790,10 @@ a.profile-link.admin-mode:hover i {
     cursor: pointer;
     transition: background 0.2s;
 }
-.btn-pro-black:hover { background: #333; }
+
+.btn-pro-black:hover {
+    background: #333;
+}
 
 
 /* AJUSTES PARA A LISTA (FOTO PEQUENA) */
@@ -2705,10 +2817,12 @@ a.profile-link.admin-mode:hover i {
 /* Container do rodapé */
 .details-footer-pro,
 .ban-footer-pro {
-    background: #fff; /* Fundo branco limpo */
+    background: #fff;
+    /* Fundo branco limpo */
     padding: 20px 30px;
     display: flex;
-    gap: 15px; /* Espaço entre os botões */
+    gap: 15px;
+    /* Espaço entre os botões */
     border-top: 1px solid #f3f4f6;
 }
 
@@ -2716,8 +2830,10 @@ a.profile-link.admin-mode:hover i {
 .btn-pro-black,
 .btn-pro-danger,
 .btn-unban,
-.btn-pro-secondary {  /* <--- ADICIONADO AQUI */
-    flex: 1; /* Faz ocupar 50% do espaço cada */
+.btn-pro-secondary {
+    /* <--- ADICIONADO AQUI */
+    flex: 1;
+    /* Faz ocupar 50% do espaço cada */
     padding: 14px;
     border-radius: 12px;
     font-weight: 600;
@@ -2736,8 +2852,9 @@ a.profile-link.admin-mode:hover i {
     background: #191D28;
     color: white;
     border: 1px solid transparent;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .btn-pro-black:hover {
     background: #333;
     transform: translateY(-2px);
@@ -2750,6 +2867,7 @@ a.profile-link.admin-mode:hover i {
     border: 1px solid transparent;
     box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
 }
+
 .btn-pro-danger:hover {
     background: #dc2626;
     transform: translateY(-2px);
@@ -2762,6 +2880,7 @@ a.profile-link.admin-mode:hover i {
     color: white;
     border: 1px solid transparent;
 }
+
 .btn-unban:hover {
     background-color: #1d4ed8;
     transform: translateY(-2px);
@@ -2770,10 +2889,12 @@ a.profile-link.admin-mode:hover i {
 /* 4. Botão Branco/Cinza (Cancelar) - CORRIGIDO */
 .btn-pro-secondary {
     background: #ffffff;
-    border: 1px solid #e5e7eb; /* Borda visível */
+    border: 1px solid #e5e7eb;
+    /* Borda visível */
     color: #374151;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .btn-pro-secondary:hover {
     background: #f9fafb;
     border-color: #d1d5db;
@@ -2793,7 +2914,7 @@ a.profile-link.admin-mode:hover i {
     border-radius: 12px;
     margin-bottom: 25px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     flex-wrap: wrap;
     gap: 15px;
 }
@@ -2819,12 +2940,14 @@ a.profile-link.admin-mode:hover i {
     transition: all 0.2s;
 }
 
-.filter-btn:hover { color: #191D28; }
+.filter-btn:hover {
+    color: #191D28;
+}
 
 .filter-btn.active {
     background: #fff;
     color: #191D28;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .filters-best {
@@ -2878,7 +3001,7 @@ a.profile-link.admin-mode:hover i {
 
 .report-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Badge de Vendas em Destaque */
@@ -2896,10 +3019,13 @@ a.profile-link.admin-mode:hover i {
     align-items: center;
     gap: 5px;
     z-index: 2;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-.sales-badge i { color: #f59e0b; /* Amarelo */ }
+.sales-badge i {
+    color: #f59e0b;
+    /* Amarelo */
+}
 
 .report-img-box {
     width: 100%;
@@ -2918,7 +3044,9 @@ a.profile-link.admin-mode:hover i {
     mix-blend-mode: multiply;
 }
 
-.report-info { padding: 15px; }
+.report-info {
+    padding: 15px;
+}
 
 .report-title {
     font-size: 1rem;
@@ -2980,9 +3108,10 @@ a.profile-link.admin-mode:hover i {
     font-size: 2.5rem;
     font-weight: 700;
     color: #fff;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     border: 4px solid #fff;
-    background-color: #cbd5e1; /* Cor padrão se não tiver foto */
+    background-color: #cbd5e1;
+    /* Cor padrão se não tiver foto */
 }
 
 /* =========================================================
@@ -3899,12 +4028,6 @@ a.profile-link.admin-mode:hover i {
     border: 1px solid #00000010;
 }
 
-@media (max-width: 700px){
-    .notificacao-geral-notification-card{
-        flex-direction: column;
-    }
-}
-
 .notificacao-geral-event-INSERT {
     border-left-color: var(--ng-insert-color);
 }
@@ -4214,10 +4337,9 @@ a.profile-link.admin-mode:hover i {
         width: 100%;
     }
 
-    .notificacao-geral-modal-title { 
+    .notificacao-geral-modal-title {
         font-size: 0.5rem;
     }
-
 }
 
 
@@ -4546,5 +4668,503 @@ a.profile-link.admin-mode:hover i {
     .avaliacao-dash-btn-delete {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* Unificando a cor dos ícones dos 4 blocos para Azul Escuro */
+.icon-center-block-vendidos,
+.icon-center-block-criados,
+.icon-center-block-produtos,
+.icon-center-block-faturamento {
+    background-color: #191D28 !important;
+    /* Cor TopStyle */
+    color: white;
+}
+
+/* Ajuste fino para os ícones ficarem centralizados e bonitos */
+.icon-center-block-vendidos i,
+.icon-center-block-criados i,
+.icon-center-block-produtos i,
+.icon-center-block-faturamento i {
+    font-size: 1.8rem;
+}
+
+
+
+/* =========================================================
+   PODIUM RACE - TOP 5 CLIENTES
+   ========================================================= */
+
+.podium-stage {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: auto;
+    border-bottom: 1px solid #e5e7eb;
+    overflow: hidden;
+    /* Garante que quem sair do top 5 não quebre o layout */
+}
+
+.podium-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #94a3b8;
+}
+
+/* O Item do Cliente (Barra + Foto) */
+.podium-item {
+    position: absolute;
+    bottom: 0;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+
+    /* --- ALTERAÇÃO AQUI --- */
+    /* Animação unificada e mais lenta para o efeito de "corrida" */
+    transition: left 1.5s cubic-bezier(0.25, 1, 0.5, 1),
+        height 1.5s cubic-bezier(0.25, 1, 0.5, 1),
+        z-index 0.5s ease,
+        opacity 0.5s ease;
+    /* ---------------------- */
+}
+
+/* Garanta que a barra acompanhe a suavidade */
+.podium-bar {
+    width: 100%;
+    background: linear-gradient(180deg, #191D28 0%, #0f172a 100%);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(25, 29, 40, 0.3);
+
+    /* Suaviza a altura junto com o pai */
+    height: 100%;
+    transition: background-color 0.3s ease, height 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.podium-item:hover .podium-bar {
+    background: #2563eb;
+    /* Azul destaque no hover */
+}
+
+/* Avatar Flutuante */
+.podium-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #cbd5e1;
+    overflow: hidden;
+    margin-bottom: -25px;
+    /* Entra na barra */
+    z-index: 2;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.podium-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.podium-username {
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* Hover Effects */
+.podium-item:hover .podium-avatar {
+    transform: scale(1.15);
+    border-color: #191D28;
+}
+
+.podium-item:hover .podium-bar {
+    background: #2563eb;
+    /* Fica mais azul ao passar o mouse */
+}
+
+/* --- TOOLTIP FLUTUANTE --- */
+.podium-tooltip {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 220px;
+    z-index: 100;
+    text-align: center;
+    pointer-events: none;
+    /* O mouse passa direto */
+    border: 1px solid #e2e8f0;
+    opacity: 0;
+    transition: opacity 0.2s, top 0.2s;
+}
+
+.podium-tooltip.visible {
+    opacity: 1;
+    top: 40px;
+    /* Sobe um pouco */
+}
+
+.tooltip-header img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #f8fafc;
+    margin-bottom: 8px;
+    object-fit: cover;
+}
+
+.tooltip-body h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.tooltip-body span {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.tooltip-body p {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0 0 8px 0;
+    word-break: break-all;
+}
+
+.tooltip-stats {
+    background: #f1f5f9;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #334155;
+}
+
+.tooltip-stats span {
+    display: inline;
+    color: #16a34a;
+    font-weight: 700;
+}
+
+/* Usuários saindo do ranking */
+.podium-item.leaving {
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+/* =========================================================
+   NOVO BLOCO: DESTAQUE DE VENDAS (WIDE)
+   ========================================================= */
+
+.graficos-footer {
+    width: 100%;
+    /* Pequeno ajuste */
+}
+
+.highlight-wrapper {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.highlight-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.highlight-header-row h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+/* Badge de "Em tempo real" pulsando */
+.live-badge {
+    font-size: 0.8rem;
+    color: #10b981;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.blink-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blinkLive 1.5s infinite;
+}
+
+@keyframes blinkLive {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- CARD WIDE --- */
+.best-seller-wide-card {
+    background: linear-gradient(to right, #f8fafc, #ffffff);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 15px 20px; /* Reduzido de 25px */
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+    min-height: 140px; /* Reduzido de 220px para 140px */
+}
+
+/* Efeito Hover TopStyle */
+.best-seller-wide-card:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+    border-color: #cbd5e1;
+}
+
+.best-seller-wide-card:hover .bsw-img-box img {
+    transform: scale(1.05);
+}
+
+/* FOTO GRANDE NA ESQUERDA */
+.bsw-img-box {
+    width: 120px;  /* Reduzido de 200px */
+    height: 120px; /* Reduzido de 180px */
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 8px;
+}
+
+.bsw-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    transition: transform 0.4s ease;
+}
+
+/* CONTEÚDO (Texto) */
+.bsw-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.bsw-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.bsw-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.95rem;
+    color: #64748b;
+    align-items: center;
+}
+
+.bsw-id-pill {
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #475569;
+}
+
+.bsw-stats-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.bsw-stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.bsw-stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.bsw-stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* BADGE DE FOGO (HOT) */
+.bsw-badge-fire {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+    border: 3px solid #fff;
+    animation: pulseFire 2s infinite;
+}
+
+.bsw-badge-fire i {
+    font-size: 1.2rem;
+}
+
+.bsw-badge-fire span {
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+@keyframes pulseFire {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+/* BOTÃO INFERIOR */
+.highlight-footer-action {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.btn-show-more-dash {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    padding: 10px 24px;
+    border-radius: 30px;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-show-more-dash:hover {
+    background: #191D28;
+    color: white;
+    border-color: #191D28;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .best-seller-wide-card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .bsw-img-box {
+        width: 100%;
+        height: 200px;
+    }
+
+    .bsw-badge-fire {
+        top: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .bsw-badge-fire i {
+        font-size: 1.2rem;
+    }
+
+    .bsw-badge-fire span {
+        display: none;
     }
 }
