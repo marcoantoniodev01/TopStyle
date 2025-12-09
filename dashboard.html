@@ -321,7 +321,7 @@
               </li>
               <ul class="submenu">
                 <li data-content="notificacao-geral">Toda as Notificações</li>
-                <li>Mensagens de usuários</li>
+                <li data-content="dashboard-tab">Mensagens de usuários</li>
                 <li>Logs de erro ou atividades (se tiver como)</li>
               </ul>
 
@@ -730,6 +730,83 @@
                   </thead>
                   <tbody id="table-body"></tbody>
                 </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="page" id="dashboard-tab">
+          <div id="avaliacao-dash-tab" class="avaliacao-dash-container">
+
+            <div class="avaliacao-dash-header">
+              <h2>Gestão de Avaliações</h2>
+              <p>Visualize, filtre e modere todos os comentários da loja.</p>
+            </div>
+
+            <div class="avaliacao-dash-kpi-grid">
+              <div class="avaliacao-dash-kpi-card">
+                <div class="avaliacao-dash-kpi-icon"><i class="bi bi-chat-left-text"></i></div>
+                <div class="avaliacao-dash-kpi-info">
+                  <h3>Total</h3>
+                  <span id="avaliacao-dash-kpi-total">0</span>
+                </div>
+              </div>
+
+              <div class="avaliacao-dash-kpi-card">
+                <div class="avaliacao-dash-kpi-icon"><i class="bi bi-star-fill"></i></div>
+                <div class="avaliacao-dash-kpi-info">
+                  <h3>Média</h3>
+                  <span id="avaliacao-dash-kpi-avg">0.0</span>
+                </div>
+              </div>
+
+              <div class="avaliacao-dash-kpi-card highlight">
+                <div class="avaliacao-dash-kpi-icon"><i class="bi bi-trophy"></i></div>
+                <div class="avaliacao-dash-kpi-info">
+                  <h3>Top Produto</h3>
+                  <span id="avaliacao-dash-kpi-top-product">Carregando...</span>
+                  <small id="avaliacao-dash-kpi-top-count">0 avaliações</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="avaliacao-dash-filters">
+              <div class="avaliacao-dash-search-group">
+                <i class="bi bi-search"></i>
+                <input type="text" id="avaliacao-dash-search" placeholder="Buscar cliente, produto, comentário...">
+              </div>
+
+              <div class="avaliacao-dash-filter-group">
+                <select id="avaliacao-dash-filter-stars">
+                  <option value="">Todas as Estrelas</option>
+                  <option value="5">★★★★★ (5)</option>
+                  <option value="4">★★★★☆ (4)</option>
+                  <option value="3">★★★☆☆ (3)</option>
+                  <option value="2">★★☆☆☆ (2)</option>
+                  <option value="1">★☆☆☆☆ (1)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="avaliacao-dash-table-wrapper">
+              <table class="avaliacao-dash-table" id="avaliacao-dash-table-el">
+                <thead>
+                  <tr>
+                    <th>Info. Cliente</th>
+                    <th>Produto</th>
+                    <th>Nota</th>
+                    <th>Comentário</th>
+                    <th style="text-align:right;">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="avaliacao-dash-tbody">
+                </tbody>
+              </table>
+
+              <div id="avaliacao-dash-no-msg" class="avaliacao-dash-no-data" style="display:none;">
+                <i class="bi bi-inbox"></i>
+                <p>Nenhuma avaliação encontrada.</p>
               </div>
             </div>
 
@@ -1240,6 +1317,8 @@
   <script src="assets/js/notificacao-geral.js"></script>
   <script src="assets/js/colecao.js"></script>
   <script src="assets/js/collection-linker.js"></script>
+  <script src="assets/js/dash-avaliacao.js"></script>
 </body>
 
 </html>
+
