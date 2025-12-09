@@ -1576,6 +1576,7 @@ main {
   display: grid;
   place-items: center;
   gap: 20px;
+  pointer-events: none;
 }
 
 #summary-avg-rating {
@@ -2194,6 +2195,7 @@ progress::-webkit-progress-value {
     height: 130px;
   }
 }
+
 
 
 
