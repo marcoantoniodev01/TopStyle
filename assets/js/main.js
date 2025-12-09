@@ -1039,7 +1039,7 @@ function initHeaderAndUIInteractions() {
   }
 }
 
-/*=============== PRELOADER + INTRO ===============*/
+/*=============== PRELOADER + INTRO OTIMIZADA ===============*/
 function runIntro() {
   const intro = document.getElementById("intro");
   const skipBtn = document.getElementById("skip-intro-btn");
@@ -1050,26 +1050,42 @@ function runIntro() {
     return;
   }
 
-  const finishIntro = () => {
-    if (intro.classList.contains('is-melting')) return;
+  // --- FUNÇÃO ÚNICA DE SAÍDA RÁPIDA ---
+  // Serve tanto para o clique em "Pular" quanto para o final natural
+  const executeFastExit = () => {
+    // 1. Mata animações pendentes
     if (tl) tl.kill();
-    gsap.killTweensOf("#intro");
+    if (window.gsap) {
+        gsap.killTweensOf("#intro");
+        gsap.killTweensOf(".intro-text span");
+        gsap.killTweensOf(".intro-text-top span");
+        gsap.killTweensOf(".intro-mask");
+    }
+
+    // 2. Esconde botão
     if (skipBtn) skipBtn.style.display = 'none';
 
-    intro.classList.add('is-melting');
+    // 3. Verifica se já está saindo para não rodar duas vezes
+    if (intro.classList.contains('simple-fade-out')) return;
 
-    intro.addEventListener('transitionend', () => {
+    // 4. Adiciona classe de saída rápida (definida no CSS)
+    intro.classList.add('simple-fade-out');
+
+    // 5. Remove do DOM assim que o fade terminar (0.5s)
+    setTimeout(() => {
       intro.style.display = "none";
       document.body.style.overflow = "auto";
       document.body.classList.remove('com-intro');
       sessionStorage.setItem("introShown", "true");
-    }, { once: true });
+    }, 550); 
   };
 
+  // Evento do botão Pular
   if (skipBtn) {
-    skipBtn.addEventListener('click', finishIntro, { once: true });
+    skipBtn.addEventListener('click', executeFastExit, { once: true });
   }
 
+  // --- GSAP TIMELINE ---
   gsap.set(".intro-mask.top", { yPercent: 0 });
   gsap.set(".intro-mask.bottom", { yPercent: 0 });
   gsap.set(".intro-text, .intro-text-top", { opacity: 1, y: 0 });
@@ -1077,11 +1093,13 @@ function runIntro() {
 
   tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
+  // 1. Animação das Máscaras (Abrem)
   tl.to(".intro-mask.top", { yPercent: -70, duration: 2, ease: "power3.out" }, 0)
     .to(".intro-mask.bottom", { yPercent: 70, duration: 2, ease: "power3.out" }, 0)
     .to(".intro-mask.top", { yPercent: -100, duration: 2, ease: "power1.inOut" })
     .to(".intro-mask.bottom", { yPercent: 100, duration: 2, ease: "power1.inOut" }, "<");
 
+  // 2. Animação dos Textos (ESTILO / OUSADIA)
   const texts = document.querySelectorAll(".intro-text");
   texts.forEach((el, i) => {
     const letters = el.querySelectorAll("span");
@@ -1091,18 +1109,25 @@ function runIntro() {
     tl.to(letters, { opacity: 0, y: -100, duration: 0.6, stagger: 0.05 }, delay + 0.8);
   });
 
-  const lastExit = (texts.length - 1) * 1.5 + 1.3;
-  const topStyleDelay = lastExit + 0.5;
+  // 3. Animação final (TopStyle)
+  // Calcula o tempo exato para começar logo após o último texto sair
+  const lastExit = texts.length > 0 ? (texts.length - 1) * 1.5 + 1.3 : 2;
+  const topStyleDelay = lastExit + 0.3; // Delay reduzido para ser mais ágil
 
   const topStyleLetters = document.querySelectorAll(".intro-text-top span");
-  tl.to(topStyleLetters, {
-    opacity: 1,
-    y: 0,
-    duration: 1,
-    stagger: 0.05
-  }, topStyleDelay);
+  
+  if (topStyleLetters.length > 0) {
+      tl.to(topStyleLetters, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.05
+      }, topStyleDelay);
+  }
 
-  tl.call(finishIntro, [], ">+0.5");
+  // 4. CHAMA A SAÍDA IMEDIATAMENTE APÓS O TEXTO APARECER
+  // O ">" significa "imediatamente após a última animação terminar"
+  tl.call(executeFastExit, [], ">");
 }
 
 function splitLetters(selector) {
