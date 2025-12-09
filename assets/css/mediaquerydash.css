@@ -1532,3 +1532,240 @@
         margin-top: 10px;
     }
 }
+
+/* ==========================================================================
+   >>> INÍCIO: NOVOS ESTILOS RESPONSIVOS (ABA 4 E 5) <<<
+   Copie a partir daqui e cole no final do arquivo mediaquerydash.css
+   ========================================================================== */
+
+/* ==========================================================================
+   2. ABA 5: RELATÓRIO DE VENDAS (#relatorio-vendas)
+   Transformação: Grid Limpo, Filtros de Scroll e Modal de Exportação Seguro
+   ========================================================================== */
+
+/* --- NOTEBOOKS PEQUENOS (max-width: 1200px) --- */
+@media (max-width: 1200px) {
+    .report-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* --- TABLETS E MOBILE (max-width: 900px) --- */
+@media (max-width: 900px) {
+    .report-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Barra de filtros vira coluna ou scroll? Vamos de Scroll Horizontal + Wrap Inteligente */
+    .report-filters-bar {
+        padding: 15px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .filters-best {
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        gap: 15px;
+    }
+}
+
+/* --- MOBILE PORTRAIT (max-width: 600px) --- */
+@media (max-width: 600px) {
+
+    /* 1. FILTROS (Estilo APP) */
+    .filter-group-time {
+        width: 100%;
+        overflow-x: auto; /* Scroll horizontal */
+        display: flex;
+        justify-content: flex-start;
+        background: transparent;
+        padding: 0;
+        gap: 8px;
+        /* Esconde scrollbar */
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .filter-group-time::-webkit-scrollbar { display: none; }
+
+    .filter-group-time .filter-btn {
+        flex: none; /* Não estica */
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px; /* Pílula */
+        padding: 8px 18px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .filter-group-time .filter-btn.active {
+        background: #191D28;
+        color: white;
+        border-color: #191D28;
+    }
+
+    /* Select de Ordenação */
+    .filter-group-sort {
+        width: 100%;
+        background: #f8fafc;
+        padding: 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .filter-group-sort select {
+        background: transparent;
+        border: none;
+        font-weight: 600;
+        text-align: right;
+        padding-right: 0;
+    }
+
+    /* Botão Baixar Relatórios */
+    .filter-btn-best {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .filter-btn-best button {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+        background: #0f172a; /* Azul muito escuro */
+    }
+
+    /* 2. GRID DE PRODUTOS */
+    .report-grid {
+        grid-template-columns: 1fr; /* 1 Coluna (Card Grande) */
+        gap: 20px;
+    }
+
+    .report-card {
+        display: flex;
+        flex-direction: row; /* Imagem esquerda, Info direita */
+        align-items: center;
+        height: auto;
+        padding: 10px;
+    }
+
+    .report-img-box {
+        width: 100px; /* Miniatura fixa */
+        height: 100px;
+        flex-shrink: 0;
+        border-bottom: none;
+        border-right: 1px solid #f3f4f6;
+        border-radius: 8px;
+        background: #fff;
+    }
+    
+    .report-img-box img {
+        padding: 5px;
+    }
+
+    .report-info {
+        padding: 10px 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .report-title {
+        font-size: 1rem;
+        white-space: normal; /* Permite quebra de linha no nome */
+        max-height: 2.8em;
+        line-height: 1.4;
+        overflow: hidden;
+    }
+
+    /* Badge flutuante (Ajuste) */
+    .sales-badge {
+        top: 10px;
+        right: 10px;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+    }
+    
+    /* 3. MODAIS DE EXPORTAÇÃO E TIPO */
+    #modal-export-reports .custom-modal-content,
+    #modal-report-type .custom-modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    /* Botões dentro do modal de Exportação */
+    #modal-export-reports .filter-btn {
+        flex: 1;
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .export-option-card {
+        padding: 15px;
+    }
+    
+    /* Modal de Tipo (Resumo vs Completo) */
+    #modal-report-type button {
+        width: 100% !important; /* Full width */
+        margin-bottom: 10px;
+        padding: 16px;
+    }
+}
+
+/* ==========================================================================
+   3. AJUSTES ESPECÍFICOS PARA TELAS MINÚSCULAS (IPHONE SE / FOLD)
+   (max-width: 375px)
+   ========================================================================== */
+@media (max-width: 375px) {
+    /* Status Pedido */
+    .kpi-value {
+        font-size: 1.8rem;
+    }
+    
+    .custom-table tr {
+        padding: 12px;
+    }
+    
+    .btn-action-status {
+        font-size: 0.85rem;
+    }
+
+    /* Relatório Vendas */
+    .report-img-box {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .report-title {
+        font-size: 0.9rem;
+    }
+    
+    .sales-badge {
+        position: static; /* No iPhone SE, tira o position absolute pra não cobrir texto */
+        margin-bottom: 5px;
+        display: inline-flex;
+        width: fit-content;
+    }
+    
+    .report-card {
+        flex-direction: column; /* Volta para coluna se a tela for muito estreita */
+        align-items: flex-start;
+    }
+    
+    .report-img-box {
+        width: 100%;
+        height: 150px;
+        border-right: none;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .report-info {
+        width: 100%;
+    }
+}
