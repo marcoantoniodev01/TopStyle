@@ -56,9 +56,16 @@
         align-items: center;
     }
 
+    .title-endereco-pagamento {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
 
     .title-endereco-pagamento h2 {
         font-size: 1.3rem;
+        text-align: center !important;
     }
 
     /* --- Bloco de Endereço --- */
@@ -70,7 +77,11 @@
     }
 
     .pagamento-endereco-data {
+        width: 100%;
+        display: flex;
         padding-top: 0.5rem;
+        text-align: center !important;
+        justify-content: center !important;
     }
 
     .pagamento-endereco-bottom .text-endereco-pagamanto {
@@ -94,7 +105,7 @@
     /* Botões (Padrão/Trocar) centralizados */
     .pagamento-botao {
         width: 100%;
-        justify-content: center;
+        justify-content: center !important;
         margin-top: 5px;
     }
 
@@ -138,6 +149,7 @@
     /* --- Bloco de Produtos --- */
     #checkout-products {
         max-height: 40vh;
+        width: 100%;
     }
 
     .pagamento-detalhe {
