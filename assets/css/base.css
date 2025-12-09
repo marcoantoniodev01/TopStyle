@@ -296,7 +296,7 @@ main {
     border: 1px solid #eee;
     transition: transform 0.3s;
     max-width: 600px !important;
-    padding: 50px 20px;
+    padding: 30px 20px;
 }
 
 /* Card de produto */
@@ -2193,5 +2193,6 @@ progress::-webkit-progress-value {
     height: 130px;
   }
 }
+
 
 
