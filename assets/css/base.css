@@ -295,7 +295,7 @@ main {
     background: #fff;
     border: 1px solid #eee;
     transition: transform 0.3s;
-    max-width: 600px !important;
+    max-width: 1100px !important;
     padding: 30px 20px;
 }
 
@@ -2194,6 +2194,7 @@ progress::-webkit-progress-value {
     height: 130px;
   }
 }
+
 
 
 
