@@ -1674,6 +1674,7 @@ progress::-webkit-progress-value {
 .stars {
   font-size: 2rem;
   color: #ccc;
+  cursor: pointer;
 }
 
 .form-group {
@@ -2193,6 +2194,7 @@ progress::-webkit-progress-value {
     height: 130px;
   }
 }
+
 
 
 
