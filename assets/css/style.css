@@ -1426,7 +1426,7 @@ hr {
 }
 
 .footer-brand {
-    flex: 1 1 250px;
+    flex: 1 1 120px;
     margin-bottom: 20px;
 }
 
@@ -4465,3 +4465,4 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
