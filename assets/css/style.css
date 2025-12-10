@@ -8,6 +8,38 @@
     margin: 0;
 }
 
+/* CORREÇÃO PARA SAFARI (iOS e macOS) */
+input, 
+textarea, 
+select {
+    -webkit-user-select: text !important; /* Força a seleção de texto no Safari */
+    user-select: text !important;
+    -webkit-appearance: none; /* Remove estilos nativos "arredondados" do Safari que as vezes bugam */
+}
+
+/* Garante que o container do formulário permita interação */
+.formulario-container form,
+.input__container {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Garante que o formulário ativo esteja acima de qualquer camada de animação */
+.painel-direito-ativo .formulario-cadastro {
+    z-index: 100 !important;
+    pointer-events: auto !important;
+}
+
+.formulario-login {
+    z-index: 100 !important; 
+    pointer-events: auto !important;
+}
+
+/* Se o painel direito estiver ativo, o login deve sair da frente do mouse */
+.painel-direito-ativo .formulario-login {
+    pointer-events: none !important;
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -4462,6 +4494,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
