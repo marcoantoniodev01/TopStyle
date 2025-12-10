@@ -2072,6 +2072,7 @@ progress::-webkit-progress-value {
   display: flex;
   padding: 10px;
   align-items: start;
+	margin-top: 20px;
 }
 
 .review-actions button {
@@ -2192,6 +2193,7 @@ progress::-webkit-progress-value {
 	width: 100%;
  	 max-width: 1100px;
 }
+
 
 
 
