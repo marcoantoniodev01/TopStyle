@@ -696,7 +696,7 @@ main {
   }
 
   .model-cloth-info {
-    width: 80%;
+    width: 100%;
     justify-content: center;
     align-items: center;
   }
@@ -2194,6 +2194,7 @@ progress::-webkit-progress-value {
     height: 130px;
   }
 }
+
 
 
 
