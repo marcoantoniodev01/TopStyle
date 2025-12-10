@@ -521,9 +521,7 @@ input[type="password"]::-ms-clear {
   display: none !important;
 }
 
-input[type="password"]::-webkit-textfield-decoration-container {
-  display: none !important;
-}
+
 
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px #FFFAFA inset !important;
@@ -973,3 +971,4 @@ select {
     /* Corrige bug visual onde o input parece "desativado" */
     -webkit-text-fill-color: #000 !important; 
 }
+
