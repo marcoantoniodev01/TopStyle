@@ -71,7 +71,7 @@
     /*marquee*/
 
     .marquee {
-        margin: 80px 0px;
+        margin: 100px 0px;
     }
 
     /*seleção de roupa*/
@@ -224,7 +224,7 @@
     /*marquee*/
 
     .marquee {
-        margin: 45px 0px;
+        margin: 100px 0px;
     }
 
     /*seleção de roupa*/
@@ -371,7 +371,7 @@
     /*marquee*/
 
     .marquee {
-        margin: 45px 0px;
+        margin: 100px 0px;
     }
 
     /*seleção de roupa*/
@@ -518,7 +518,7 @@
     /*marquee*/
 
     .marquee {
-        margin: 55px 0px;
+        margin: 100px 0px;
     }
 
     /*seleção de roupa*/
@@ -723,6 +723,7 @@
    TV / TELAS GRANDES (1920px+)
    =========================== */
 @media (min-width: 1920px) {}
+
 
 
 
