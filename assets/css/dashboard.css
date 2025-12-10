@@ -4134,7 +4134,7 @@ a.profile-link.admin-mode:hover i {
     background-color: #ffffff;
     width: 100%;
     max-width: 1100px;
-    height: 90vh;
+    height: 70vh;
     border-radius: 16px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -5168,3 +5168,4 @@ a.profile-link.admin-mode:hover i {
         display: none;
     }
 }
+
