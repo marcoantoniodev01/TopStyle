@@ -617,78 +617,86 @@ main {
 
 /*SELEÇÃO DE ROUPA*/
 
+/* ============================================= */
+/* ===== SELEÇÃO DE ROUPA (CORRIGIDO) ===== */
+/* ============================================= */
+
 .selection-initial {
     width: 100%;
-    height: 80vh;
+    /* Mudei de height fixo para auto + min-height para não cortar conteúdo no mobile */
+    height: auto; 
+    min-height: 80vh; 
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 50px 0; /* Espaço extra em cima e embaixo */
 }
 
 .page-product-cards {
     width: 80%;
     height: auto;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Permite quebrar linha */
     gap: 10px;
     transition: all 0.3s ease;
 }
 
-.card-opt {
-    height: 300px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+/* --- A MÁGICA ACONTECE AQUI --- */
+/* Agora estilizamos o <a> pois ele é o pai direto dentro do Flexbox */
+.page-product-cards > a {
+    display: block;
+    height: 300px; /* A altura fixa fica no link agora */
+    position: relative;
+    overflow: hidden; /* Mantém o zoom da imagem dentro da borda */
+    text-decoration: none;
     cursor: pointer;
+    border-radius: 4px; /* Opcional: borda levemente arredondada */
+}
+
+/* Transferindo os tamanhos (flex-basis) das classes .opt para os links correspondentes */
+/* Baseado na ordem do seu HTML: 1-Camisa, 2-Moletom, 3-Short, 4-Calça, 5-Acess, 6-Tênis */
+
+.page-product-cards > a:nth-child(1) { flex: 1 1 400px; } /* Equivalente a .opt1 */
+.page-product-cards > a:nth-child(2) { flex: 1 1 500px; } /* Equivalente a .opt2 */
+.page-product-cards > a:nth-child(3) { flex: 1 1 500px; } /* Equivalente a .opt3 */
+.page-product-cards > a:nth-child(4) { flex: 1 1 250px; } /* Equivalente a .opt4 */
+.page-product-cards > a:nth-child(5) { flex: 1 1 250px; } /* Equivalente a .opt5 */
+.page-product-cards > a:nth-child(6) { flex: 1 1 250px; } /* Equivalente a .opt6 */
+
+/* A div interna .card-opt agora apenas preenche o espaço do link */
+.card-opt {
+    height: 100%;
+    width: 100%;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    position: relative;
 }
 
 .card-opt img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease; /* Transição suave na imagem */
 }
 
+/* --- EFEITOS DE HOVER --- */
 
-/* estados dinâmicos via JS */
-.card-opt.active {
-    transform: scale(1.1);
+/* Quando passar o mouse no LINK, aplicamos o zoom na div interna */
+.page-product-cards > a:hover .card-opt {
+    /* transform: scale(1.05);  <-- Se quiser zoom no card todo, descomente */
     z-index: 2;
-    filter: grayscale(1);
 }
 
+.page-product-cards > a:hover img {
+    transform: scale(1.1); /* Zoom na imagem */
+}
+
+/* Estados de inativo (opcional, se você usa JS para adicionar essa classe) */
 .card-opt.inactive {
     transform: scale(.9);
     opacity: 0.7;
 }
 
-.opt1 {
-    flex: 1 1 400px;
-}
-
-.opt2 {
-    flex: 1 1 500px;
-}
-
-.opt4 {
-    flex: 1 1 250px;
-}
-
-.opt3 {
-    flex: 1 1 500px;
-}
-
-.opt6 {
-    flex: 1 1 250px;
-}
-
-.opt5 {
-    flex: 1 1 250px;
-}
-
-.card-opt {
-    position: relative;
-    overflow: hidden;
-}
-
+/* --- TEXTO E FAIXA DIAGONAL (Mantido original) --- */
 
 .card-opt .faixa-diagonal {
     position: absolute;
@@ -696,13 +704,13 @@ main {
     left: 50%;
     width: 0;
     height: 60px;
-    /* altura da faixa */
     background: rgba(0, 0, 0, 0.75);
     transform: translate(-50%, -50%) rotate(-45deg);
     transform-origin: center;
     opacity: 0;
     z-index: 2;
     transition: width 0.6s ease-out, opacity 0.3s ease;
+    pointer-events: none; /* Deixa o clique passar para o link */
 }
 
 .card-opt .faixa-diagonal .texto {
@@ -718,7 +726,30 @@ main {
     opacity: 0;
     transition: opacity 0.4s ease 0.2s;
     pointer-events: none;
+    white-space: nowrap;
 }
+
+/* --- RESPONSIVIDADE --- */
+
+@media (max-width: 1024px) {
+    .page-product-cards {
+        width: 95%; /* Usa mais largura em tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .selection-initial {
+        margin-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .page-product-cards > a {
+        /* No celular, forçamos cada card a ocupar 100% da largura (um embaixo do outro) */
+        flex: 1 1 100% !important; 
+        height: 250px; /* Altura um pouco menor no mobile para não ficar gigante */
+    }
+}
+
 
 
 /*PROMOÇÕES DIÁRIAS*/
@@ -4465,4 +4496,5 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
