@@ -1633,7 +1633,7 @@ const mediaQueries = {
 
 function atualizarImagem() {
   if (mediaQueries.mobilev1.matches) {
-    banner.src = 'mobile.jpg';
+    banner.src = 'https://i.ibb.co/tPpG0vHV/principalimg.png';
   } else if (mediaQueries.mobilev2.matches) {
     banner.src = 'https://i.ibb.co/WNnXgnQp/png002.webp';
   } else if (mediaQueries.mobilev3.matches) {
@@ -1680,4 +1680,5 @@ window.openEditModalById = async function (productId) {
     else alert('Erro: ' + err.message);
   }
 };
+
 
