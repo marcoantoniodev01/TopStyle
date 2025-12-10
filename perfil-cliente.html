@@ -153,61 +153,6 @@
                         </div>
                     </li>
 
-
-                    <li title="Promoções" class="nav__item dropdown item2">
-                        <div class="header__link">
-                            <a href="#off" class="nav__link">Off</a>
-                            <i class="bi bi-caret-down-fill mobile-caret"></i>
-                        </div>
-
-                        <!-- MEGA MENU INSERIDO AQUI -->
-                        <div class="mega-menu" id="mega-menu-off">
-                            <div class="mega-content">
-                                <div class="column">
-                                    <h3><span class="column__title">Vestuário</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Camisetas</a>
-                                    <a href="#">Camiseta Plus-Size</a>
-                                    <a href="#">Camiseta Manga Longa</a>
-                                    <a href="#">Moletons</a>
-                                    <a href="#">Jaquetas E Casacos</a>
-                                    <a href="#">Camisas</a>
-                                    <a href="#">Calças</a>
-                                    <a href="#">Shorts E Bermudas</a>
-                                </div>
-
-                                <div class="column">
-                                    <h3><span class="column__title">Outros</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Juvenil</a>
-                                    <a href="#">Feminino</a>
-                                    <a href="#">Packs</a>
-                                </div>
-
-                                <div class="column">
-                                    <h3><span class="column__title">Acessórios</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Chaveiros E Adesivos</a>
-                                    <a href="#">Cuecas</a>
-                                    <a href="#">Gorros</a>
-                                    <a href="#">Pochetes</a>
-                                    <a href="#">Mochilas</a>
-                                    <a href="#">Meias</a>
-                                    <a href="#">Bags</a>
-                                    <a href="#">Bonés</a>
-                                    <a href="#">Bucket</a>
-                                    <a href="#">Carteiras</a>
-                                </div>
-
-                                <div class="column">
-                                    <h3><span class="column__title">Calçados</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Chinelos</a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
                     <li title="Sobre Nós" class="nav__item dropdown item2">
                         <div class="header__link">
                             <a href="#sobre" class="nav__link">Sobre</a>
@@ -239,7 +184,6 @@
                         <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
                     </li>
                 </ul>
-
             </div>
         </nav>
         <div class="progress-bar"></div>
@@ -248,11 +192,20 @@
     <main class="perfil-main">
         <section class="perfil-cliente">
             <div class="painel-cliente-nav">
+                <!-- MODIFIQUEI -->
                 <div class="perfil-page-img">
-                    <img id="profilePhoto" src="" alt="perfil" style="cursor: pointer;"
-                        title="Clique para alterar a foto">
+                    <div class="perfil-photo-wrap">
+                        <img id="profilePhoto" src="https://placehold.co/300x300" alt="perfil"
+                            title="Clique para alterar a foto">
+                        <button id="profile-edit-btn" class="profile-edit-btn" aria-label="Editar foto"
+                            title="Editar foto">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+
                     <input type="file" id="profileUpload" accept="image/*" style="display: none;">
                 </div>
+                <!-- ATÉ AQUI -->
 
                 <hr class="hr-perfil-client">
                 <ul class="list-page-perfil">
@@ -268,15 +221,11 @@
                         <li class="words">Endereços</li>
                         <li class="responsive"><i class="bi bi-house-fill"></i></li>
                     </a>
-                    <a class="link-page-perfil" href="#telefones">
-                        <li class="words">Telefones</li>
-                        <li class="responsive"><i class="bi bi-phone-fill"></i></li>
-                    </a>
                     <a class="link-page-perfil" href="#pedidos">
                         <li class="words">Pedidos</li>
                         <li class="responsive"><i class="bi bi-receipt"></i></li>
                     </a>
-                    <a class="link-page-logout" href="index.html" id="logout">
+                    <a class="link-page-perfil" href="index.html" id="logout">
                         <li class="words">Sair</li>
                         <li class="responsive"><i class="bi bi-box-arrow-right"></i></li>
                     </a>
@@ -530,10 +479,8 @@
     <script src="assets/js/drops.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/colecao.js"></script>
-  <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/collection-linker.js"></script>
 </body>
 
 
 </html>
-
-

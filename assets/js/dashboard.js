@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     atualizarTotalUsuarios();       // <--- NOVO
     atualizarTotalFornecedores();   // <--- NOVO
     iniciarRealtimeKPIs();          // <--- NOVO
+    atualizarGraficoVendasReal(); // Adicione isso dentro do DOMContentLoaded
 });
 
 // 🔹 Atualiza a contagem de produtos
@@ -172,78 +173,96 @@ document.querySelectorAll('.submenu li').forEach(li => {
     });
 });
 
-// ====== GRÁFICO DE LINHAS ======
+/* =========================================================
+   GRÁFICO DE VENDAS PROFISSIONAL (Baseado em orders)
+   ========================================================= */
+
 const lineOptions = {
     chart: {
         type: "area",
-        height: 320,
+        height: 350,
         toolbar: { show: false },
+        fontFamily: 'Inter, sans-serif'
     },
-    colors: ["#1E90FF", "#00C9A7"],
-    dataLabels: { enabled: false },
+    colors: ["#191D28"], // Navy TopStyle
     stroke: { curve: "smooth", width: 3 },
     fill: {
         type: "gradient",
-        gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.4,
-            opacityTo: 0.1,
-            stops: [0, 100]
-        }
+        gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 90, 100] }
     },
-    series: [
-        {
-            name: "Vendidos",
-            data: [10, 15, 9, 20, 25, 18, 30, 28, 25, 35, 40, 50]
-        },
-        {
-            name: "Revendidos",
-            data: [8, 12, 15, 18, 20, 15, 28, 25, 30, 32, 45, 60]
-        }
-    ],
+    series: [{ name: "Pedidos Concluídos", data: new Array(12).fill(0) }],
     xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        labels: { style: { colors: '#666' } }
+        categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        axisBorder: { show: false },
+        labels: { style: { colors: '#94a3b8' } }
     },
-    yaxis: { labels: { style: { colors: '#666' } } },
-    legend: { position: "top", horizontalAlign: "right" },
-    grid: { borderColor: "#f0f0f0" }
+    yaxis: {
+        labels: { style: { colors: '#94a3b8' } }
+    },
+    grid: { borderColor: "#f1f5f9", strokeDashArray: 4 },
+    dataLabels: { enabled: false },
+    tooltip: { theme: 'dark', x: { show: true } }
 };
 
 const lineChart = new ApexCharts(document.querySelector("#lineChart"), lineOptions);
 lineChart.render();
 
-// ====== GRÁFICO DE BARRAS ======
-const barOptions = {
-    chart: {
-        type: 'bar',
-        height: 200,
-        toolbar: { show: false }
-    },
-    plotOptions: {
-        bar: {
-            borderRadius: 8,
-            columnWidth: '50%'
-        }
-    },
-    dataLabels: { enabled: false },
-    colors: ['#1E90FF'],
-    series: [{
-        name: 'Sales',
-        data: [500, 800, 1200, 1600, 2100]
-    }],
-    xaxis: {
-        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-        labels: { style: { colors: '#666' } }
-    },
-    yaxis: { labels: { show: false } },
-    grid: { show: false },
-    legend: { show: false }
-};
+async function atualizarGraficoVendasReal() {
+    const selector = document.getElementById('chart-year-selector');
+    const selectedYear = selector ? selector.value : new Date().getFullYear();
 
-const barChart = new ApexCharts(document.querySelector("#barChart"), barOptions);
-barChart.render();
+    try {
+        // Buscamos na tabela orders ignorando cancelados para ter um dado real de venda
+        const { data, error } = await client
+            .from('orders')
+            .select('created_at')
+            .neq('status', 'CANCELADO')
+            .gte('created_at', `${selectedYear}-01-01T00:00:00`)
+            .lte('created_at', `${selectedYear}-12-31T23:59:59`);
 
+        if (error) throw error;
+
+        const pedidosPorMes = new Array(12).fill(0);
+
+        data.forEach(order => {
+            const date = new Date(order.created_at);
+            const mes = date.getMonth();
+            pedidosPorMes[mes]++;
+        });
+
+        // Lógica de Crescimento (Comparação Dezembro vs Novembro para o badge)
+        const dez = pedidosPorMes[11] || 0;
+        const nov = pedidosPorMes[10] || 0;
+        let crescimento = 0;
+        if (nov > 0) crescimento = ((dez - nov) / nov) * 100;
+        else if (dez > 0) crescimento = 100;
+
+        document.getElementById('growth-value').innerText = `${crescimento.toFixed(1)}% este mês`;
+
+        lineChart.updateSeries([{
+            name: "Pedidos Concluídos",
+            data: pedidosPorMes
+        }]);
+
+    } catch (err) {
+        console.error("Erro ao processar pedidos do gráfico:", err);
+    }
+}
+
+// Escuta em tempo real inserções na tabela orders
+function ouvirOrdersRealtime() {
+    client.channel('public:orders')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
+            atualizarGraficoVendasReal();
+        })
+        .subscribe();
+}
+
+// Chamar no final do arquivo dashboard.js ou no DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    atualizarGraficoVendasReal();
+    ouvirOrdersRealtime();
+});
 
 // =========================================================
 //  DASHBOARD FINANCEIRO (VIA POLÍTICA RLS)
@@ -681,12 +700,16 @@ function toggleBanDateInput() {
 
 // --- AÇÃO: CONFIRMAR BANIMENTO (Atualizado) ---
 async function confirmBanUser() {
-    // Pega valor do input hidden (novo sistema)
+    // Pega valor do input hidden (permanent ou temporary)
     const duration = document.getElementById('ban-duration-value').value;
     const reason = document.getElementById('ban-reason').value.trim();
     const dateInput = document.getElementById('ban-date-input').value;
 
-    if (!currentUserId) return;
+    if (!currentUserId) {
+        if (window.showToast) window.showToast("Erro: ID do usuário não encontrado.");
+        return;
+    }
+
     if (!duration) {
         if (window.showToast) window.showToast("Selecione a duração do banimento.");
         else alert("Selecione a duração.");
@@ -699,6 +722,8 @@ async function confirmBanUser() {
     }
 
     let bannedUntil = null;
+    
+    // Se for temporário, valida e formata a data
     if (duration === 'temporary') {
         if (!dateInput) {
             if (window.showToast) window.showToast("Selecione a data final.");
@@ -708,12 +733,17 @@ async function confirmBanUser() {
         bannedUntil = new Date(dateInput).toISOString();
     }
 
-    // Envia para o Supabase
+    // Envia para o Supabase (AGORA COM ban_type)
     const { error } = await supabaseAdmin
         .from('user_bans')
-        .insert({
-            // ... dados ...
-        });
+        .insert([
+            {
+                user_id: currentUserId,
+                reason: reason,
+                banned_until: bannedUntil,
+                ban_type: duration // <--- ADICIONADO: envia 'permanent' ou 'temporary'
+            }
+        ]);
 
     if (error) {
         console.error(error);
@@ -721,10 +751,9 @@ async function confirmBanUser() {
     } else {
         if (window.showToast) window.showToast("Usuário banido com sucesso!");
 
-        closeBanModal();  // Fecha o de banimento
-        closeUserModal(); // <--- ADICIONE ISSO: Fecha o de perfil também, pois o status mudou
-
-        mostrarProfiles(); // Atualiza a lista visual
+        closeBanModal();
+        closeUserModal();
+        mostrarProfiles();
     }
 }
 
@@ -1217,6 +1246,534 @@ function catCloseModals() {
 /* EXEMPLO DE COMO DEVE FICAR SEU BLOCO DE MENU NO DASHBOARD.JS:
    (Você pode apenas copiar o trecho abaixo e substituir o listener existente ou adicionar a lógica dentro dele)
 */
+
+/* =============================================================
+   DROP (COLEÇÕES)
+*/
+
+(() => {
+    'use strict';
+
+    const DROP_TABLE = 'drops';
+    const PRODUCT_TABLE = 'products';
+    const DROP_BUCKET = 'drop-imgs';
+
+    async function ensureClient() {
+        // 1) se existe binding 'client' (declared as const client = ... no dashboard.js), use-o
+        try {
+            if (typeof client !== 'undefined' && client) {
+                return client;
+            }
+        } catch (e) { /* acessando client pode lançar se não existir */ }
+
+        // 2) se window.client foi definido explicitamente, use-o
+        if (window.client) {
+            return window.client;
+        }
+
+        // 3) se window.supabase (lib carregada) e variáveis globais SUPABASE_URL/SUPABASE_KEY existirem, crie client a partir disso
+        try {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                const url = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL :
+                    (window.SUPABASE_URL || null);
+                const key = (typeof SUPABASE_KEY !== 'undefined') ? SUPABASE_KEY :
+                    (window.SUPABASE_KEY || null);
+
+                if (url && key) {
+                    // cria e armazena em window.client para reutilização
+                    window.client = window.supabase.createClient(url, key);
+                    return window.client;
+                }
+                // se não houver url/key suficientes, não quebramos: tentamos fallback abaixo
+            }
+        } catch (e) {
+            console.warn('ensureClient: falha ao usar window.supabase.createClient', e);
+        }
+
+        // 4) fallback: importa supabase-js dinamicamente (mantemos constantes internas ao drops se não houver outras)
+        try {
+            const SUPABASE_URL_FALLBACK = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : 'https://xhzdyatnfaxnvvrllhvs.supabase.co';
+            const SUPABASE_KEY_FALLBACK = (typeof SUPABASE_KEY !== 'undefined') ? SUPABASE_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo';
+
+            const mod = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+            const createClient = mod.createClient;
+            window.client = createClient(SUPABASE_URL_FALLBACK, SUPABASE_KEY_FALLBACK);
+            return window.client;
+        } catch (err) {
+            console.error('ensureClient: não foi possível criar/obter Supabase client', err);
+            throw err;
+        }
+    }
+
+    function showToastSafe(msg, type = 'info') {
+        if (typeof window.showToast === 'function') {
+            try { window.showToast(msg, type === 'error' ? 'error' : (type === 'success' ? 'success' : 'info'), 3500); return; } catch (e) { /* noop */ }
+        }
+        console.log(`[toast ${type}]`, msg);
+    }
+
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    // util: cria nome de arquivo único
+    function makeUniqueFilename(originalName = '') {
+        const ext = (originalName.match(/\.[^.]+$/) || [''])[0];
+        const base = originalName.replace(/\.[^.]*$/, '').replace(/[^a-z0-9_\-\.]/gi, '_').slice(0, 40);
+        const t = Date.now();
+        const r = Math.floor(Math.random() * 1e6);
+        return `drops/${t}_${r}_${base}${ext}`;
+    }
+
+    // resolve URL pública a partir do campo image_drop: se já for URL retorna; se for path tenta obter public URL do bucket
+    async function resolveDropImageUrl(client, imageValue) {
+        if (!imageValue) return null;
+        const s = String(imageValue).trim();
+        if (/^https?:\/\//i.test(s)) return s;
+        try {
+            // getPublicUrl retorno está disponível
+            const res = client.storage.from(DROP_BUCKET).getPublicUrl(s.replace(/^\/+/, ''));
+            if (res && (res.data?.publicUrl || res.publicUrl)) {
+                return res.data?.publicUrl || res.publicUrl;
+            }
+        } catch (e) {
+            console.warn('resolveDropImageUrl erro', e);
+        }
+        // fallback: construir path público (se bucket for público)
+        try {
+            const base = window.client ? (window.client.storage?.url || '') : '';
+            if (base) return `${base}/${encodeURIComponent(s)}`;
+        } catch (e) { /* noop */ }
+        return s;
+    }
+
+    /* -------------------- LISTAR / RENDERIZAR DROPS -------------------- */
+
+    async function dropLoadDrops() {
+        const loader = document.getElementById('drop-loader');
+        const content = document.getElementById('drop-content');
+        const listBody = document.getElementById('drop-list-body');
+        const emptyState = document.getElementById('drop-empty-state');
+        const statsContainer = document.getElementById('drop-stats-container');
+
+        if (!loader || !content || !listBody || !statsContainer || !emptyState) {
+            console.warn('dropLoadDrops: elementos DOM essenciais não encontrados.', { loader, content, listBody, emptyState, statsContainer });
+            return;
+        }
+
+        loader.classList.remove('hidden');
+        content.classList.add('hidden');
+
+        let client;
+        try { client = await ensureClient(); } catch (e) { loader.classList.add('hidden'); showToastSafe('Erro interno (cliente).', 'error'); return; }
+
+        // pega drops
+        let { data: drops, error: dropsErr } = await client
+            .from(DROP_TABLE)
+            .select('id, name_drop, image_drop')
+            .order('name_drop', { ascending: true });
+
+        if (dropsErr) {
+            console.error('Erro ao buscar drops:', dropsErr);
+            loader.classList.add('hidden');
+            showToastSafe('Erro ao carregar drops. Veja console.', 'error');
+            return;
+        }
+
+        // pega produtos para contagem por dropName
+        let { data: products, error: prodErr } = await client
+            .from(PRODUCT_TABLE)
+            .select('id, dropName');
+
+        if (prodErr) {
+            console.warn('Erro ao buscar produtos para contagem:', prodErr);
+            products = [];
+        }
+
+        // monta mapa dropName -> quantidade
+        const countMap = {};
+        (products || []).forEach(p => {
+            if (!p.dropName) return;
+            const k = String(p.dropName).trim();
+            if (!k) return;
+            countMap[k] = (countMap[k] || 0) + 1;
+        });
+
+        // debug log para diagnosticar porque o wrapper pode estar oculto
+        console.debug('dropLoadDrops: drops length=', Array.isArray(drops) ? drops.length : 'null', 'products length=', Array.isArray(products) ? products.length : 'null');
+
+        // stats
+        statsContainer.innerHTML = `
+    <div class="drop-stat-card">
+      <div class="drop-stat-icon" style="background:#eff6ff;color:#2563eb;">
+        <i class="bi bi-images"></i>
+      </div>
+      <div class="drop-stat-info">
+        <h3>${drops ? drops.length : 0}</h3>
+        <p>Drops Cadastrados</p>
+      </div>
+    </div>
+    <div class="drop-stat-card">
+      <div class="drop-stat-icon" style="background:#f0fdf4;color:#16a34a;">
+        <i class="bi bi-box-seam-fill"></i>
+      </div>
+      <div class="drop-stat-info">
+        <h3>${products ? products.length : 0}</h3>
+        <p>Produtos Totais</p>
+      </div>
+    </div>
+  `;
+
+        // Render tabela — pega o wrapper dentro do content para evitar ambiguidades
+        const tableWrapper = content.querySelector('.drop-table-wrapper');
+        if (!tableWrapper) {
+            console.warn('dropLoadDrops: .drop-table-wrapper não encontrado dentro de #drop-content. Verifique o DOM.');
+        }
+
+        listBody.innerHTML = '';
+        if (!Array.isArray(drops) || drops.length === 0) {
+            // não há drops: mostra estado vazio e esconde a tabela
+            emptyState.classList.remove('hidden');
+            if (tableWrapper) {
+                tableWrapper.classList.add('hidden');
+                tableWrapper.style.removeProperty('display'); // limpeza extra caso tenha sido mexido
+            }
+        } else {
+            // há drops: esconde estado vazio e mostra a tabela
+            emptyState.classList.add('hidden');
+
+            if (tableWrapper) {
+                // Garante que a classe 'hidden' seja removida (evita conflitos com CSS !important)
+                tableWrapper.classList.remove('hidden');
+                // Se por algum motivo a propriedade inline 'display' foi forçada para none, limpa-a
+                tableWrapper.style.removeProperty('display');
+            } else {
+                // fallback: se por alguma razão não achou wrapper, tentar tornar visível o content inteiro
+                content.classList.remove('hidden');
+            }
+
+            for (const d of drops) {
+                const count = countMap[d.name_drop] || 0;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex:none;">
+              <img src="${escapeHtml(await (resolveDropImageUrl(client, d.image_drop) || ''))}" alt="${escapeHtml(d.name_drop || '')}" style="width:48px;height:48px;object-fit:cover;display:block;" onerror="this.style.display='none'">
+            </div>
+            <div style="display:flex;flex-direction:column;">
+              <span style="font-weight:600">${escapeHtml(d.name_drop || '')}</span>
+              <small style="color:#94a3b8;font-size:.82rem">${escapeHtml(d.image_drop || '')}</small>
+            </div>
+          </div>
+        </td>
+        <td style="text-align:center;">
+          <span style="background:#f1f5f9;padding:6px 12px;border-radius:20px;font-size:.85rem;font-weight:600;color:#64748b;">
+            ${count} itens
+          </span>
+        </td>
+        <td style="text-align:right;">
+          <button class="drop-action-btn" title="Editar" onclick="dropOpenFormModal('edit','${escapeHtml(d.id)}','${escapeHtml(d.name_drop)}','${escapeHtml(d.image_drop || '')}')">
+            <i class="bi bi-pencil-fill"></i>
+          </button>
+          <button class="drop-action-btn delete" title="Excluir" onclick="dropOpenDeleteModal('${escapeHtml(d.id)}','${escapeHtml(d.name_drop)}',${count})">
+            <i class="bi bi-trash3-fill"></i>
+          </button>
+        </td>
+      `;
+                listBody.appendChild(tr);
+            }
+        }
+
+        loader.classList.add('hidden');
+        content.classList.remove('hidden');
+    }
+
+    /* -------------------- SINCRONIZAR DROPS (products -> drops) --------------------
+       Garante que todo drop usado em products.dropName exista na tabela drops.
+    */
+    async function dropSyncFromProducts() {
+        let client;
+        try { client = await ensureClient(); } catch (e) { return; }
+
+        // puxa drops existentes
+        const { data: existing, error: existingErr } = await client.from(DROP_TABLE).select('name_drop');
+        if (existingErr) { console.warn('dropSyncFromProducts: erro', existingErr); return; }
+        const existingNames = (existing || []).map(x => String(x.name_drop).trim().toLowerCase());
+
+        // pega dropName únicos do products
+        const { data: products, error: prodErr } = await client.from(PRODUCT_TABLE).select('dropName');
+        if (prodErr) { console.warn('dropSyncFromProducts: erro produtos', prodErr); return; }
+        const usedNames = [...new Set((products || []).map(p => (p.dropName || '').toString().trim()).filter(Boolean))];
+
+        const missing = usedNames.filter(n => !existingNames.includes(n.toLowerCase()));
+        if (missing.length === 0) return;
+
+        const payload = missing.map(n => ({ name_drop: n }));
+        const { error: insertErr } = await client.from(DROP_TABLE).insert(payload);
+        if (!insertErr) showToastSafe('Drops sincronizados automaticamente!', 'success');
+        else console.warn('dropSyncFromProducts: insertErr', insertErr);
+    }
+
+    /* -------------------- FORM MODAL (create/edit) -------------------- */
+    // HTML modal IDs used in your markup:
+    // #drop-modal-form, input fields: #drop-input-name, #drop-input-old-name, #drop-input-mode, #drop-input-id
+    // We will also inject a file input for upload and a URL input for image.
+
+    function dropOpenFormModal(mode = 'add', id = '', name = '', image = '') {
+        const modal = document.getElementById('drop-modal-form');
+        if (!modal) { console.warn('dropOpenFormModal: modal não encontrado'); return; }
+
+        // garante inputs existem (se não, cria)
+        let inputName = document.getElementById('drop-input-name');
+        let inputOldName = document.getElementById('drop-input-old-name');
+        let inputMode = document.getElementById('drop-input-mode');
+        let inputId = document.getElementById('drop-input-id');
+
+        const contentWrap = modal.querySelector('.drop-modal-content') || modal;
+
+        if (!inputName) {
+            inputName = document.createElement('input');
+            inputName.id = 'drop-input-name';
+            inputName.className = 'drop-form-input';
+            inputName.placeholder = 'Ex: Oversized';
+            contentWrap.appendChild(inputName);
+        }
+        if (!inputOldName) {
+            inputOldName = document.createElement('input'); inputOldName.type = 'hidden'; inputOldName.id = 'drop-input-old-name';
+            contentWrap.appendChild(inputOldName);
+        }
+        if (!inputMode) {
+            inputMode = document.createElement('input'); inputMode.type = 'hidden'; inputMode.id = 'drop-input-mode';
+            contentWrap.appendChild(inputMode);
+        }
+        if (!inputId) {
+            inputId = document.createElement('input'); inputId.type = 'hidden'; inputId.id = 'drop-input-id';
+            contentWrap.appendChild(inputId);
+        }
+
+        // imagem: cria campo de url e file input se não existirem
+        let imgUrlInput = document.getElementById('drop-input-image-url');
+        if (!imgUrlInput) {
+            imgUrlInput = document.createElement('input');
+            imgUrlInput.id = 'drop-input-image-url';
+            imgUrlInput.className = 'drop-form-input';
+            imgUrlInput.placeholder = 'URL da imagem (opcional)';
+
+            const footerEl = modal.querySelector('.drop-modal-footer');
+            if (footerEl && footerEl.parentNode) {
+                footerEl.parentNode.insertBefore(imgUrlInput, footerEl);
+            } else {
+                contentWrap.appendChild(imgUrlInput); - fallback
+            }
+        }
+
+        let imgFileInput = document.getElementById('drop-input-image-file');
+        if (!imgFileInput) {
+            imgFileInput = document.createElement('input');
+            imgFileInput.id = 'drop-input-image-file';
+            imgFileInput.type = 'file';
+            imgFileInput.accept = 'image/*';
+            imgFileInput.style.display = 'block';
+            imgFileInput.className = 'drop-form-input';
+
+            const label = document.createElement('label');
+            label.style.fontSize = '0.9rem';
+            label.style.marginTop = '6px';
+            label.textContent = 'Ou envie um arquivo (opcional):';
+
+            const footerEl2 = modal.querySelector('.drop-modal-footer');
+            if (footerEl2 && footerEl2.parentNode) {
+                footerEl2.parentNode.insertBefore(label, footerEl2);
+                footerEl2.parentNode.insertBefore(imgFileInput, footerEl2);
+            } else {
+                contentWrap.appendChild(label);
+                contentWrap.appendChild(imgFileInput);
+            }
+        }
+
+        // popula valores
+        inputMode.value = mode;
+        inputId.value = id || '';
+        inputName.value = name || '';
+        inputOldName.value = name || '';
+        imgUrlInput.value = image || '';
+
+        // abre modal
+        modal.classList.add('open');
+        // focus no input nome
+        setTimeout(() => inputName.focus(), 120);
+    }
+
+    async function dropHandleSave() {
+        const modal = document.getElementById('drop-modal-form');
+        if (!modal) return;
+        const inputMode = document.getElementById('drop-input-mode');
+        const inputId = document.getElementById('drop-input-id');
+        const inputName = document.getElementById('drop-input-name');
+        const inputOldName = document.getElementById('drop-input-old-name');
+        const imgUrlInput = document.getElementById('drop-input-image-url');
+        const imgFileInput = document.getElementById('drop-input-image-file');
+
+        const mode = inputMode?.value || 'add';
+        const id = inputId?.value || '';
+        const newName = (inputName?.value || '').trim();
+        const oldName = (inputOldName?.value || '').trim();
+        const imageUrlField = (imgUrlInput?.value || '').trim();
+        const file = imgFileInput?.files && imgFileInput.files[0] ? imgFileInput.files[0] : null;
+
+        if (!newName) {
+            showToastSafe('Nome do drop é obrigatório.', 'error');
+            return;
+        }
+
+        let client;
+        try { client = await ensureClient(); } catch (e) { showToastSafe('Erro interno (cliente).', 'error'); return; }
+
+        // função auxiliar para fazer upload (se houver file) e retornar valor a salvar em image_drop
+        async function uploadIfNeeded(fileObj) {
+            if (!fileObj) return null;
+            try {
+                const filename = makeUniqueFilename(fileObj.name || 'img.png');
+                // upload (overwrite = false)
+                const up = await client.storage.from(DROP_BUCKET).upload(filename, fileObj, { cacheControl: '3600', upsert: false });
+                if (up.error) {
+                    // se erro de conflito de nome, tenta outro nome
+                    if (up.error.status === 409) {
+                        const alt = makeUniqueFilename(fileObj.name || 'img.png');
+                        const up2 = await client.storage.from(DROP_BUCKET).upload(alt, fileObj, { upsert: false });
+                        if (up2.error) throw up2.error;
+                        // retorna path
+                        return alt;
+                    }
+                    throw up.error;
+                }
+                // retorna path relativo (sem /object/public prefix). Ao salvar no DB usaremos esse path
+                return filename;
+            } catch (err) {
+                console.error('uploadIfNeeded erro', err);
+                throw err;
+            }
+        }
+
+        try {
+            // se existir arquivo, faz upload
+            let imageToSave = imageUrlField || null;
+            if (file) {
+                const path = await uploadIfNeeded(file);
+                // cria URL público
+                try {
+                    const pub = client.storage.from(DROP_BUCKET).getPublicUrl(path);
+                    imageToSave = (pub && (pub.data?.publicUrl || pub.publicUrl)) || path;
+                } catch (e) {
+                    // fallback: salva o path (backend pode saber montar URL)
+                    imageToSave = path;
+                }
+            }
+
+            if (mode === 'add') {
+                const payload = { name_drop: newName, image_drop: imageToSave };
+                const { error } = await client.from(DROP_TABLE).insert([payload]);
+                if (error) throw error;
+                showToastSafe('Drop criado com sucesso!', 'success');
+            } else {
+                // edit
+                const updates = { name_drop: newName };
+                if (imageToSave !== null) updates.image_drop = imageToSave;
+                const { error } = await client.from(DROP_TABLE).update(updates).eq('id', id);
+                if (error) throw error;
+
+                // se o nome mudou, atualiza products.dropName que tinham o oldName
+                if (oldName && oldName !== newName) {
+                    const { error: e2 } = await client.from(PRODUCT_TABLE).update({ dropName: newName }).eq('dropName', oldName);
+                    if (e2) console.warn('dropHandleSave: erro ao atualizar produtos vinculados', e2);
+                }
+
+                showToastSafe('Drop atualizado!', 'success');
+            }
+            // recarrega
+            dropCloseModals();
+            await dropLoadDrops();
+        } catch (err) {
+            console.error('dropHandleSave erro', err);
+            showToastSafe('Erro ao salvar drop. Veja console.', 'error');
+        }
+    }
+
+    /* -------------------- DELETAR -------------------- */
+    function dropOpenDeleteModal(id, name, count) {
+        const modal = document.getElementById('drop-modal-delete');
+        if (!modal) return;
+        modal.dataset.targetId = id;
+        modal.dataset.targetName = name || '';
+        const nameEl = document.getElementById('drop-delete-target-name');
+        const warnEl = document.getElementById('drop-delete-count-warning');
+        if (nameEl) nameEl.textContent = name || '';
+        if (warnEl) warnEl.textContent = count > 0 ? `${count} produto(s) serão desvinculados (ficarão sem drop).` : 'Nenhum produto vinculado.';
+        modal.classList.add('open');
+    }
+
+    async function dropConfirmDelete() {
+        const modal = document.getElementById('drop-modal-delete');
+        if (!modal) return;
+        const id = modal.dataset.targetId;
+        const name = modal.dataset.targetName;
+
+        if (!id) { showToastSafe('ID do drop ausente.', 'error'); return; }
+
+        let client;
+        try { client = await ensureClient(); } catch (e) { showToastSafe('Erro interno (cliente).', 'error'); return; }
+
+        try {
+            const { error } = await client.from(DROP_TABLE).delete().eq('id', id);
+            if (error) throw error;
+
+            // desvincula produtos que apontavam para esse drop (set null)
+            const { error: e2 } = await client.from(PRODUCT_TABLE).update({ dropName: null }).eq('dropName', name);
+            if (e2) console.warn('dropConfirmDelete: erro ao desvincular produtos', e2);
+
+            showToastSafe('Drop excluído.', 'success');
+            dropCloseModals();
+            await dropLoadDrops();
+        } catch (err) {
+            console.error('dropConfirmDelete erro', err);
+            showToastSafe('Erro ao excluir drop. Veja console.', 'error');
+        }
+    }
+
+    function dropCloseModals() {
+        document.querySelectorAll('.drop-modal-overlay').forEach(m => m.classList.remove('open'));
+    }
+
+    /* -------------------- BOOT / BIND -------------------- */
+    // expõe funções globais usadas pelo HTML onClick
+    window.dropOpenFormModal = dropOpenFormModal;
+    window.dropOpenDeleteModal = dropOpenDeleteModal;
+    window.dropConfirmDelete = dropConfirmDelete;
+    window.dropHandleSave = dropHandleSave;
+    window.dropCloseModals = dropCloseModals;
+
+    // init: sincroniza e carrega
+    async function init() {
+        try {
+            await ensureClient();
+            // sincroniza (se desejar manter sincronização automática)
+            await dropSyncFromProducts();
+            await dropLoadDrops();
+        } catch (e) {
+            console.error('drops-admin init erro', e);
+        }
+    }
+
+    // inicia quando DOM pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
 
 document.querySelectorAll('.submenu li').forEach(li => {
     li.addEventListener('click', () => {
@@ -2259,6 +2816,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('dashboard-best-seller-card')) {
         loadDashboardBestSeller();
     }
+    
 });
 
 async function loadDashboardBestSeller() {

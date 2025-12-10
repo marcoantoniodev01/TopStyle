@@ -66,6 +66,9 @@ html {
 }
 
 /* ---------------- painel esquerdo (nav) ---------------- */
+
+/* MODIFIQUEI */
+
 .painel-cliente-nav {
   background-color: var(--second-color-opacity);
   padding: 22px;
@@ -94,9 +97,43 @@ html {
   transition: transform .18s ease, box-shadow .18s ease;
 }
 
-.perfil-page-img img:hover {
+.perfil-photo-wrap:hover {
   transform: translateY(-4px) scale(1.02);
 }
+
+/* wrapper que define o tamanho da foto e serve como referencia para posicionamento absoluto */
+.perfil-photo-wrap {
+  position: relative;
+  width: 140px;
+  /* igual ao tamanho da imagem */
+  height: 140px;
+  /* igual ao tamanho da imagem */
+  transition: transform .18s ease, box-shadow .18s ease;
+  cursor: pointer;
+}
+
+/* botão do lápis posicionado sobre a foto (canto inferior direito) */
+.perfil-photo-wrap .profile-edit-btn {
+  position: absolute;
+  right: 8px;
+  /* distancia da borda direita do círculo */
+  bottom: 8px;
+  /* distancia da borda inferior do círculo */
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sixth-color);
+  color: var(--first-color);
+  box-shadow: 0 8px 20px var(--fourth-color-opacity);
+  padding: 0;
+  font-size: 14px;
+}
+
+/* ATÉ AQUI */
 
 .hr-perfil-client {
   border: none;

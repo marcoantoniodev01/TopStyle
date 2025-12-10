@@ -1,8 +1,10 @@
 @charset "UTF-8";
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-*{
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+* {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
+
 /*--------------------- GERAL ---------------------*/
 
 :root {
@@ -225,7 +227,7 @@ header>ul>li>a:hover {
   cursor: pointer;
 }
 
-#burger{
+#burger {
   display: none;
 }
 
@@ -278,6 +280,8 @@ a.profile-link.admin-mode:hover i {
 }
 
 /* ===== MEGA MENU (INTEGRAÇÃO TOPSTYLE) ===== */
+
+/* MODIFIQUEI */
 .mega-menu {
   top: 2vh;
   position: fixed;
@@ -289,8 +293,9 @@ a.profile-link.admin-mode:hover i {
   transition: all 0.35s ease;
   z-index: 10000;
   padding-top: 3vh;
-  left: -18%;
+  left: -24%;
 }
+/* ATÉ AQUI */
 
 .dropdown:hover .mega-menu,
 .mega-menu:hover {
@@ -328,25 +333,28 @@ a.profile-link.admin-mode:hover i {
   transition: all 0.25s ease;
 }
 
-.column-drop{
+.column-drop {
   display: none;
 }
 
-.mega-imgs{
+.mega-imgs {
   display: flex;
   flex-direction: row;
   gap: 7px;
   height: auto;
   width: 100%;
   flex: 1;
-  overflow-x: auto;                  /* habilita scroll horizontal */
-  scroll-snap-type: x mandatory;     /* "encaixe" por item (opcional) */
+  overflow-x: auto;
+  /* habilita scroll horizontal */
+  scroll-snap-type: x mandatory;
+  /* "encaixe" por item (opcional) */
   align-items: center;
   overflow-y: hidden;
 }
 
 .mega-imgs::-webkit-scrollbar {
-  height: 8px;                       /* altura da barra de rolagem */
+  height: 8px;
+  /* altura da barra de rolagem */
   background-color: var(--first-color-opacity);
   border-radius: 4px;
   width: 50px;
@@ -357,24 +365,26 @@ a.profile-link.admin-mode:hover i {
   border-radius: 4px;
 }
 
-.mega-drops{
+.mega-drops {
   display: none;
 }
 
-.drop-column{
+.drop-column {
   display: flex;
   flex-direction: column;
   gap: 7px;
   height: auto;
   width: auto;
-  flex: none;                        /* evita que a coluna cresça além do necessário */
-  scroll-snap-align: start;          /* "encaixe" no início do item (opcional) */
+  flex: none;
+  /* evita que a coluna cresça além do necessário */
+  scroll-snap-align: start;
+  /* "encaixe" no início do item (opcional) */
   padding: 5px;
   align-items: center;
   justify-content: center;
 }
 
-.drop-column{
+.drop-column {
   transition: transform 0.3s ease;
 }
 
@@ -383,8 +393,8 @@ a.profile-link.admin-mode:hover i {
   height: 290px;
 }
 
-.drop-column:hover{
-  transform: translateX(3px); 
+.drop-column:hover {
+  transform: translateX(3px);
 }
 
 #mega-menu-drops .drop__img {
@@ -392,23 +402,27 @@ a.profile-link.admin-mode:hover i {
   max-width: 250px;
 }
 
-#mega-menu-drops{
-  left: -280%;
+/* MODIFIQUEI */
+
+#mega-menu-drops {
+  left: -290%;
   display: flex;
 }
 
-#mega-menu-drops .mega-content{
+/* ATÉ AQUI */
+
+#mega-menu-drops .mega-content {
   display: flex;
   grid-template-columns: unset;
   padding: 10px;
   width: 100%;
 }
 
-#mega-menu-off{
+#mega-menu-off {
   left: -820%;
 }
 
-.bi-caret-down-fill{
+.bi-caret-down-fill {
   display: none;
 }
 
@@ -419,79 +433,79 @@ a.profile-link.admin-mode:hover i {
 }
 
 .cart-icon {
-    position: relative;
-    display: inline-block;
-    /* Garante que o link tenha dimensões para o posicionamento */
+  position: relative;
+  display: inline-block;
+  /* Garante que o link tenha dimensões para o posicionamento */
 }
 
 .cart-count {
-    position: absolute;
-    top: -5px;
-    /* Move para cima */
-    right: -8px;
-    /* Move para a direita */
-    background: black;
-    color: white;
-    font-size: 0.7rem;
-    /* Um pouco menor para ficar mais delicado */
-    font-weight: bold;
-    height: 18px;
-    /* Altura e largura mínimas iguais para um círculo mais perfeito */
-    min-width: 18px;
-    padding: 0 5px;
-    /* Espaçamento horizontal se o número for maior que 9 */
-    border-radius: 50%;
-    /* Garante que seja sempre um círculo */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
+  position: absolute;
+  top: -5px;
+  /* Move para cima */
+  right: -8px;
+  /* Move para a direita */
+  background: black;
+  color: white;
+  font-size: 0.7rem;
+  /* Um pouco menor para ficar mais delicado */
+  font-weight: bold;
+  height: 18px;
+  /* Altura e largura mínimas iguais para um círculo mais perfeito */
+  min-width: 18px;
+  padding: 0 5px;
+  /* Espaçamento horizontal se o número for maior que 9 */
+  border-radius: 50%;
+  /* Garante que seja sempre um círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 /* Animação do carrinho */
 /* Bounce no ícone do carrinho */
 .cart-bounce {
-    animation: cartBounce 0.5s ease;
+  animation: cartBounce 0.5s ease;
 }
 
 @keyframes cartBounce {
-    0% {
-        transform: translateY(0);
-    }
+  0% {
+    transform: translateY(0);
+  }
 
-    25% {
-        transform: translateY(-5px);
-    }
+  25% {
+    transform: translateY(-5px);
+  }
 
-    50% {
-        transform: translateY(0);
-    }
+  50% {
+    transform: translateY(0);
+  }
 
-    75% {
-        transform: translateY(-3px);
-    }
+  75% {
+    transform: translateY(-3px);
+  }
 
-    100% {
-        transform: translateY(0);
-    }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 
 /* Bounce já existe. Agora o Pulse do badge: */
 .cart-pulse {
-    animation: pulse 0.5s ease;
+  animation: pulse 0.5s ease;
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(1);
+  }
 
-    50% {
-        transform: scale(1.3);
-    }
+  50% {
+    transform: scale(1.3);
+  }
 
-    100% {
-        transform: scale(1);
-    }
+  100% {
+    transform: scale(1);
+  }
 }

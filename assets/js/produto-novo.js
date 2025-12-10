@@ -136,89 +136,89 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ======== populatePage ========
   // produto-novo.js
 
-  // ======== populatePage ========
-  function populatePage(product) {
-    currentProduct = product;
-    pageTitle.textContent = `${product.nome} - TopStyle`;
-    productTitleEl.textContent = product.nome;
-    const precoFormatado = formatPriceBR(product.preco);
-    const parcelaFormatada = formatPriceBR(product.preco / 2);
-    productPriceEl.innerHTML = `${precoFormatado} <small>ou 2x de ${parcelaFormatada}</small>`;
+// ======== populatePage ========
+function populatePage(product) {
+  currentProduct = product;
+  pageTitle.textContent = `${product.nome} - TopStyle`;
+  productTitleEl.textContent = product.nome;
+  const precoFormatado = formatPriceBR(product.preco);
+  const parcelaFormatada = formatPriceBR(product.preco / 2);
+  productPriceEl.innerHTML = `${precoFormatado} <small>ou 2x de ${parcelaFormatada}</small>`;
 
-    const firstImg = (product.cores && product.cores[0]?.img1) || product.img;
-    if (hiddenImgEl) hiddenImgEl.src = firstImg;
+  const firstImg = (product.cores && product.cores[0]?.img1) || product.img;
+  if (hiddenImgEl) hiddenImgEl.src = firstImg;
 
-    sizeContainer.innerHTML = '';
-    const sizes = product.tamanhos ? product.tamanhos.split(',').map(s => s.trim()) : [];
-    if (sizes.length > 0) {
-      sizes.forEach(size => {
-        const div = document.createElement('div');
-        div.className = 'model-size-btn';
-        div.dataset.size = size;
-        div.textContent = size;
-        sizeContainer.appendChild(div);
-      });
-    } else {
-      sizeContainer.innerHTML = '<p>Tamanho único</p>';
-      selectedSize = 'Único';
-    }
-
-    colorContainer.innerHTML = '';
-    const colors = product.cores || [];
-    if (colors.length > 0) {
-      colors.forEach(color => {
-        const div = document.createElement('div');
-        div.dataset.colorName = color.nome;
-        const bgColor = color.hex || (color.nome === 'Branco' ? '#fff' : (color.nome === 'Preto' ? '#000' : '#ccc'));
-        div.innerHTML = `<span style="background: ${bgColor}; border: 1px solid #ddd;"></span> ${color.nome}`;
-        colorContainer.appendChild(div);
-      });
-    } else {
-      colorContainer.innerHTML = '<p>Cor única</p>';
-      selectedColor = 'Única';
-    }
-
-    galleryWrapper.innerHTML = '';
-    let hasImages = false;
-    if (colors.length > 0) {
-      colors.forEach(color => {
-        if (color.img1) {
-          galleryWrapper.insertAdjacentHTML('beforeend',
-            `<div class="swiper-slide"><img src="${color.img1}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)}"></div>`);
-          hasImages = true;
-        }
-        if (color.img2) {
-          galleryWrapper.insertAdjacentHTML('beforeend',
-            `<div class="swiper-slide"><img src="${color.img2}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)} (2)"></div>`);
-          hasImages = true;
-        }
-      });
-    }
-
-    if (!hasImages && product.img) {
-      galleryWrapper.insertAdjacentHTML('beforeend',
-        `<div class="swiper-slide"><img src="${product.img}" alt="${escapeHtml(product.nome)}"></div>`);
-      hasImages = true;
-    }
-
-    if (!hasImages) {
-      galleryWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/400x600/eee/ccc?text=Sem+imagem" alt="Sem imagem"></div>`;
-    }
-
-    // ===========================================
-    // NOVO CÓDIGO PARA O ACORDEÃO (Detalhes e Info. Complementares)
-    // ===========================================
-
-    if (descriptionContentEl) {
-      // Puxa da coluna 'description'
-      descriptionContentEl.innerHTML = product.description || '- Sem descrição detalhada fornecida.';
-    }
-
-    if (additionalInfoContentEl) {
-      // Puxa da coluna 'additional_info'
-      additionalInfoContentEl.innerHTML = product.additional_info || 'Sem informações complementares fornecidas.';
-    }
+  sizeContainer.innerHTML = '';
+  const sizes = product.tamanhos ? product.tamanhos.split(',').map(s => s.trim()) : [];
+  if (sizes.length > 0) {
+    sizes.forEach(size => {
+      const div = document.createElement('div');
+      div.className = 'model-size-btn';
+      div.dataset.size = size;
+      div.textContent = size;
+      sizeContainer.appendChild(div);
+    });
+  } else {
+    sizeContainer.innerHTML = '<p>Tamanho único</p>';
+    selectedSize = 'Único';
   }
+
+  colorContainer.innerHTML = '';
+  const colors = product.cores || [];
+  if (colors.length > 0) {
+    colors.forEach(color => {
+      const div = document.createElement('div');
+      div.dataset.colorName = color.nome;
+      const bgColor = color.hex || (color.nome === 'Branco' ? '#fff' : (color.nome === 'Preto' ? '#000' : '#ccc'));
+      div.innerHTML = `<span style="background: ${bgColor}; border: 1px solid #ddd;"></span> ${color.nome}`;
+      colorContainer.appendChild(div);
+    });
+  } else {
+    colorContainer.innerHTML = '<p>Cor única</p>';
+    selectedColor = 'Única';
+  }
+
+  galleryWrapper.innerHTML = '';
+  let hasImages = false;
+  if (colors.length > 0) {
+    colors.forEach(color => {
+      if (color.img1) {
+        galleryWrapper.insertAdjacentHTML('beforeend',
+          `<div class="swiper-slide"><img src="${color.img1}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)}"></div>`);
+        hasImages = true;
+      }
+      if (color.img2) {
+        galleryWrapper.insertAdjacentHTML('beforeend',
+          `<div class="swiper-slide"><img src="${color.img2}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)} (2)"></div>`);
+        hasImages = true;
+      }
+    });
+  }
+
+  if (!hasImages && product.img) {
+    galleryWrapper.insertAdjacentHTML('beforeend',
+      `<div class="swiper-slide"><img src="${product.img}" alt="${escapeHtml(product.nome)}"></div>`);
+    hasImages = true;
+  }
+
+  if (!hasImages) {
+    galleryWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/400x600/eee/ccc?text=Sem+imagem" alt="Sem imagem"></div>`;
+  }
+  
+  // ===========================================
+  // NOVO CÓDIGO PARA O ACORDEÃO (Detalhes e Info. Complementares)
+  // ===========================================
+  
+  if (descriptionContentEl) {
+    // Puxa da coluna 'description'
+    descriptionContentEl.innerHTML = product.description || '- Sem descrição detalhada fornecida.';
+  }
+
+  if (additionalInfoContentEl) {
+    // Puxa da coluna 'additional_info'
+    additionalInfoContentEl.innerHTML = product.additional_info || 'Sem informações complementares fornecidas.';
+  }
+}
 
   // ======== adicionar interatividade ========
   function addInteractivity() {
@@ -525,9 +525,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ================================
   // LISTAGEM DE REVIEWS (COM PAGINAÇÃO, BYPASS DE JOIN E DELETAR)
   // ================================ 
-  // ================================
-  // LISTAGEM DE REVIEWS (COM PAGINAÇÃO E DELETE DE ADMIN)
-  // ================================ 
   async function carregarReviews(productId, page = 1) {
     g_currentPage = page;
     const reviewsContainer = document.getElementById("reviewsList");
@@ -540,17 +537,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const supabase = await initSupabaseClient();
 
-    // 1. Pega ID do usuário e ROLE (Papel)
+    // NOVO: Pega o ID do usuário logado uma única vez
     const { data: userSession } = await supabase.auth.getSession();
     const currentUserId = userSession?.session?.user?.id;
-    // Pega o papel salvo no login (admin ou cliente)
-    const userRole = localStorage.getItem('userRole');
 
-    // 2. Calcular o range da paginação
+    // 1. Calcular o range da paginação
     const from = (page - 1) * REVIEWS_PER_PAGE;
     const to = from + REVIEWS_PER_PAGE - 1;
 
-    // 3. BUSCAR REVIEWS
+    // 2. BUSCAR REVIEWS SEM JOIN
     const { data: reviewsData, error, count } = await supabase
       .from("reviews")
       .select(`*`, { count: "exact" })
@@ -569,20 +564,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       reviewsContainer.innerHTML = `<p>Nenhuma avaliação ainda.</p>`;
     }
 
-    // 4. Coletar perfis
+    // 3. Coletar IDs de usuário e buscar perfis (agora incluindo avatar_url)
     const userIds = reviewsData.map(r => r.user_id).filter(id => id);
     let reviews = reviewsData;
 
     if (userIds.length > 0) {
       const { data: profiles, error: profileError } = await supabase
         .from("profiles")
+        // NOVO: Puxando avatar_url
         .select("id, username, avatar_url")
         .in("id", userIds);
 
-      if (!profileError) {
+      if (profileError) {
+        console.warn("Aviso: Falha ao carregar nomes/avatares de usuário.", profileError);
+      } else {
         const profileMap = profiles.reduce((acc, profile) => {
           acc[profile.id] = {
             username: profile.username,
+            // NOVO: Mapeando avatar_url
             avatar_url: profile.avatar_url
           };
           return acc;
@@ -591,15 +590,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         reviews = reviewsData.map(review => ({
           ...review,
           username: profileMap[review.user_id]?.username,
+          // NOVO: Adicionando avatar_url ao objeto review
           avatar_url: profileMap[review.user_id]?.avatar_url
         }));
       }
     }
 
+
     reviewsContainer.innerHTML = "";
 
-    // 5. Renderizar reviews
+    // 4. Renderizar reviews
     for (const review of reviews) {
+      // Buscar mídias
       const { data: medias } = await supabase
         .from("review_media")
         .select("*")
@@ -608,12 +610,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const div = document.createElement("div");
       div.className = "review-item";
 
-      // --- Estrelas e Avatar ---
+      // --- Estrelas ---
       let estrelasHTML = "";
       for (let i = 0; i < 5; i++) {
         estrelasHTML += `<span class="star ${i < review.estrelas ? "on" : ""}">★</span>`;
       }
-      const defaultAvatar = 'https://i.ibb.co/L8r4JbN/default-avatar.png';
+
+      // --- Avatar ---
+      const defaultAvatar = 'https://i.ibb.co/L8r4JbN/default-avatar.png'; // Use uma imagem padrão se a URL estiver vazia
       const avatarSrc = review.avatar_url || defaultAvatar;
 
       // --- Galeria ---
@@ -621,51 +625,62 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (medias?.length > 0) {
         const swiperId = `swiperReview${review.id}`;
         galeriaHTML = `
-          <div class="review-media-gallery">
-               <div class="swiper review-swiper" id="${swiperId}">
-                 <div class="swiper-wrapper">
-                   ${medias.map(m => {
+  <div class="review-media-gallery">
+       <div class="swiper review-swiper" id="${swiperId}">
+         <div class="swiper-wrapper">
+           ${medias.map(m => {
           if (m.media_type === "image") {
-            return `<div class="swiper-slide"><img src="${m.media_url}" alt="foto avaliação"></div>`;
+            return `
+                 <div class="swiper-slide">
+                   <img src="${m.media_url}" alt="foto avaliação">
+                 </div>
+               `;
           } else {
-            return `<div class="swiper-slide"><video src="${m.media_url}" controls></video></div>`;
+            return `
+                 <div class="swiper-slide">
+                   <video src="${m.media_url}" controls></video>
+                 </div>
+               `;
           }
         }).join("")}
-                 </div>
-                 <div class="swiper-pagination"></div>
-                 <div class="swiper-button-next"></div>
-                 <div class="swiper-button-prev"></div>
-               </div>
-           </div>`;
+         </div>
+
+         <div class="swiper-pagination"></div> <!-- bullets ficam aqui -->
+
+         <div class="swiper-button-next"></div>
+         <div class="swiper-button-prev"></div>
+       </div>
+   </div>
+`;
+
       }
 
       const username = review.username || "Usuário Anônimo";
 
-      // === AQUI ESTÁ A MUDANÇA PRINCIPAL ===
-      // Mostra o botão se for o DONO ou se for ADMIN
-      const isOwner = currentUserId && currentUserId === review.user_id;
-      const isAdmin = userRole === 'admin';
+      // NOVO: Botão de Excluir
+      const deleteButton =
+        currentUserId && currentUserId === review.user_id ?
+          `<button class="review-delete-btn" data-review-id="${review.id}">
+             <i class="bi bi-trash"></i> Excluir
+           </button>` :
+          '';
 
-      const deleteButton = (isOwner || isAdmin) ?
-        `<button class="review-delete-btn" data-review-id="${review.id}" style="${isAdmin && !isOwner ? 'background: transparent;' : ''}">
-             <i class="bi bi-trash"></i> ${isAdmin && !isOwner ? 'Apagar (Admin)' : 'Excluir'}
-           </button>` : '';
-      // =====================================
-
+      // --- HTML final ---
       div.innerHTML = `
         <div class="review-header">
-          <img class="review-avatar" src="${avatarSrc}" alt="Avatar">
+          <img class="review-avatar" src="${avatarSrc}" alt="Avatar de ${username}">
           <div class="review-info-group">
             <div class="review-stars">${estrelasHTML}</div>
             <strong class="review-username">${username}</strong>
             <small>${new Date(review.created_at).toLocaleDateString("pt-BR")}</small>
           </div>
         </div>
-        <div class="title-coment-block">
-          <h4 class="review-title">${review.titulo || ""}</h4>
-          <p class="review-text">${review.comentario || ""}</p>
-        </div>
+      <div class="title-coment-block">
+        <h4 class="review-title">${review.titulo || ""}</h4>
+        <p class="review-text">${review.comentario || ""}</p>
+      </div>
         ${galeriaHTML}
+
         <div class="review-actions">
             ${deleteButton}
         </div>
@@ -673,55 +688,65 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       reviewsContainer.appendChild(div);
 
-      // Iniciar swiper da avaliação
+      // iniciar swiper da avaliação
+      // iniciar swiper da avaliação
       if (medias?.length > 0) {
         new Swiper(`#swiperReview${review.id}`, {
-          slidesPerView: 2,
+          slidesPerView: 2,         // Agora mostra 2 por vez
           spaceBetween: 0,
           loop: medias.length > 1,
-          pagination: { el: `#swiperReview${review.id} .swiper-pagination`, clickable: true },
-          navigation: { nextEl: `#swiperReview${review.id} .swiper-button-next`, prevEl: `#swiperReview${review.id} .swiper-button-prev` }
+
+          pagination: {
+            el: `#swiperReview${review.id} .swiper-pagination`,
+            clickable: true,        // Bullets clicáveis
+          },
+
+          navigation: {
+            nextEl: `#swiperReview${review.id} .swiper-button-next`,
+            prevEl: `#swiperReview${review.id} .swiper-button-prev`,
+          }
         });
       }
+
     }
 
-    // 6. Adicionar listener para o botão de exclusão
+    // 5. Adicionar listener para o botão de exclusão
     document.querySelectorAll('.review-delete-btn').forEach(button => {
       button.addEventListener('click', async (e) => {
         const reviewIdToDelete = e.currentTarget.getAttribute('data-review-id');
-
-        // Mensagem personalizada para admin
-        const msg = userRole === 'admin'
-          ? "ADMIN: Tem certeza que deseja apagar este comentário permanentemente?"
-          : "Tem certeza que deseja apagar esta avaliação?";
-
-        if (confirm(msg)) {
+        if (confirm("Tem certeza que deseja apagar esta avaliação?")) {
           try {
             const { error: deleteError } = await supabase
               .from('reviews')
               .delete()
-              .eq('id', reviewIdToDelete);
+              .eq('id', reviewIdToDelete); // Deleta a review pelo ID
 
             if (deleteError) {
-              console.error(deleteError);
-              throw new Error("Erro ao apagar. Verifique se você tem permissão no banco de dados.");
+              // Se for erro de permissão (RLS), o Supabase retorna um erro 406
+              if (deleteError.code === 'PGRST406' || deleteError.message.includes('permission')) {
+                throw new Error("Você só pode apagar suas próprias avaliações.");
+              }
+              throw deleteError;
             }
 
             showToast("Avaliação apagada com sucesso!");
+            // Recarrega as reviews para atualizar a lista
             carregarReviews(productId, g_currentPage);
             carregarRatingSummary(productId);
 
           } catch (err) {
             console.error("Erro ao apagar review:", err);
-            showToast(err.message, { duration: 3000 });
+            showToast(err.message || "Falha ao apagar. Verifique suas permissões.", { duration: 3000 });
           }
         }
       });
     });
 
-    // 7. RENDERIZAR A PAGINAÇÃO (Mantido igual)
+    // 6. RENDERIZAR A PAGINAÇÃO
     const totalPages = Math.ceil(totalReviews / REVIEWS_PER_PAGE);
+
     if (totalPages > 1) {
+      // Função auxiliar para criar botões de página
       const createPageButton = (pageNumber, text) => {
         const btn = document.createElement("button");
         btn.className = "pagination-number-btn";
@@ -733,6 +758,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         return btn;
       };
+
+      // Adiciona botão "Anterior"
       if (page > 1) {
         const prevBtn = document.createElement("button");
         prevBtn.className = "pagination-btn-nav";
@@ -740,27 +767,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         prevBtn.onclick = () => carregarReviews(productId, page - 1);
         paginationContainer.appendChild(prevBtn);
       }
-      const maxPagesToShow = 5;
+
+      const maxPagesToShow = 5; // Mostrar no máximo 5 botões de número
       let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
       let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-      if (endPage - startPage + 1 < maxPagesToShow) startPage = Math.max(1, endPage - maxPagesToShow + 1);
+
+      // Ajuste para garantir que 5 botões sejam sempre mostrados no final
+      if (endPage - startPage + 1 < maxPagesToShow) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+      }
+
+      // Se houver mais de 1 página antes do início (mostra 1 + ...)
       if (startPage > 1) {
         paginationContainer.appendChild(createPageButton(1));
         if (startPage > 2) {
           const dots = document.createElement("span");
-          dots.textContent = "..."; dots.className = "pagination-dots";
+          dots.textContent = "...";
+          dots.className = "pagination-dots";
           paginationContainer.appendChild(dots);
         }
       }
-      for (let i = startPage; i <= endPage; i++) paginationContainer.appendChild(createPageButton(i));
+
+      // Renderiza os números das páginas visíveis
+      for (let i = startPage; i <= endPage; i++) {
+        paginationContainer.appendChild(createPageButton(i));
+      }
+
+      // Se houver mais de 1 página após o fim (mostra ... + TotalPages)
       if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
           const dots = document.createElement("span");
-          dots.textContent = "..."; dots.className = "pagination-dots";
+          dots.textContent = "...";
+          dots.className = "pagination-dots";
           paginationContainer.appendChild(dots);
         }
         paginationContainer.appendChild(createPageButton(totalPages));
       }
+
+      // Adiciona botão "Próxima"
       if (page < totalPages) {
         const nextBtn = document.createElement("button");
         nextBtn.className = "pagination-btn-nav";

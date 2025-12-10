@@ -4191,9 +4191,9 @@ a.profile-link.admin-mode:hover i {
 }
 
 .notificacao-geral-view-btn.notificacao-geral-active {
-    background-color: var(--ng-supabase-green);
+    background-color: black;
     color: #ffffff;
-    border-color: var(--ng-supabase-green);
+    border-color: white;
 }
 
 .notificacao-geral-modal-body {
@@ -5073,10 +5073,11 @@ a.profile-link.admin-mode:hover i {
     right: 15px;
     background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
     color: white;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 30px;
+    border-radius: 50px;
     display: flex;
-    flex-direction: column;
+    gap: 0.3rem;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
@@ -5085,7 +5086,7 @@ a.profile-link.admin-mode:hover i {
 }
 
 .bsw-badge-fire i {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
 }
 
 .bsw-badge-fire span {
@@ -5169,3 +5170,345 @@ a.profile-link.admin-mode:hover i {
     }
 }
 
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.chart-select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #191D28;
+    background: white;
+    outline: none;
+}
+
+.growth-badge {
+    background: #f0fdf4;
+    color: #16a34a;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #dcfce7;
+}
+
+/* ========================================================= */
+/* GESTÃO DE DROPS (INTEGRAÇÃO) */
+/* ========================================================= */
+
+.drop-container {
+    max-width: 100%;
+}
+
+.drop-hidden {
+    display: none !important;
+}
+
+/* HEADER & STATS */
+.drop-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: static;
+    height: auto;
+}
+
+.drop-subtitle {
+    color: #64748b;
+    margin: 5px 0 0 0;
+    font-size: 0.95rem;
+}
+
+/* CARDS DE ESTATÍSTICAS */
+.drop-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.drop-stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.2s;
+}
+
+.drop-stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.drop-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.drop-stat-info h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.drop-stat-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* TABELA ESPECÍFICA DE dropEGORIAS */
+/* CONTAINER DA TABELA COM SCROLL */
+.drop-table-wrapper {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    /* --- ALTERAÇÕES PARA O SCROLL --- */
+    overflow-y: auto;
+    /* Habilita o scroll vertical */
+    max-height: 72.2vh;
+    /* Define a altura máxima (ajuste 65vh conforme sua necessidade) */
+    /* -------------------------------- */
+    z-index: 10000;
+}
+
+/* (OPCIONAL) CABEÇALHO FIXO AO ROLAR */
+.drop-table thead th {
+    position: sticky;
+    /* Faz o cabeçalho "grudar" no topo */
+    top: 0;
+    z-index: 5;
+    /* Garante que fique acima do conteúdo */
+    background: #f8fafc;
+    /* Cor de fundo para não ficar transparente */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Sombra suave para separar */
+}
+
+.drop-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.drop-table th {
+    background: #f8fafc;
+    padding: 16px 24px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.drop-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.drop-table tr:last-child td {
+    border-bottom: none;
+}
+
+.drop-table tr:hover {
+    background: #f8fafc;
+}
+
+/* ESTADO VAZIO */
+#drop-empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* BOTÕES & AÇÕES */
+.drop-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.drop-btn-primary {
+    background: #010b20;
+    color: white;
+}
+
+.drop-btn-primary:hover {
+    background: #041544;
+}
+
+.drop-btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.drop-btn-danger:hover {
+    background: #b91c1c;
+}
+
+.drop-btn-secondary {
+    background: white;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.drop-btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.drop-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    transition: .2s;
+}
+
+.drop-action-btn:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.drop-action-btn.delete:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.drop-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* MODAL */
+.drop-modal-overlay {
+    position: absolute;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.drop-modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.drop-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    border-radius: 16px;
+    transform: scale(0.95);
+    transition: transform 0.2s;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.drop-modal-overlay.open .drop-modal-content {
+    transform: scale(1);
+}
+
+.drop-form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+#drop-input-image-file::file-selector-button {
+    background-color: #010b20;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.drop-modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.drop-modal-footer .drop-btn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* MODAL EXCLUSÃO ESPECÍFICO */
+.drop-delete-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    font-size: 1.5rem;
+}
+
+.drop-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.drop-modal-desc {
+    color: #64748b;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}

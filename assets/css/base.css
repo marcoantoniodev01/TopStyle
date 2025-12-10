@@ -290,13 +290,6 @@ main {
   object-fit: cover;
 }
 
-.product {
-    width: 100%;
-    background: #fff;
-    border: 1px solid #eee;
-    transition: transform 0.3s;
-    max-width: 1100px !important;
-}
 
 /* Card de produto */
 .product-card {
@@ -696,7 +689,7 @@ main {
   }
 
   .model-cloth-info {
-    width: 100%;
+    width: 80%;
     justify-content: center;
     align-items: center;
   }
@@ -1575,7 +1568,6 @@ main {
   display: grid;
   place-items: center;
   gap: 20px;
-  pointer-events: none;
 }
 
 #summary-avg-rating {
@@ -1674,7 +1666,6 @@ progress::-webkit-progress-value {
 .stars {
   font-size: 2rem;
   color: #ccc;
-  cursor: pointer;
 }
 
 .form-group {
@@ -2194,14 +2185,4 @@ progress::-webkit-progress-value {
     height: 130px;
   }
 }
-
-.model-cloth-info > .container > .product{
-	padding: 50px 20px;
-}
-
-
-
-
-
-
 

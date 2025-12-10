@@ -294,7 +294,7 @@
               <ul class="submenu">
                 <li data-content="lista-produto">Listagem com imagem, preço, estoque e status</li>
                 <li data-content="categoria-produto">Categorias e filtros</li>
-                <li data-content="colecao-drops">Drops</li>
+                <li data-content="drop-produto">Drops</li>
                 <li data-content="controle-header">Header links</li>
               </ul>
 
@@ -427,13 +427,15 @@
                 <!-- ====== GRÁFICO DE LINHAS ====== -->
                 <div class="main-chart">
                   <div class="chart-header">
-                    <h3>Vendidos & Revenda</h3>
-                    <div class="chart-tabs">
-                      <button class="active">Hoje</button>
-                      <button>Ontem</button>
-                      <button>7 dias</button>
-                      <button>15 dias</button>
-                      <button>30 dias</button>
+                    <h3>Faturamento Mensal</h3>
+                    <div class="chart-controls">
+                      <div class="growth-badge" id="growth-indicator">
+                        <i class="bi bi-graph-up-arrow"></i> <span id="growth-value">0%</span>
+                      </div>
+                      <select id="chart-year-selector" class="chart-select" onchange="atualizarGraficoVendasReal()">
+                        <option value="2025" selected>2025</option>
+                        <option value="2024">2024</option>
+                      </select>
                     </div>
                   </div>
                   <div id="lineChart"></div>
@@ -570,6 +572,47 @@
 
             <div id="productGrid" class="ProGrid"></div>
           </section>
+        </div>
+
+
+        <div class="page page-drop" id="drop-produto">
+          <div class="drop-container">
+            <header class="drop-header-section">
+              <div>
+                <h1>Gestão de Drops</h1>
+                <p class="drop-subtitle">Controle as Drops da loja (Sincronizado com Produtos)</p>
+              </div>
+              <button onclick="dropOpenFormModal('add')" class="drop-btn drop-btn-primary">
+                <i class="bi bi-plus-lg"></i> Nova Drop
+              </button>
+            </header>
+
+            <div id="drop-stats-container" class="drop-stats-grid">
+            </div>
+
+            <div id="drop-loader" class="drop-loader hidden"></div>
+
+            <div id="drop-content" class="hidden">
+              <div class="drop-table-wrapper">
+                <table class="drop-table">
+                  <thead>
+                    <tr>
+                      <th>Drop</th>
+                      <th style="text-align: center;">Qtd. Produtos</th>
+                      <th style="text-align: right;">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="drop-list-body">
+                  </tbody>
+                </table>
+              </div>
+
+              <div id="drop-empty-state" class="hidden">
+                <i class="bi bi-inbox" style="font-size: 40px; margin-bottom: 10px;"></i>
+                <p>Nenhuma Drop encontrada.</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="page" id="cupom">

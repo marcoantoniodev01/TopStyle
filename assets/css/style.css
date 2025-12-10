@@ -8,38 +8,6 @@
     margin: 0;
 }
 
-/* CORREÇÃO PARA SAFARI (iOS e macOS) */
-input, 
-textarea, 
-select {
-    -webkit-user-select: text !important; /* Força a seleção de texto no Safari */
-    user-select: text !important;
-    -webkit-appearance: none; /* Remove estilos nativos "arredondados" do Safari que as vezes bugam */
-}
-
-/* Garante que o container do formulário permita interação */
-.formulario-container form,
-.input__container {
-    -webkit-user-select: text !important;
-    user-select: text !important;
-}
-
-/* Garante que o formulário ativo esteja acima de qualquer camada de animação */
-.painel-direito-ativo .formulario-cadastro {
-    z-index: 100 !important;
-    pointer-events: auto !important;
-}
-
-.formulario-login {
-    z-index: 100 !important; 
-    pointer-events: auto !important;
-}
-
-/* Se o painel direito estiver ativo, o login deve sair da frente do mouse */
-.painel-direito-ativo .formulario-login {
-    pointer-events: none !important;
-}
-
 html {
     scroll-behavior: smooth;
 }
@@ -510,7 +478,6 @@ main {
     width: 100%;
     height: 85vh;
     margin-top: 8vh;
-    margin-bottom: 100px;
 }
 
 .inicio__left {
@@ -529,7 +496,6 @@ main {
     font-size: 9rem;
     width: 100%;
     text-transform: uppercase;
-    pointer-events: none;
 }
 
 .creat__cloth span {
@@ -540,7 +506,6 @@ main {
     width: 70%;
     padding: 0px 10px;
     margin-left: 150px;
-    pointer-events: none;
 }
 
 .buttons__inicio {
@@ -1461,7 +1426,7 @@ hr {
 }
 
 .footer-brand {
-    flex: 1 1 120px;
+    flex: 1 1 250px;
     margin-bottom: 20px;
 }
 
@@ -3818,6 +3783,7 @@ hr {
 /* 1. O container principal da página
    (Define o alinhamento ao topo, como na sua foto) */
 .selecao-products {
+    top: 12vh;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
@@ -4263,7 +4229,12 @@ hr {
     background: #fff;
     border: 1px solid #eee;
     transition: transform 0.3s;
-    max-width: 450px;
+    max-width: 400px;
+}
+
+.product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .product-link-selecao img {
@@ -4494,10 +4465,3 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
-
-
-
-
-
-
-
