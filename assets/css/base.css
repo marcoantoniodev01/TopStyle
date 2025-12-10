@@ -2186,3 +2186,7 @@ progress::-webkit-progress-value {
   }
 }
 
+.model-cloth-info > .container > .product{
+	padding: 50px 20px;
+}
+
