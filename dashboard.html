@@ -292,7 +292,8 @@
                 <span class="arrow">▶</span>
               </li>
               <ul class="submenu">
-                <li data-content="lista-produto">Listagem com imagem, preço, estoque e status</li>
+                <li data-content="lista-produto">Produtos</li>
+                <li data-content="cores-produto">Cores</li>
                 <li data-content="categoria-produto">Categorias e filtros</li>
                 <li data-content="drop-produto">Drops</li>
                 <li data-content="controle-header">Header links</li>
@@ -610,6 +611,42 @@
               <div id="drop-empty-state" class="hidden">
                 <i class="bi bi-inbox" style="font-size: 40px; margin-bottom: 10px;"></i>
                 <p>Nenhuma Drop encontrada.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="cores-produto">
+          <div class="cat-container">
+            <header class="cat-header-section">
+              <div>
+                <h1>Gestão de Cores</h1>
+                <p class="cat-subtitle">Defina as cores disponíveis para os produtos.</p>
+              </div>
+              <button onclick="colorOpenFormModal('add')" class="cat-btn cat-btn-primary">
+                <i class="bi bi-palette-fill"></i> Nova Cor
+              </button>
+            </header>
+
+            <div id="color-loader" class="cat-loader hidden"></div>
+
+            <div id="color-content" class="hidden">
+              <div class="cat-table-wrapper">
+                <table class="cat-table">
+                  <thead>
+                    <tr>
+                      <th>Cor (Preview)</th>
+                      <th>Nome</th>
+                      <th>Hex Code</th>
+                      <th style="text-align: right;">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="color-list-body"></tbody>
+                </table>
+              </div>
+              <div id="color-empty-state" class="hidden">
+                <i class="bi bi-palette" style="font-size: 40px; margin-bottom: 10px;"></i>
+                <p>Nenhuma cor cadastrada.</p>
               </div>
             </div>
           </div>
@@ -1391,6 +1428,36 @@
     </div>
   </div>
 
+  <div id="color-modal-form" class="cat-modal-overlay" style="z-index: 10005;">
+    <div class="cat-modal-content">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <h2 id="color-form-title" style="margin: 0; font-size: 1.25rem;">Nova Cor</h2>
+        <button onclick="colorCloseModals()" class="cat-close-btn"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <input type="hidden" id="color-input-id">
+      <input type="hidden" id="color-input-mode">
+
+      <label style="font-size: 0.9rem; font-weight: 500;">Nome da Cor</label>
+      <input type="text" id="color-input-name" class="cat-form-input" placeholder="Ex: Azul Marinho">
+
+      <label style="font-size: 0.9rem; font-weight: 500; margin-top:15px; display:block;">Seletor</label>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="color" id="color-input-picker"
+          style="width: 50px; height: 40px; cursor: pointer; border:none; padding:0;"
+          onchange="document.getElementById('color-input-hex').value = this.value">
+
+        <input type="text" id="color-input-hex" class="cat-form-input" placeholder="#000000"
+          style="margin-top:0; flex:1;" onchange="document.getElementById('color-input-picker').value = this.value">
+      </div>
+
+      <div class="cat-modal-footer">
+        <button onclick="colorCloseModals()" class="cat-btn cat-btn-secondary">Cancelar</button>
+        <button onclick="colorHandleSave()" class="cat-btn cat-btn-primary">Salvar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
@@ -1406,8 +1473,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <script src="assets/js/status-pedido-dash.js"></script>
   <script src="assets/js/notificacao-geral.js"></script>
-  <script src="assets/js/colecao.js"></script>
   <script src="assets/js/collection-linker.js"></script>
+  <script src="assets/js/drops.js"></script>
   <script src="assets/js/dash-avaliacao.js"></script>
 </body>
 

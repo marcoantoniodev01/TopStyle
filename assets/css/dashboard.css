@@ -1027,7 +1027,7 @@ main {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
-    margin-bottom: 30px;
+    margin-top: 1rem;
 }
 
 .cat-stat-card {
@@ -1084,6 +1084,7 @@ main {
     /* Define a altura máxima (ajuste 65vh conforme sua necessidade) */
     /* -------------------------------- */
     z-index: 10000;
+    margin-top: 1rem;
 }
 
 /* (OPCIONAL) CABEÇALHO FIXO AO ROLAR */
@@ -5511,4 +5512,316 @@ a.profile-link.admin-mode:hover i {
     text-align: center;
     margin-bottom: 24px;
     line-height: 1.5;
+}
+
+/* ================================================================= */
+/* === FORÇAR ESTILO DO MODAL DE PRODUTOS (CORREÇÃO FOOTER) === */
+/* ================================================================= */
+
+/* Fundo Escuro e Posição */
+#admin-modal {
+    z-index: 99999 !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    display: none; /* Controlado via JS */
+    align-items: center;
+    justify-content: center;
+}
+
+#admin-modal.flex {
+    display: flex !important;
+}
+
+/* Caixa do Modal */
+#admin-modal .modal-content {
+    background-color: #fafafa !important;
+    width: 90% !important;
+    max-width: 1000px !important;
+    max-height: 90vh !important;
+    border-radius: 12px !important;
+    /* Removemos o padding bottom para o footer encostar no chão */
+    padding: 30px 40px 0 40px !important; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+    border: 1px solid #e5e5e5 !important;
+    display: block !important; /* Importante para o sticky funcionar bem */
+    overflow-y: auto !important;
+    position: relative !important;
+}
+
+/* Títulos */
+#admin-modal h2 {
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: #191D28 !important;
+    border-bottom: 2px solid #191D28 !important;
+    padding-bottom: 15px !important;
+    margin-bottom: 25px !important;
+    text-align: left !important;
+}
+
+/* Labels e Inputs */
+#admin-modal label {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #333 !important;
+    margin-bottom: 5px !important;
+    margin-top: 15px !important;
+    display: block !important;
+    text-align: left !important;
+}
+
+#admin-modal input[type="text"],
+#admin-modal input[type="number"],
+#admin-modal select,
+#admin-modal textarea {
+    background-color: #eee !important;
+    border: 2px solid transparent !important;
+    border-radius: 6px !important;
+    padding: 12px 15px !important;
+    font-size: 1rem !important;
+    color: #333 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-family: 'Roboto', sans-serif !important;
+    transition: all 0.3s ease;
+}
+
+#admin-modal input:focus,
+#admin-modal select:focus,
+#admin-modal textarea:focus {
+    background-color: #fff !important;
+    border-color: #191D28 !important;
+    box-shadow: 0 0 0 4px rgba(25, 29, 40, 0.1) !important;
+    outline: none !important;
+}
+
+/* --- CORREÇÃO DO RODAPÉ (FOOTER) --- */
+#admin-modal .modal-actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    
+    /* Margens negativas para compensar o padding do pai e encostar nas bordas */
+    margin-left: -40px !important;
+    margin-right: -40px !important;
+    width: calc(100% + 80px) !important;
+    
+    background: #fafafa !important;
+    border-top: 1px solid #e5e5e5;
+    padding: 30px 40px !important; /* Devolve o padding interno visual */
+    
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    z-index: 100 !important; /* Garante que fique acima do conteúdo */
+    margin-top: 30px;
+}
+
+/* Botões do Rodapé */
+#admin-modal #modal-save {
+    background-color: #191D28 !important;
+    color: white !important;
+    padding: 12px 30px !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+}
+
+#admin-modal #modal-cancel {
+    background-color: #e5e7eb !important;
+    color: #374151 !important;
+    padding: 12px 20px !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+}
+
+#admin-modal #modal-delete {
+    background-color: #dc2626 !important;
+    color: white !important;
+    margin-right: auto !important;
+    padding: 12px 20px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+}
+
+#admin-modal #modal-remove-link {
+    background-color: #89bcff !important;
+    color: #000 !important;
+    padding: 12px 20px !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+}
+
+/* Linha de Cores */
+#admin-modal .color-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+#admin-modal .remove-color-btn {
+    background: #dc2626 !important;
+    color: white !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 6px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* ================================================================= */
+/* === MODAL DE EDIÇÃO (IDENTICO AO MAIN.JS) - GLOBAL === */
+/* ================================================================= */
+
+#admin-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: none; /* Controlado via JS */
+    align-items: center;
+    justify-content: center;
+}
+
+#admin-modal.flex {
+    display: flex !important;
+}
+
+#admin-modal .modal-content {
+    background-color: #fafafa;
+    width: 90%;
+    max-width: 800px; /* Largura igual ao da main */
+    max-height: 90vh;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    border: 1px solid #e5e5e5;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#admin-modal h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #191D28;
+    border-bottom: 2px solid #191D28;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    margin-top: 0;
+}
+
+#admin-modal label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+    margin-top: 15px;
+    display: block;
+}
+
+#admin-modal input[type="text"],
+#admin-modal input[type="number"],
+#admin-modal select,
+#admin-modal textarea {
+    background-color: #eee;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+}
+
+#admin-modal input:focus,
+#admin-modal select:focus,
+#admin-modal textarea:focus {
+    background-color: #fff;
+    border-color: #191D28;
+    box-shadow: 0 0 0 4px rgba(25, 29, 40, 0.1);
+    outline: none;
+}
+
+/* Ações do Modal */
+#admin-modal .modal-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#admin-modal .modal-actions button {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 0.95rem;
+}
+
+#modal-save { background-color: #191D28; color: white; }
+#modal-save:hover { background-color: #333; }
+
+#modal-cancel { background-color: #e5e7eb; color: #374151; }
+#modal-cancel:hover { background-color: #d1d5db; }
+
+#modal-delete { background-color: #ef4444; color: white; margin-right: auto; }
+#modal-delete:hover { background-color: #dc2626; }
+
+/* Linhas de Cores */
+.color-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.color-row input {
+    margin-top: 0 !important; /* Remove margem extra dos inputs dentro da linha */
+}
+
+.remove-color-btn {
+    background: #ef4444;
+    color: white;
+    width: 40px;
+    height: 42px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   CORREÇÃO: MODAL DE CONFIRMAÇÃO NO TOPO
+   O #admin-modal tem z-index: 99999. 
+   O confirm-overlay precisa ser maior para aparecer na frente.
+   ========================================================= */
+.confirm-overlay {
+    z-index: 200000 !important;
+    position: fixed; /* Garante que o z-index funcione */
+}
+
+/* Correção de Z-Index para o Modal de Cores aparecer na frente */
+#color-modal-form, 
+.cat-modal-overlay {
+    z-index: 200000 !important; /* Maior que os 99999 do admin-modal */
 }

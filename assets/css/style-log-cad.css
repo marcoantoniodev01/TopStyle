@@ -932,3 +932,54 @@ input:-webkit-autofill {
   filter: invert(1);
   opacity: 0.7;
 }
+
+/* =======================================
+   ESTILO DO BOTÃO "ENTRAR SEM CONTA"
+   ======================================= */
+
+.guest-login-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Espaço do botão Entrar */
+    margin-bottom: 10px;
+}
+
+#btn-guest-login {
+    text-decoration: none;
+    color: #6b7280; /* Cinza suave */
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+
+#btn-guest-login i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+/* Efeito Hover */
+#btn-guest-login:hover {
+    color: #191D28; /* Cor escura da marca */
+    background-color: rgba(0, 0, 0, 0.05); /* Fundo sutil */
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+#btn-guest-login:hover i {
+    transform: translateX(4px); /* Seta move para direita */
+}
+
+/* Responsivo para telas menores */
+@media (max-width: 921px) {
+    .guest-login-wrapper {
+        margin-top: 15px;
+    }
+}

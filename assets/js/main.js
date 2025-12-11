@@ -37,6 +37,49 @@ async function initSupabaseClient() {
 window.initSupabaseClient = initSupabaseClient;
 
 
+/* ============ MAPA DE CORES DINÂMICO ============ */
+let globalColorMap = {}; // Cache local
+
+// Função que busca cores do Supabase e popula o mapa
+async function initColorMap() {
+  try {
+    const supabase = await initSupabaseClient();
+    const { data, error } = await supabase.from('product_colors').select('name, hex_code');
+
+    if (!error && data) {
+      data.forEach(c => {
+        globalColorMap[c.name.toLowerCase().trim()] = c.hex_code;
+      });
+      console.log("Mapa de cores carregado:", globalColorMap);
+    }
+  } catch (err) {
+    console.error("Erro ao carregar mapa de cores:", err);
+  }
+}
+
+// Nova função getColorHex que consulta o mapa dinâmico
+function getColorHex(colorName) {
+  if (!colorName) return '#cccccc';
+  const name = colorName.toLowerCase().trim();
+
+  // Tenta pegar do banco dinâmico
+  if (globalColorMap[name]) return globalColorMap[name];
+
+  // Fallbacks básicos hardcoded para segurança caso o banco falhe
+  const fallbacks = {
+    'branco': '#ffffff', 'preto': '#000000', 'Cinza': '#adadadff'
+  };
+  return fallbacks[name] || null;
+}
+
+// Expor globalmente
+window.getColorHex = getColorHex;
+
+// Chamar a inicialização assim que o DOM carregar
+document.addEventListener('DOMContentLoaded', () => {
+  initColorMap();
+});
+
 
 /* ============ MODAL DE CONFIRMAÇÃO CUSTOMIZADO ============ */
 function showConfirmationModal(message, { okText = 'Confirmar', cancelText = 'Cancelar' } = {}) {
@@ -183,9 +226,21 @@ async function addToCart(item) {
     const supabase = await window.initSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // === ALTERAÇÃO AQUI ===
     if (!user) {
-      showToast('Faça login para adicionar itens ao carrinho.', { duration: 3000 });
-      return;
+      // Exibe o modal de confirmação igual ao das páginas protegidas
+      const irParaLogin = await window.showConfirmationModal(
+        "Você precisa estar logado para adicionar itens ao carrinho. Deseja entrar agora?",
+        {
+          okText: 'Entrar / Criar Conta',
+          cancelText: 'Continuar Navegando'
+        }
+      );
+
+      if (irParaLogin) {
+        window.location.href = 'index.html'; // Redireciona para o login
+      }
+      return; // Interrompe a função aqui
     }
 
     const newItem = {
@@ -256,7 +311,7 @@ function prepareProductHoverAndOptions() {
 
     // --- EVENTO DE MOUSE ENTRANDO ---
     product.addEventListener('mouseenter', () => {
-      
+
       // === AQUI ESTÁ A CORREÇÃO ===
       // Verifica se o dispositivo NÃO tem cursor preciso (mouse).
       // Se for touch (celular/tablet), encerra a função aqui.
@@ -286,8 +341,8 @@ function prepareProductHoverAndOptions() {
 
       const colorsDiv = optionsContainer.querySelector('.colors');
       const sizesDiv = optionsContainer.querySelector('.sizes');
-      if(colorsDiv) colorsDiv.innerHTML = '';
-      if(sizesDiv) sizesDiv.innerHTML = '';
+      if (colorsDiv) colorsDiv.innerHTML = '';
+      if (sizesDiv) sizesDiv.innerHTML = '';
 
       const cores = meta.cores || [];
       let selectedColorMeta = product.__selectedColorMeta || (cores.length > 0 ? cores[0] : { img1: originalImgSrc });
@@ -298,14 +353,22 @@ function prepareProductHoverAndOptions() {
           sw.type = 'button';
           sw.className = 'color-swatch';
           sw.title = cor.nome || '';
-          if (cor.img1) {
+          const hexColor = getColorHex(cor.nome);
+
+          // Lógica: Se tiver cor no dicionário, usa a cor. 
+          // Se não tiver, tenta usar a imagem pequena. Se não, usa cinza.
+          if (hexColor) {
+            sw.style.backgroundColor = hexColor;
+            // Se for branco ou off white, coloca uma borda sutil para não sumir no fundo branco
+            if (hexColor === '#ffffff' || hexColor === '#f8f8ff') {
+              sw.style.border = '1px solid #000000ff';
+            }
+          } else if (cor.img1) {
+            // Fallback: Se digitou uma cor estranha (ex: "Galáxia"), usa a foto
             sw.style.backgroundImage = `url('${cor.img1}')`;
             sw.style.backgroundSize = 'cover';
           } else {
             sw.style.background = '#ccc';
-          }
-          if (selectedColorMeta && cor.nome === selectedColorMeta.nome) {
-            sw.classList.add('active');
           }
 
           sw.addEventListener('click', (e) => {
@@ -559,24 +622,136 @@ function createColorRow(color = {}) {
   row.style.display = 'flex';
   row.style.gap = '5px';
   row.style.marginBottom = '5px';
+  row.style.alignItems = 'center';
+
+  // HTML da linha: Select + Inputs de Imagem + Botão Remover
   row.innerHTML = `
-    <input type="text" placeholder="Nome (ex: Preto)" value="${color.nome || ''}" style="flex:1;">
-    <input type="text" placeholder="URL Imagem Principal" value="${color.img1 || ''}" style="flex:2;">
-    <input type="text" placeholder="URL Imagem Hover (Opcional)" value="${color.img2 || ''}" style="flex:2;">
-    <button type="button" class="remove-color-btn" style="padding: 0 8px;">&times;</button>
+    <div style="flex: 1; min-width: 120px;">
+        <select class="color-select-input" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; background: #eee;">
+            <option value="">Carregando...</option>
+        </select>
+    </div>
+    <input type="text" placeholder="URL Imagem Principal" value="${color.img1 || ''}" style="flex: 2;">
+    <input type="text" placeholder="URL Imagem Hover (Opcional)" value="${color.img2 || ''}" style="flex: 2;">
+    <button type="button" class="remove-color-btn" style="padding: 0 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">&times;</button>
   `;
+
+  const select = row.querySelector('select');
+
+  // Chama a função corrigida (ela agora é async e lida com o fetch internamente)
+  populateColorSelectElement(select, color.nome);
+
+  // Popula o select imediatamente (se cache existir) ou busca
+  if (globalColorCache.length > 0) {
+    populateColorSelectElement(select, color.nome);
+  } else {
+    fetchColorsForSelect().then(() => populateColorSelectElement(select, color.nome));
+  }
+
+  // Ação de remover linha
   row.querySelector('.remove-color-btn').onclick = () => row.remove();
 
+  // Método auxiliar para o botão Salvar pegar os dados
   row.getColorObject = () => {
     const inputs = row.querySelectorAll('input');
+    const selectVal = row.querySelector('select').value;
     return {
-      nome: inputs[0].value.trim(),
-      img1: inputs[1].value.trim(),
-      img2: inputs[2].value.trim()
+      nome: selectVal, // Pega do Select
+      img1: inputs[0].value.trim(),
+      img2: inputs[1].value.trim()
     };
   };
+
   return row;
 }
+
+/* ============ HELPER GESTÃO DE CORES GLOBAL (SELECT) ============ */
+let globalColorCache = []; // Cache do main.js
+
+// Função para buscar cores (Garante que busca se o cache estiver vazio)
+async function fetchColorsForSelect() {
+  try {
+    const supabase = await window.initSupabaseClient();
+    const { data, error } = await supabase
+      .from('product_colors')
+      .select('name, hex_code')
+      .order('name', { ascending: true });
+
+    if (!error && data) {
+      globalColorCache = data;
+      return data;
+    }
+  } catch (err) {
+    console.error("Erro ao buscar cores:", err);
+  }
+  return [];
+}
+
+// Função CORRIGIDA para preencher um select
+async function populateColorSelectElement(selectEl, selectedValue = null) {
+  // Se o cache estiver vazio, busca primeiro
+  if (globalColorCache.length === 0) {
+      selectEl.innerHTML = '<option value="">Carregando...</option>';
+      await fetchColorsForSelect();
+  }
+
+  const currentVal = selectedValue || selectEl.value;
+  selectEl.innerHTML = '<option value="">Selecione...</option>';
+
+  globalColorCache.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name; 
+    opt.textContent = c.name;
+    
+    // Seleciona se bater o nome
+    if (currentVal && c.name.toLowerCase() === currentVal.toLowerCase()) {
+      opt.selected = true;
+    }
+    selectEl.appendChild(opt);
+  });
+}
+
+// Função para preencher um select específico
+function populateColorSelectElement(selectEl, selectedValue = null) {
+  const currentVal = selectEl.value || selectedValue;
+  selectEl.innerHTML = '<option value="">Selecione...</option>';
+
+  globalColorCache.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.name; // Salva o NOME no banco do produto
+    opt.textContent = c.name;
+    // Tenta selecionar se bater o nome
+    if (currentVal && c.name.toLowerCase() === currentVal.toLowerCase()) {
+      opt.selected = true;
+    }
+    // Mostra uma bolinha de cor no fundo da opção (suportado em alguns browsers)
+    opt.style.backgroundColor = '#fff';
+    opt.style.color = '#000';
+    selectEl.appendChild(opt);
+  });
+
+  // Se o produto tem uma cor antiga que não está no banco (ex: digitada manualmente antes)
+  if (currentVal && !globalColorCache.find(c => c.name.toLowerCase() === currentVal.toLowerCase())) {
+    const opt = document.createElement('option');
+    opt.value = currentVal;
+    opt.textContent = currentVal + " (Legado)";
+    opt.selected = true;
+    selectEl.appendChild(opt);
+  }
+}
+
+// Escuta global para atualizar todos os selects quando uma cor nova for criada
+document.addEventListener('colors-updated', async () => {
+  await fetchColorsForSelect(); // Recarrega do banco
+  document.querySelectorAll('.color-select-input').forEach(select => {
+    populateColorSelectElement(select);
+  });
+});
+
+// Inicializa cache ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+  fetchColorsForSelect();
+});
 
 /* ============ LÓGICA DE CATEGORIAS (NOVA) ============ */
 async function fetchCategoriesFromDB() {
@@ -752,8 +927,8 @@ window.openAddProductModal = function (slotId = null) {
       <label>Categoria:</label>
       <div style="display: flex; gap: 8px; align-items: center;">
           <select id="modal-category-input" style="flex: 1;"></select>
-          <button type="button" id="btn-manage-cats-add" title="Gerenciar Categorias" style="padding: 10px; background: #333; color: #fff;">
-            <i class="ri-settings-3-line"></i> ⚙️
+          <button type="button" id="btn-manage-cats-add" title="Gerenciar Categorias" style="padding: 8px; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
+            <i class="ri-settings-3-line"></i> 
           </button>
       </div>
 
@@ -778,13 +953,38 @@ window.openAddProductModal = function (slotId = null) {
       
       <label>Cores:</label>
       <div id="modal-colors-container"></div>
-      <button type="button" id="modal-add-color-btn" style="margin-top: 5px;">+ Adicionar Cor</button>
+      
+      <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+          <button type="button" id="modal-add-color-btn">+ Adicionar Cor</button>
+          
+          <button type="button" id="modal-manage-colors-btn" title="Criar nova cor" style="padding: 8px; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
+            <i class="ri-settings-3-line" style="font-size: 1.2rem; color: #333;"></i> 
+          </button>
+      </div>
       
       <div class="modal-actions">
         <button id="modal-cancel">Cancelar</button>
         <button id="modal-save">Salvar</button>
       </div>
     </div>`;
+
+  // ...
+  modal.querySelector('#modal-add-color-btn').onclick = () => {
+    const container = modal.querySelector('#modal-colors-container');
+    container.appendChild(createColorRow());
+  };
+
+  // NOVO: Botão da Engrenagem chama o modal de Cores
+  modal.querySelector('#modal-manage-colors-btn').onclick = () => {
+    // Verifica se a função global do dashboard existe (se estiver no dash)
+    if (typeof window.colorOpenFormModal === 'function') {
+      window.colorOpenFormModal('add');
+    } else {
+      // Fallback se estiver na home (talvez precise implementar um modal simples de cor na home ou avisar)
+      alert("A criação de cores deve ser feita pelo Painel Admin -> Cores.");
+    }
+  };
+  // ...
 
   // ... (O restante da lógica de preencher Selects continua igual) ...
   const catSelect = modal.querySelector('#modal-category-input');
@@ -885,8 +1085,8 @@ function openEditModalForProduct(productNode) {
       <div style="display: flex; gap: 8px; align-items: center;">
           <select id="modal-category-input" style="flex: 1;">
              </select>
-          <button type="button" id="btn-manage-cats-edit" title="Gerenciar Categorias" style="padding: 10px; background: #333; color: #fff;">
-            <i class="ri-settings-3-line"></i> ⚙️
+          <button type="button" id="btn-manage-cats-edit" title="Gerenciar Categorias" style="padding: 8px; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
+            <i class="ri-settings-3-line"></i> 
           </button>
       </div>
 
@@ -905,9 +1105,18 @@ function openEditModalForProduct(productNode) {
       <textarea id="modal-description-input" style="min-height: 80px;">${meta.description || ''}</textarea>
       <label>Informações Complementares:</label>
       <textarea id="modal-additional-info-input" style="min-height: 60px;">${meta.additional_info || ''}</textarea>
+      // ... dentro do innerHTML do modal ...
       <label>Cores:</label>
       <div id="modal-colors-container"></div>
-      <button type="button" id="modal-add-color-btn" style="margin-top: 5px;">+ Adicionar Cor</button>
+      
+      <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+          <button type="button" id="modal-add-color-btn">+ Adicionar Cor</button>
+          
+          <button type="button" id="modal-manage-colors-btn" title="Criar nova cor" style="padding: 8px; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
+            <i class="ri-settings-3-line" style="font-size: 1.2rem; color: #333;"></i> 
+          </button>
+      </div>
+
       <div class="modal-actions" style="flex-wrap: wrap;">
         <button id="modal-delete" style="background-color: #dc3545; color: white;">Excluir Produto</button>
         <button id="modal-remove-link" style="background-color: #ffc107; color: black;">Remover da Página</button>
@@ -917,6 +1126,23 @@ function openEditModalForProduct(productNode) {
     </div>`;
 
   qs('#modal-gender-input').value = meta.gender || 'U';
+
+  // ...
+  modal.querySelector('#modal-add-color-btn').onclick = () => {
+    const container = modal.querySelector('#modal-colors-container');
+    container.appendChild(createColorRow());
+  };
+
+  // NOVO: Botão da Engrenagem chama o modal de Cores
+  modal.querySelector('#modal-manage-colors-btn').onclick = () => {
+    // Verifica se a função global do dashboard existe (se estiver no dash)
+    if (typeof window.colorOpenFormModal === 'function') {
+      window.colorOpenFormModal('add');
+    } else {
+      // Fallback se estiver na home (talvez precise implementar um modal simples de cor na home ou avisar)
+      alert("A criação de cores deve ser feita pelo Painel Admin -> Cores.");
+    }
+  };
 
   // POPULA O SELECT DE CATEGORIA E SELECIONA A ATUAL
   const catSelect = qs('#modal-category-input');
@@ -1070,10 +1296,10 @@ function runIntro() {
     // 1. Mata animações pendentes
     if (tl) tl.kill();
     if (window.gsap) {
-        gsap.killTweensOf("#intro");
-        gsap.killTweensOf(".intro-text span");
-        gsap.killTweensOf(".intro-text-top span");
-        gsap.killTweensOf(".intro-mask");
+      gsap.killTweensOf("#intro");
+      gsap.killTweensOf(".intro-text span");
+      gsap.killTweensOf(".intro-text-top span");
+      gsap.killTweensOf(".intro-mask");
     }
 
     // 2. Esconde botão
@@ -1091,7 +1317,7 @@ function runIntro() {
       document.body.style.overflow = "auto";
       document.body.classList.remove('com-intro');
       sessionStorage.setItem("introShown", "true");
-    }, 550); 
+    }, 550);
   };
 
   // Evento do botão Pular
@@ -1129,14 +1355,14 @@ function runIntro() {
   const topStyleDelay = lastExit + 0.3; // Delay reduzido para ser mais ágil
 
   const topStyleLetters = document.querySelectorAll(".intro-text-top span");
-  
+
   if (topStyleLetters.length > 0) {
-      tl.to(topStyleLetters, {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.05
-      }, topStyleDelay);
+    tl.to(topStyleLetters, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      stagger: 0.05
+    }, topStyleDelay);
   }
 
   // 4. CHAMA A SAÍDA IMEDIATAMENTE APÓS O TEXTO APARECER
@@ -1199,7 +1425,7 @@ function handlePreloaderAndIntro() {
     } else {
       document.addEventListener('admin-logic-complete', resolve, { once: true });
       // Timeout de segurança de 7s caso o Supabase falhe
-      setTimeout(resolve, 7000); 
+      setTimeout(resolve, 7000);
     }
   });
 
@@ -1207,8 +1433,8 @@ function handlePreloaderAndIntro() {
   const productsLoadPromise = new Promise(resolve => {
     // Se não estiver na home (sem slots), resolve rápido
     if (!document.querySelector('.product-slot') && !document.querySelector('.product-content-selecao')) {
-       resolve();
-       return;
+      resolve();
+      return;
     }
 
     if (document.body.classList.contains('products-logic-complete')) {
@@ -1236,9 +1462,9 @@ function handlePreloaderAndIntro() {
   Promise.all(promisesToWait).then(() => {
     // Esconde o preloader
     if (preloader) {
-       preloader.classList.add('hidden');
-       // Remove do DOM após o fade-out CSS
-       setTimeout(() => preloader.style.display = 'none', 500);
+      preloader.classList.add('hidden');
+      // Remove do DOM após o fade-out CSS
+      setTimeout(() => preloader.style.display = 'none', 500);
     }
 
     if (skipAnimation) {
@@ -1651,34 +1877,169 @@ Object.values(mediaQueries).forEach(mq => {
   mq.addEventListener('change', atualizarImagem);
 });
 
+// Substitua a função window.openEditModalById existente por esta versão:
+
 window.openEditModalById = async function (productId) {
-  console.log("Abrindo modal para editar ID:", productId); // Log para confirmar que clicou
+  console.log("Tentando editar produto ID:", productId);
+
+  // Feedback visual imediato
+  if (window.showToast) showToast('Carregando dados do produto...');
+
   try {
     const supabase = await window.initSupabaseClient();
+
+    // 1. Busca dados do produto
     const { data: product, error } = await supabase
       .from('products')
       .select('*')
       .eq('id', productId)
       .single();
 
-    if (error || !product) throw new Error("Produto não encontrado");
+    if (error) throw new Error("Erro ao buscar produto: " + error.message);
+    if (!product) throw new Error("Produto não encontrado no banco de dados.");
 
-    // Cria um elemento HTML "falso" para reutilizar a lógica existente
+    console.log("Produto carregado:", product);
+
+    // 2. Prepara o objeto fakeNode para reutilizar a função existente
+    // Garante que a estrutura de cores esteja correta
+    if (!product.cores) product.cores = [];
+
     const fakeProductNode = document.createElement('div');
     fakeProductNode.__productMeta = product;
 
-    // Chama a função original do main.js que abre o modal
+    // 3. Verifica se a função de construção do modal existe
     if (typeof openEditModalForProduct === 'function') {
       openEditModalForProduct(fakeProductNode);
     } else {
-      console.error("Função openEditModalForProduct não encontrada.");
+      throw new Error("Função interna 'openEditModalForProduct' não encontrada.");
     }
 
   } catch (err) {
-    console.error(err);
-    if (window.showToast) showToast('Erro ao abrir edição: ' + err.message);
+    console.error("Erro crítico ao abrir modal:", err);
+    if (window.showToast) showToast('Erro: ' + err.message);
     else alert('Erro: ' + err.message);
   }
 };
 
+// Certifique-se também que a função openEditModalForProduct está abrindo o modal corretamente:
+// (Não precisa substituir a função inteira, apenas verifique se no final ela tem isso:)
+// showAdminModal(modal); 
+// E se showAdminModal faz: modal.style.display = 'flex'; ou adiciona classe .flex
 
+/* =========================================================
+   INTERCEPTADOR DE LINKS PROTEGIDOS (USANDO MODAL EXISTENTE)
+   ========================================================= */
+
+document.addEventListener('click', async (e) => {
+  // 1. Verifica se o elemento clicado (ou pai) é um link <a>
+  const link = e.target.closest('a');
+
+  // Se não for link ou se o link não tiver href, ignora
+  if (!link || !link.getAttribute('href')) return;
+
+  const href = link.getAttribute('href');
+
+  // 2. Lista de páginas que exigem login
+  const protectedPages = [
+    'perfil-cliente.html',
+    'carrinho.html',
+    'pagamento.html',
+    'checkout.html'
+  ];
+
+  // Verifica se o link aponta para uma página protegida
+  const isProtected = protectedPages.some(page => href.includes(page));
+
+  if (isProtected) {
+    // Pausa o clique imediatamente para verificar a sessão
+    e.preventDefault();
+
+    try {
+      // Verifica sessão (usa a função global se existir ou tenta direto)
+      const supabase = await window.initSupabaseClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        // SE TEM LOGIN: Libera o usuário para ir à página
+        window.location.href = href;
+      } else {
+        // SE NÃO TEM LOGIN: Usa seu modal de confirmação existente
+        const irParaLogin = await window.showConfirmationModal(
+          "Você precisa estar logado para acessar esta área. Deseja entrar agora?",
+          {
+            okText: 'Entrar / Criar Conta',
+            cancelText: 'Continuar Navegando'
+          }
+        );
+
+        if (irParaLogin) {
+          window.location.href = 'index.html'; // Vai para Login
+        }
+        // Se cancelar, nada acontece (ele continua na página atual)
+      }
+    } catch (err) {
+      console.error("Erro ao verificar sessão:", err);
+      // Em caso de erro técnico, previne acesso por segurança
+      window.location.href = 'index.html';
+    }
+  }
+});
+
+/* ============ MONITORAMENTO DE BANIMENTO EM TEMPO REAL ============ */
+async function initRealtimeBanMonitor() {
+  try {
+    const supabase = await initSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Se não tem usuário logado, não precisa monitorar
+    if (!user) return;
+
+    // 1. Função auxiliar para processar o banimento
+    const handleBanTrigger = async (reason = "Violação dos termos") => {
+      console.warn("Banimento detectado. Encerrando sessão...");
+      await supabase.auth.signOut();
+      localStorage.removeItem('userRole'); // Limpa permissões locais
+      // Redireciona para index com flag de banido
+      window.location.href = `index.html?banned=true&reason=${encodeURIComponent(reason)}`;
+    };
+
+    // 2. Verificação Inicial (Caso tenha sido banido enquanto estava offline/navegando)
+    const { data: banData } = await supabase
+      .from('user_bans')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (banData) {
+      // Verifica validade se for temporário
+      let isActive = true;
+      if (banData.ban_type === 'temporary' && banData.banned_until) {
+        if (new Date() > new Date(banData.banned_until)) isActive = false;
+      }
+
+      if (isActive) {
+        await handleBanTrigger(banData.reason);
+        return;
+      }
+    }
+
+    // 3. Listener em Tempo Real (Ouve INSERT na tabela user_bans)
+    supabase.channel('public:user_bans_monitor')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'user_bans', filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          // Se inseriu um banimento para este ID, tchau!
+          handleBanTrigger(payload.new.reason);
+        }
+      )
+      .subscribe();
+
+  } catch (err) {
+    console.error("Erro no monitor de banimento:", err);
+  }
+}
+
+// Inicializa o monitor quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', () => {
+  initRealtimeBanMonitor();
+});

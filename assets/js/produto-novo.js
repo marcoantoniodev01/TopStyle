@@ -136,89 +136,99 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ======== populatePage ========
   // produto-novo.js
 
-// ======== populatePage ========
-function populatePage(product) {
-  currentProduct = product;
-  pageTitle.textContent = `${product.nome} - TopStyle`;
-  productTitleEl.textContent = product.nome;
-  const precoFormatado = formatPriceBR(product.preco);
-  const parcelaFormatada = formatPriceBR(product.preco / 2);
-  productPriceEl.innerHTML = `${precoFormatado} <small>ou 2x de ${parcelaFormatada}</small>`;
+  // ======== populatePage ========
+  function populatePage(product) {
+    currentProduct = product;
+    pageTitle.textContent = `${product.nome} - TopStyle`;
+    productTitleEl.textContent = product.nome;
+    const precoFormatado = formatPriceBR(product.preco);
+    const parcelaFormatada = formatPriceBR(product.preco / 2);
+    productPriceEl.innerHTML = `${precoFormatado} <small>ou 2x de ${parcelaFormatada}</small>`;
 
-  const firstImg = (product.cores && product.cores[0]?.img1) || product.img;
-  if (hiddenImgEl) hiddenImgEl.src = firstImg;
+    const firstImg = (product.cores && product.cores[0]?.img1) || product.img;
+    if (hiddenImgEl) hiddenImgEl.src = firstImg;
 
-  sizeContainer.innerHTML = '';
-  const sizes = product.tamanhos ? product.tamanhos.split(',').map(s => s.trim()) : [];
-  if (sizes.length > 0) {
-    sizes.forEach(size => {
-      const div = document.createElement('div');
-      div.className = 'model-size-btn';
-      div.dataset.size = size;
-      div.textContent = size;
-      sizeContainer.appendChild(div);
-    });
-  } else {
-    sizeContainer.innerHTML = '<p>Tamanho único</p>';
-    selectedSize = 'Único';
-  }
+    sizeContainer.innerHTML = '';
+    const sizes = product.tamanhos ? product.tamanhos.split(',').map(s => s.trim()) : [];
+    if (sizes.length > 0) {
+      sizes.forEach(size => {
+        const div = document.createElement('div');
+        div.className = 'model-size-btn';
+        div.dataset.size = size;
+        div.textContent = size;
+        sizeContainer.appendChild(div);
+      });
+    } else {
+      sizeContainer.innerHTML = '<p>Tamanho único</p>';
+      selectedSize = 'Único';
+    }
 
-  colorContainer.innerHTML = '';
-  const colors = product.cores || [];
-  if (colors.length > 0) {
-    colors.forEach(color => {
-      const div = document.createElement('div');
-      div.dataset.colorName = color.nome;
-      const bgColor = color.hex || (color.nome === 'Branco' ? '#fff' : (color.nome === 'Preto' ? '#000' : '#ccc'));
-      div.innerHTML = `<span style="background: ${bgColor}; border: 1px solid #ddd;"></span> ${color.nome}`;
-      colorContainer.appendChild(div);
-    });
-  } else {
-    colorContainer.innerHTML = '<p>Cor única</p>';
-    selectedColor = 'Única';
-  }
+    colorContainer.innerHTML = '';
+    const colors = product.cores || [];
+    if (colors.length > 0) {
+      product.cores.forEach(color => {
+        const div = document.createElement('div');
+        div.dataset.colorName = color.nome;
 
-  galleryWrapper.innerHTML = '';
-  let hasImages = false;
-  if (colors.length > 0) {
-    colors.forEach(color => {
-      if (color.img1) {
-        galleryWrapper.insertAdjacentHTML('beforeend',
-          `<div class="swiper-slide"><img src="${color.img1}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)}"></div>`);
-        hasImages = true;
-      }
-      if (color.img2) {
-        galleryWrapper.insertAdjacentHTML('beforeend',
-          `<div class="swiper-slide"><img src="${color.img2}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)} (2)"></div>`);
-        hasImages = true;
-      }
-    });
-  }
+        // Usa a função global atualizada
+        let hex = window.getColorHex ? window.getColorHex(color.nome) : '#ccc';
 
-  if (!hasImages && product.img) {
-    galleryWrapper.insertAdjacentHTML('beforeend',
-      `<div class="swiper-slide"><img src="${product.img}" alt="${escapeHtml(product.nome)}"></div>`);
-    hasImages = true;
-  }
+        // Fallback visual se retornar null (tenta usar a imagem se existir, ou cinza)
+        if (!hex && color.img1) {
+          // Se não tem cor definida, mas tem imagem, podemos usar a imagem como fundo (opcional)
+          // Mas como você pediu cor sólida, deixamos cinza ou tentamos um RGB genérico
+          hex = '#ccc';
+        }
 
-  if (!hasImages) {
-    galleryWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/400x600/eee/ccc?text=Sem+imagem" alt="Sem imagem"></div>`;
-  }
-  
-  // ===========================================
-  // NOVO CÓDIGO PARA O ACORDEÃO (Detalhes e Info. Complementares)
-  // ===========================================
-  
-  if (descriptionContentEl) {
-    // Puxa da coluna 'description'
-    descriptionContentEl.innerHTML = product.description || '- Sem descrição detalhada fornecida.';
-  }
+        div.innerHTML = `<span style="background: ${hex || '#ccc'}; border: 1px solid #ddd;"></span> ${color.nome}`;
+        colorContainer.appendChild(div);
+      });
+    } else {
+      colorContainer.innerHTML = '<p>Cor única</p>';
+      selectedColor = 'Única';
+    }
 
-  if (additionalInfoContentEl) {
-    // Puxa da coluna 'additional_info'
-    additionalInfoContentEl.innerHTML = product.additional_info || 'Sem informações complementares fornecidas.';
+    galleryWrapper.innerHTML = '';
+    let hasImages = false;
+    if (colors.length > 0) {
+      colors.forEach(color => {
+        if (color.img1) {
+          galleryWrapper.insertAdjacentHTML('beforeend',
+            `<div class="swiper-slide"><img src="${color.img1}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)}"></div>`);
+          hasImages = true;
+        }
+        if (color.img2) {
+          galleryWrapper.insertAdjacentHTML('beforeend',
+            `<div class="swiper-slide"><img src="${color.img2}" alt="${escapeHtml(product.nome)} - ${escapeHtml(color.nome)} (2)"></div>`);
+          hasImages = true;
+        }
+      });
+    }
+
+    if (!hasImages && product.img) {
+      galleryWrapper.insertAdjacentHTML('beforeend',
+        `<div class="swiper-slide"><img src="${product.img}" alt="${escapeHtml(product.nome)}"></div>`);
+      hasImages = true;
+    }
+
+    if (!hasImages) {
+      galleryWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/400x600/eee/ccc?text=Sem+imagem" alt="Sem imagem"></div>`;
+    }
+
+    // ===========================================
+    // NOVO CÓDIGO PARA O ACORDEÃO (Detalhes e Info. Complementares)
+    // ===========================================
+
+    if (descriptionContentEl) {
+      // Puxa da coluna 'description'
+      descriptionContentEl.innerHTML = product.description || '- Sem descrição detalhada fornecida.';
+    }
+
+    if (additionalInfoContentEl) {
+      // Puxa da coluna 'additional_info'
+      additionalInfoContentEl.innerHTML = product.additional_info || 'Sem informações complementares fornecidas.';
+    }
   }
-}
 
   // ======== adicionar interatividade ========
   function addInteractivity() {

@@ -157,7 +157,7 @@ document.querySelectorAll('.submenu li').forEach(li => {
         const currentPage = document.querySelector('.page.active');
         const newPage = document.getElementById(target);
 
-        if (currentPage === newPage) return; 
+        if (currentPage === newPage) return;
 
         if (currentPage) {
             currentPage.style.opacity = 0;
@@ -287,7 +287,7 @@ function animarValor(idElemento, valorFinal, isMoeda = true) {
     else if (idElemento === 'valor-lucro-liquido') chaveEstado = 'lucroLiquido';
 
     const valorInicial = dashboardState[chaveEstado] || 0;
-    const duracao = 1500; 
+    const duracao = 1500;
     const startTime = performance.now();
 
     function update(currentTime) {
@@ -321,7 +321,7 @@ function animarValor(idElemento, valorFinal, isMoeda = true) {
 async function atualizarMetricasFinanceiras() {
     try {
         // Usa client normal. O RLS no banco vai liberar os dados se você for Admin.
-        const { data: itens, error } = await client 
+        const { data: itens, error } = await client
             .from('order_items')
             .select('quantity, price');
 
@@ -335,7 +335,7 @@ async function atualizarMetricasFinanceiras() {
             const preco = Number(item.price) || 0;
 
             qtdTotal += qtd;
-            receitaBruta += (preco * qtd); 
+            receitaBruta += (preco * qtd);
         });
 
         const custoTotal = receitaBruta * 0.40;
@@ -355,8 +355,8 @@ async function atualizarMetricasFinanceiras() {
 function iniciarRealtimeFinanceiro() {
     client
         .channel('realtime:financeiro_geral')
-        .on('postgres_changes', 
-            { event: '*', schema: 'public', table: 'order_items' }, 
+        .on('postgres_changes',
+            { event: '*', schema: 'public', table: 'order_items' },
             (payload) => {
                 console.log('Movimentação detectada:', payload);
                 atualizarMetricasFinanceiras();
@@ -722,7 +722,7 @@ async function confirmBanUser() {
     }
 
     let bannedUntil = null;
-    
+
     // Se for temporário, valida e formata a data
     if (duration === 'temporary') {
         if (!dateInput) {
@@ -895,8 +895,8 @@ function renderProducts(products) {
             </strong>
           </div>
 
-          <div class="ProRow" style="margin-top:14px; gap:6px;">
-                <button class="ProEdit" onclick="window.openEditModalById('${p.id}')">Editar</button>
+            <div class="ProRow" style="margin-top:14px; gap:6px;">
+                <button class="ProEdit" onclick="dashEditProduct('${p.id}')">Editar</button>
                 <button class="ProView" onclick="openLink('${p.link || '#'}')">Ver</button>
                 <button class="ProDelete" onclick="deleteProduct('${p.id}')">Excluir</button>
             </div>
@@ -2438,8 +2438,8 @@ async function loadSidebarProfile() {
     try {
         // 1. Pega usuário logado
         const { data: { user } } = await client.auth.getUser();
-        
-        if (!user) return; 
+
+        if (!user) return;
 
         // 2. Busca dados na tabela profiles
         const { data: profile, error } = await client
@@ -2462,17 +2462,17 @@ async function loadSidebarProfile() {
         // 4. Preenche Dados de Texto
         const fullName = profile.full_name || 'Administrador';
         const username = profile.username || 'admin';
-        
+
         // Formatação do Nome (apenas Primeiro e Último para economizar espaço se for muito longo)
         const names = fullName.split(' ');
-        const displayName = names.length > 1 
-            ? `${names[0]} ${names[names.length - 1]}` 
+        const displayName = names.length > 1
+            ? `${names[0]} ${names[names.length - 1]}`
             : names[0];
 
-        if(elName) elName.innerText = displayName;
-        if(elUser) elUser.innerText = '@' + username;
-        if(elEmail) elEmail.innerText = profile.email || user.email;
-        
+        if (elName) elName.innerText = displayName;
+        if (elUser) elUser.innerText = '@' + username;
+        if (elEmail) elEmail.innerText = profile.email || user.email;
+
         // Data formatada
         if (profile.created_at && elCreated) {
             const date = new Date(profile.created_at);
@@ -2483,16 +2483,16 @@ async function loadSidebarProfile() {
         // Verifica se existe URL e se ela não é vazia ou null
         if (profile.avatar_url && profile.avatar_url.trim() !== "") {
             console.log("Tentando carregar avatar:", profile.avatar_url);
-            
+
             elImg.src = profile.avatar_url;
             elImg.style.display = 'block';
             elInitials.style.display = 'none';
-            
+
             // Força o wrapper a não ter fundo preto se tiver imagem (opcional)
             elWrapper.style.backgroundColor = 'transparent';
         } else {
             console.log("Sem avatar URL, usando iniciais.");
-            
+
             // Lógica das Iniciais
             const initials = fullName
                 .split(' ')
@@ -2500,7 +2500,7 @@ async function loadSidebarProfile() {
                 .slice(0, 2)
                 .join('')
                 .toUpperCase();
-            
+
             elInitials.innerText = initials || "AD";
             elImg.style.display = 'none';
             elInitials.style.display = 'block';
@@ -2517,12 +2517,12 @@ async function loadSidebarProfile() {
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
     const btnChangePass = document.getElementById('btn-alterar-senha-dash');
-    
+
     if (btnChangePass) {
         btnChangePass.addEventListener('click', async () => {
             // 1. Pega o usuário atual
             const { data: { user } } = await client.auth.getUser();
-            
+
             if (!user || !user.email) {
                 window.showToast("Erro: Não foi possível identificar o usuário logado.");
                 return;
@@ -2538,7 +2538,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Envia o e-mail de recuperação (Step 1 automático)
             if (window.showToast) window.showToast("Enviando código de verificação...");
-            
+
             const { error } = await client.auth.resetPasswordForEmail(user.email);
 
             if (error) {
@@ -2559,7 +2559,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleDashSidebar() {
     const sidebar = document.querySelector('.body-left');
     const overlay = document.getElementById('dash-overlay');
-    
+
     // Cria o overlay se não existir
     if (!overlay) {
         const newOverlay = document.createElement('div');
@@ -2585,11 +2585,11 @@ function toggleDashSidebar() {
 // =========================================================
 
 const PODIUM_POSITIONS = {
-    1: { left: '41%', height: '240px', zIndex: 10, label: '1', class: 'rank-1' }, 
-    2: { left: '62%', height: '180px', zIndex: 8, label: '2', class: 'rank-2' }, 
-    3: { left: '20%', height: '140px', zIndex: 6, label: '3', class: 'rank-3' },  
-    4: { left: '82%', height: '100px', zIndex: 4, label: '4', class: 'rank-4' }, 
-    5: { left: '0%',  height: '70px',  zIndex: 2, label: '5', class: 'rank-5' }   
+    1: { left: '41%', height: '240px', zIndex: 10, label: '1', class: 'rank-1' },
+    2: { left: '62%', height: '180px', zIndex: 8, label: '2', class: 'rank-2' },
+    3: { left: '20%', height: '140px', zIndex: 6, label: '3', class: 'rank-3' },
+    4: { left: '82%', height: '100px', zIndex: 4, label: '4', class: 'rank-4' },
+    5: { left: '0%', height: '70px', zIndex: 2, label: '5', class: 'rank-5' }
 };
 
 async function updateTopClientsPodium() {
@@ -2619,13 +2619,13 @@ async function updateTopClientsPodium() {
         // 2. Busca Perfis
         const userIds = ranking.map(r => r.user_id).filter(id => id !== null);
         let profileMap = {};
-        
+
         if (userIds.length > 0) {
             const { data: profiles, error: profError } = await client
                 .from('profiles')
                 .select('id, username, full_name, email, avatar_url')
                 .in('id', userIds);
-            
+
             if (!profError && profiles) {
                 profiles.forEach(p => profileMap[p.id] = p);
             }
@@ -2684,7 +2684,7 @@ async function updateTopClientsPodium() {
                 } else {
                     avatarHtml = `<div style="width:100%;height:100%;background:#191D28;color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:bold;">${initials}</div>`;
                 }
-                
+
                 barHeight = posConfig.height; // Altura baseada no rank atual
                 labelText = posConfig.label;  // Número 1, 2, 3...
             }
@@ -2735,18 +2735,18 @@ const tooltip = document.getElementById('podium-tooltip');
 
 function showPodiumTooltip(e, profile, count) {
     if (!profile) return;
-    
+
     const tName = document.getElementById('tooltip-name');
     const tUser = document.getElementById('tooltip-user');
     const tEmail = document.getElementById('tooltip-email');
     const tTotal = document.getElementById('tooltip-total');
     const tImg = document.getElementById('tooltip-img');
 
-    if(tName) tName.innerText = profile.full_name || profile.username;
-    if(tUser) tUser.innerText = '@' + profile.username;
-    if(tEmail) tEmail.innerText = profile.email;
-    if(tTotal) tTotal.innerText = count + ' itens comprados';
-    
+    if (tName) tName.innerText = profile.full_name || profile.username;
+    if (tUser) tUser.innerText = '@' + profile.username;
+    if (tEmail) tEmail.innerText = profile.email;
+    if (tTotal) tTotal.innerText = count + ' itens comprados';
+
     if (tImg) {
         if (profile.avatar_url) {
             tImg.src = profile.avatar_url;
@@ -2756,17 +2756,17 @@ function showPodiumTooltip(e, profile, count) {
         }
     }
 
-    if(tooltip) tooltip.classList.add('visible');
+    if (tooltip) tooltip.classList.add('visible');
 }
 
 function hidePodiumTooltip() {
-    if(tooltip) tooltip.classList.remove('visible');
+    if (tooltip) tooltip.classList.remove('visible');
 }
 
 // --- CLIQUE LEVA AO PERFIL ---
 function goToUserProfile(profile) {
     if (!profile) return;
-    
+
     // Clica na aba de usuários para carregar a lista
     const menuUsers = document.querySelector('li[data-content="usuarios-cadastro"]');
     if (menuUsers) menuUsers.click();
@@ -2782,7 +2782,7 @@ function goToUserProfile(profile) {
                 profile.cpf,
                 profile.created_at,
                 profile.is_admin,
-                false, 
+                false,
                 profile.avatar_url
             );
         }
@@ -2816,7 +2816,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('dashboard-best-seller-card')) {
         loadDashboardBestSeller();
     }
-    
+
 });
 
 async function loadDashboardBestSeller() {
@@ -2827,7 +2827,7 @@ async function loadDashboardBestSeller() {
         // Usa a mesma RPC do relatório, mas limitando a 1 e ordenando DESC
         // Calculamos o período 'all' (desde 1970) para pegar o maior de todos os tempos, 
         // ou você pode mudar para pegar o destaque do mês.
-        const startDate = new Date(0).toISOString(); 
+        const startDate = new Date(0).toISOString();
 
         const { data, error } = await client.rpc('get_best_sellers_report', {
             period_start: startDate,
@@ -2850,10 +2850,10 @@ async function loadDashboardBestSeller() {
         const safeImg = p.img || '';
         const safeId = p.product_id;
         const totalSold = p.total_sold || 0;
-        
+
         // Formata receita estimada (opcional, se sua RPC retornar revenue)
         // Se não tiver revenue na RPC, podemos omitir ou calcular se tiver preço
-        const revenueText = "R$ ---"; 
+        const revenueText = "R$ ---";
 
         cardContainer.innerHTML = `
             <div class="bsw-badge-fire">
@@ -2890,7 +2890,7 @@ async function loadDashboardBestSeller() {
         `;
 
         // Adiciona o clique no card inteiro
-        cardContainer.onclick = function() {
+        cardContainer.onclick = function () {
             // Reutiliza sua função de modal existente!
             openProductDetailsModal(safeId, safeName, safeImg, totalSold);
         };
@@ -2916,8 +2916,464 @@ function navigateToReports() {
     // 2. Simula o clique nele para ativar a lógica de troca de aba
     if (reportItem) {
         reportItem.click();
-        
+
         // Opcional: Rola suavemente para o topo
         document.querySelector('.body-right').scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
+
+/* =========================================================
+   MODAL DE EDIÇÃO "GÊMEO" DO MAIN.JS (PARA DASHBOARD)
+   ========================================================= */
+
+// Função Principal chamada pelo botão "Editar" na tabela
+async function dashEditProduct(id) {
+    if (window.showToast) window.showToast("Carregando dados...");
+
+    try {
+        // 1. Buscar dados frescos do Supabase
+        const { data: product, error } = await client
+            .from('products')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+
+        // 2. Montar o Modal (HTML IDÊNTICO AO MAIN.JS)
+        let modal = document.getElementById('admin-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'admin-modal';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+        <div class="modal-content">
+            <h2 id="modal-title">Editar Produto</h2>
+            
+            <label>Título:</label>
+            <input type="text" id="modal-title-input" value="${product.nome || ''}">
+            
+            <label>Preço:</label>
+            <input type="text" id="modal-price-input" value="${product.preco || ''}">
+            
+            <label>Categoria:</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <select id="modal-category-input" style="flex: 1;"></select>
+                </div>
+
+            <label>Gênero:</label>
+            <select id="modal-gender-input">
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+                <option value="U">Unissex</option>
+            </select>
+
+            <label>Imagem Padrão (se não houver cores):</label>
+            <input type="text" id="modal-img-input" value="${product.img || ''}">
+
+            <label>Tamanhos (separados por vírgula):</label>
+            <input type="text" id="modal-sizes-input" value="${product.tamanhos || ''}">
+            
+            <label>Descrição:</label>
+            <textarea id="modal-description-input" style="min-height: 80px;">${product.description || ''}</textarea>
+            
+            <label>Informações Complementares:</label>
+            <textarea id="modal-additional-info-input" style="min-height: 60px;">${product.additional_info || ''}</textarea>
+            
+            <label>Cores:</label>
+            <div id="modal-colors-container"></div>
+            
+            <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                <button type="button" id="modal-add-color-btn" style="margin-top: 10px; padding: 8px 16px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer;">+ Adicionar Cor</button>
+                
+                <button type="button" id="modal-dash-new-color-btn" title="Gerenciar Cores" style="padding: 10px; background:#fff; border:1px solid #ccc; border-radius:6px; cursor:pointer;">
+                    <i class="ri-settings-3-fill" style="font-size: 1.2rem; color: #333;"></i>
+                </button>
+            </div>
+
+            <div class="modal-actions">
+                <button id="modal-delete" onclick="dashDeleteProductInsideModal('${product.id}')">Excluir Produto</button>
+                <button id="modal-cancel" onclick="closeDashModal()">Cancelar</button>
+                <button id="modal-save">Salvar Alterações</button>
+            </div>
+        </div>`;
+
+        // 3. Preencher Selects e Dados
+        document.getElementById('modal-gender-input').value = product.gender || 'U';
+        
+        // Popula Categoria
+        const catSelect = document.getElementById('modal-category-input');
+        await dashPopulateCategories(catSelect, product.category);
+
+        // Popula Cores
+        const colorsContainer = document.getElementById('modal-colors-container');
+        if (product.cores && product.cores.length > 0) {
+            product.cores.forEach(cor => colorsContainer.appendChild(dashCreateColorRow(cor)));
+        } else {
+            colorsContainer.appendChild(dashCreateColorRow());
+        }
+
+        // Listener da Engrenagem
+        document.getElementById('modal-dash-new-color-btn').onclick = () => {
+            // Chama a função global que abre o modal de criação de cores
+            if (typeof window.colorOpenFormModal === 'function') {
+                window.colorOpenFormModal('add'); 
+                // Nota: Certifique-se que o z-index do modal de cores é maior que o modal de edição
+                // No CSS, coloque z-index: 100000 para .cat-modal-overlay
+            }
+        };
+
+        // Listener Adicionar Cor
+        document.getElementById('modal-add-color-btn').onclick = () => {
+            colorsContainer.appendChild(dashCreateColorRow());
+        };
+
+        // Listener Salvar
+        document.getElementById('modal-save').onclick = () => dashSaveProduct(product.id);
+
+        // 4. Exibir Modal
+        modal.classList.add('flex'); // Usa flex para centralizar
+        modal.style.display = 'flex'; // Garante display
+        document.body.style.overflow = 'hidden';
+
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao abrir modal: " + err.message);
+    }
+}
+
+// --- Helper: Fechar Modal ---
+function closeDashModal() {
+    const modal = document.getElementById('admin-modal');
+    if (modal) {
+        modal.classList.remove('flex');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// --- Helper: Criar Linha de Cor (Igual ao Main) ---
+function dashCreateColorRow(color = {}) {
+    const row = document.createElement('div');
+    row.className = 'color-row';
+    row.innerHTML = `
+        <input type="text" placeholder="Nome (ex: Preto)" value="${color.nome || ''}" style="flex:1;">
+        <input type="text" placeholder="URL Imagem Principal" value="${color.img1 || ''}" style="flex:2;">
+        <input type="text" placeholder="URL Hover (Opcional)" value="${color.img2 || ''}" style="flex:2;">
+        <button type="button" class="remove-color-btn" title="Remover cor">&times;</button>
+    `;
+    
+    // Remove linha ao clicar no X
+    row.querySelector('.remove-color-btn').onclick = () => row.remove();
+    
+    // Anexa método para extrair dados facilmente
+    row.getColorObject = () => {
+        const inputs = row.querySelectorAll('input');
+        return {
+            nome: inputs[0].value.trim(),
+            img1: inputs[1].value.trim(),
+            img2: inputs[2].value.trim()
+        };
+    };
+    return row;
+}
+
+// --- Helper: Popular Categorias ---
+async function dashPopulateCategories(selectElement, selectedValue) {
+    selectElement.innerHTML = '<option value="">Carregando...</option>';
+    
+    const { data: categories } = await client
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true });
+
+    selectElement.innerHTML = '<option value="">Selecione...</option>';
+    
+    if (categories) {
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.name;
+            option.textContent = cat.name.charAt(0).toUpperCase() + cat.name.slice(1);
+            if (selectedValue && cat.name === selectedValue) option.selected = true;
+            selectElement.appendChild(option);
+        });
+    }
+}
+
+// --- Função de Salvar ---
+async function dashSaveProduct(id) {
+    // Coleta dados dos inputs
+    const nome = document.getElementById('modal-title-input').value.trim();
+    const preco = parseFloat(document.getElementById('modal-price-input').value.replace(',', '.')) || 0;
+    const category = document.getElementById('modal-category-input').value;
+    const gender = document.getElementById('modal-gender-input').value;
+    const img = document.getElementById('modal-img-input').value.trim();
+    const tamanhos = document.getElementById('modal-sizes-input').value.trim();
+    const description = document.getElementById('modal-description-input').value.trim();
+    const additional_info = document.getElementById('modal-additional-info-input').value.trim();
+
+    // Coleta cores
+    const colorRows = Array.from(document.querySelectorAll('.color-row'));
+    const cores = colorRows.map(row => row.getColorObject()).filter(c => c.nome && c.img1);
+
+    if (!nome) return alert("O nome do produto é obrigatório.");
+
+    const updates = {
+        nome, preco, category, gender, img, tamanhos, description, additional_info, cores,
+        updated_at: new Date()
+    };
+
+    try {
+        const { error } = await client.from('products').update(updates).eq('id', id);
+        if (error) throw error;
+
+        if(window.showToast) window.showToast("Produto salvo com sucesso!");
+        
+        closeDashModal();
+        loadProducts(); // Atualiza a tabela da dashboard
+
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao salvar: " + err.message);
+    }
+}
+
+// --- Função Excluir de Dentro do Modal ---
+async function dashDeleteProductInsideModal(id) {
+    const confirmed = await window.showConfirmationModal(
+        'Tem certeza que deseja excluir este produto permanentemente?',
+        { okText: 'Excluir', cancelText: 'Cancelar' }
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const { error } = await client.from('products').delete().eq('id', id);
+        if(error) throw error;
+        
+        if(window.showToast) window.showToast("Produto excluído.");
+        closeDashModal();
+        loadProducts();
+    } catch(err) {
+        alert("Erro ao excluir: " + err.message);
+    }
+}
+
+/* =============================================================
+   LÓGICA DE GESTÃO DE CORES
+   ============================================================= */
+
+// Listener do Menu
+document.querySelectorAll('.submenu li[data-content="cores-produto"]').forEach(li => {
+    li.addEventListener('click', () => {
+        loadColorsPage();
+    });
+});
+
+async function loadColorsPage() {
+    const loader = document.getElementById('color-loader');
+    const content = document.getElementById('color-content');
+    const listBody = document.getElementById('color-list-body');
+    const emptyState = document.getElementById('color-empty-state');
+
+    if(!loader) return;
+
+    loader.classList.remove('hidden');
+    content.classList.add('hidden');
+
+    const { data: colors, error } = await client
+        .from('product_colors')
+        .select('*')
+        .order('name', { ascending: true });
+
+    if (error) {
+        alert('Erro ao carregar cores: ' + error.message);
+        return;
+    }
+
+    listBody.innerHTML = '';
+
+    if (!colors || colors.length === 0) {
+        emptyState.classList.remove('hidden');
+        content.querySelector('.cat-table-wrapper').classList.add('hidden');
+    } else {
+        emptyState.classList.add('hidden');
+        content.querySelector('.cat-table-wrapper').classList.remove('hidden');
+
+        colors.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background-color: ${c.hex_code}; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
+                </td>
+                <td style="font-weight:600; color:#333;">${c.name}</td>
+                <td style="font-family:monospace; color:#666;">${c.hex_code}</td>
+                <td style="text-align:right;">
+                    <button onclick="colorOpenFormModal('edit', '${c.id}', '${c.name}', '${c.hex_code}')" class="cat-action-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+                    <button onclick="colorDelete('${c.id}')" class="cat-action-btn delete" title="Excluir"><i class="bi bi-trash3-fill"></i></button>
+                </td>
+            `;
+            listBody.appendChild(tr);
+        });
+    }
+
+    loader.classList.add('hidden');
+    content.classList.remove('hidden');
+}
+
+// Abrir Modal
+window.colorOpenFormModal = function(mode, id='', name='', hex='#000000') {
+    document.getElementById('color-input-mode').value = mode;
+    document.getElementById('color-input-id').value = id;
+    document.getElementById('color-input-name').value = name;
+    document.getElementById('color-input-hex').value = hex;
+    document.getElementById('color-input-picker').value = hex;
+    document.getElementById('color-form-title').innerText = mode === 'add' ? 'Nova Cor' : 'Editar Cor';
+    
+    document.getElementById('color-modal-form').classList.add('open');
+}
+
+window.colorCloseModals = function() {
+    document.getElementById('color-modal-form').classList.remove('open');
+}
+
+// Salvar Cor
+window.colorHandleSave = async function() {
+    const mode = document.getElementById('color-input-mode').value;
+    const id = document.getElementById('color-input-id').value;
+    const name = document.getElementById('color-input-name').value.trim();
+    const hex = document.getElementById('color-input-hex').value.trim();
+
+    if (!name || !hex) return alert("Preencha nome e cor.");
+
+    const payload = { name, hex_code: hex };
+
+    let error;
+    if (mode === 'add') {
+        const { error: e } = await client.from('product_colors').insert([payload]);
+        error = e;
+    } else {
+        const { error: e } = await client.from('product_colors').update(payload).eq('id', id);
+        error = e;
+    }
+
+    if (error) {
+        alert("Erro: " + error.message);
+    } else {
+        if(window.showToast) window.showToast("Cor salva com sucesso!");
+        colorCloseModals();
+        loadColorsPage(); // Recarrega tabela de cores
+        
+        // === O SEGREDO DO TEMPO REAL ===
+        // Dispara o evento que o main.js está ouvindo para atualizar os selects
+        document.dispatchEvent(new Event('colors-updated'));
+    }
+}
+
+// Deletar Cor
+window.colorDelete = async function(id) {
+    if(!confirm("Tem certeza? Produtos usando esta cor manterão o nome antigo, mas perderão a referência dinâmica.")) return;
+    
+    const { error } = await client.from('product_colors').delete().eq('id', id);
+    if(error) alert(error.message);
+    else {
+        if(window.showToast) window.showToast("Cor excluída.");
+        loadColorsPage();
+    }
+}
+
+/* =============================================================
+   INTEGRAÇÃO NO MODAL DE PRODUTOS (SELECT + ENGRENAGEM)
+   ============================================================= */
+
+// Cache de cores para não buscar toda hora
+let cachedColors = [];
+
+async function fetchColorsForSelect() {
+    const { data } = await client.from('product_colors').select('*').order('name');
+    cachedColors = data || [];
+    return cachedColors;
+}
+
+// Substitua ou Atualize a função dashCreateColorRow existente
+window.dashCreateColorRow = function(color = {}) {
+    const row = document.createElement('div');
+    row.className = 'color-row';
+    row.style.display = 'flex';
+    row.style.gap = '10px';
+    row.style.marginBottom = '10px';
+    row.style.alignItems = 'center';
+
+    row.innerHTML = `
+        <div style="flex: 1;">
+            <select class="color-select-input" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; background-color: #eee;">
+                <option value="">Carregando...</option>
+            </select>
+        </div>
+        <input type="text" placeholder="URL Img Principal" value="${color.img1 || ''}" style="flex: 2; margin-top:0 !important;">
+        <input type="text" placeholder="URL Hover (Opcional)" value="${color.img2 || ''}" style="flex: 2; margin-top:0 !important;">
+        <button type="button" class="remove-color-btn" title="Remover" style="width: 36px; height: 36px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; display:flex; align-items:center; justify-content:center;">
+            <i class="ri-close-line"></i>
+        </button>
+    `;
+    
+    const select = row.querySelector('.color-select-input');
+
+    // Usa a função do main.js se disponível, senão tenta buscar direto
+    if (typeof populateColorSelectElement === 'function') {
+         if (typeof mainColorCache !== 'undefined' && mainColorCache.length > 0) {
+            populateColorSelectElement(select, color.nome);
+         } else if (typeof fetchColorsForSelect === 'function') {
+            fetchColorsForSelect().then(() => populateColorSelectElement(select, color.nome));
+         }
+    } else {
+        // Fallback robusto se main.js não carregou
+        initSupabaseClient().then(supa => {
+            supa.from('product_colors').select('name').order('name').then(({data}) => {
+                if(data) {
+                    select.innerHTML = '<option value="">Selecione...</option>';
+                    data.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.name; 
+                        opt.textContent = c.name;
+                        if(c.name === color.nome) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                }
+            });
+        });
+    }
+
+    row.querySelector('.remove-color-btn').onclick = () => row.remove();
+    
+    row.getColorObject = () => {
+        const selectVal = row.querySelector('select').value;
+        const inputs = row.querySelectorAll('input');
+        return {
+            nome: selectVal,
+            img1: inputs[0].value.trim(),
+            img2: inputs[1].value.trim()
+        };
+    };
+    return row;
+}
+
+// Fallback específico do Dashboard se necessário
+async function fetchColorsForSelectDashboard(selectEl, selectedVal) {
+    const { data } = await client.from('product_colors').select('name').order('name');
+    selectEl.innerHTML = '<option value="">Selecione...</option>';
+    if(data) {
+        data.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name;
+            if(c.name === selectedVal) opt.selected = true;
+            selectEl.appendChild(opt);
+        });
+    }
+}
+
+// Adicione esta linha no final do dashboard.js (ou após a função de busca)
+window.dashPopulateColorSelects = fetchColorsForSelectDashboard;

@@ -15,7 +15,7 @@ const cardLogos = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. CONEXÃO SEGURA: Puxa a instância do main.js
+    // 1. CONEXÃO SEGURA
     try {
         if (window.initSupabaseClient) {
             supabase = await window.initSupabaseClient();
@@ -28,18 +28,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 2. Verifica Auth na instância correta
+    // 2. Verifica Auth
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
-        // Se não tiver login, manda para a home/login
-        window.location.href = 'index.html';
-        return;
+        // --- CORREÇÃO AQUI ---
+        // Oculta o conteúdo para não "piscar" dados (opcional, mas recomendado)
+        const mainContent = document.querySelector('main');
+        if(mainContent) mainContent.style.opacity = "0.1";
+
+        // Chama seu modal existente
+        const irParaLogin = await window.showConfirmationModal(
+            "Você precisa estar logado para visualizar seu perfil.", 
+            { 
+                okText: 'Fazer Login', 
+                cancelText: 'Voltar ao Início' 
+            }
+        );
+
+        if (irParaLogin) {
+            window.location.href = 'index.html'; // Vai para Login
+        } else {
+            window.location.href = 'inicial.html'; // Vai para Home (não pode ficar no perfil)
+        }
+        
+        return; // Para a execução do script aqui
     }
     
     currentUser = session.user;
 
-    // Inicializa todas as abas
+    // Se passou, restaura opacidade e carrega as funções
+    const mainContent = document.querySelector('main');
+    if(mainContent) mainContent.style.opacity = "1";
+
     initProfileData();
     initAddressLogic();
     initCardLogic();

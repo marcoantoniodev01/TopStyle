@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const emailEnviadoEl = document.getElementById('email-enviado');
   const novaSenhaInput = document.getElementById('recuperar-nova-senha');
   const confirmSenhaInput = document.getElementById('recuperar-confirm-senha');
-  
+
   // Seletores de Inputs do Código (OTP)
   const codeInputsContainer = document.getElementById('code-inputs');
   // Converte NodeList para Array para facilitar manipulação
@@ -71,6 +71,36 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+const urlParams = new URLSearchParams(window.location.search);
+  
+  // === LÓGICA DE EXIBIÇÃO DE BANIMENTO (NOVO) ===
+  if (urlParams.get('banned') === 'true') {
+    const motivo = urlParams.get('reason') || 'Violação dos termos de uso.';
+    
+    // Usa o showConfirmationModal do main.js que você já tem
+    // Colocamos num timeout pequeno para garantir que o DOM/CSS carregou
+    setTimeout(() => {
+        if (window.showConfirmationModal) {
+            window.showConfirmationModal(
+                `ACESSO SUSPENSO. Sua conta foi desconectada imediatamente.\n\nMotivo: ${motivo}`, 
+                { 
+                    okText: 'Entendi', 
+                    cancelText: 'Falar com Suporte' // Opcional
+                }
+            ).then((contatarSuporte) => {
+                if (!contatarSuporte) { // Se clicou em "Falar com Suporte" (botão da esquerda retorna false na sua lógica atual)
+                   // Opcional: Redirecionar para página de suporte
+                   // window.location.href = 'suporte.html';
+                }
+                // Limpa a URL para o modal não aparecer se der F5
+                window.history.replaceState({}, document.title, "index.html");
+            });
+        } else {
+            alert(`ACESSO SUSPENSO\nMotivo: ${motivo}`);
+        }
+    }, 500);
+  }
+
   // ============================================================
   // 3. LÓGICA DE REDIRECIONAMENTO DA DASHBOARD (CORRIGIDO)
   // ============================================================
@@ -78,38 +108,37 @@ document.addEventListener('DOMContentLoaded', () => {
      Isso garante que o script não quebre ao tentar acessar elementos undefined.
   */
 
-  const urlParams = new URLSearchParams(window.location.search);
   const action = urlParams.get('action');
   const emailParam = urlParams.get('email');
 
   if (action === 'reset_step2' && emailParam) {
-      
-      // 1. Ativa o painel de recuperação
-      if (caixa) caixa.classList.add('recuperar-ativo');
 
-      // 2. Preenche a variável global com o email da URL
-      recoveryEmail = decodeURIComponent(emailParam);
-      
-      // 3. Atualiza a UI visual
-      if (emailEnviadoEl) emailEnviadoEl.textContent = recoveryEmail;
+    // 1. Ativa o painel de recuperação
+    if (caixa) caixa.classList.add('recuperar-ativo');
 
-      // 4. Manipula as etapas (Esconde etapa 1, Mostra etapa 2)
-      if (stepEmail) stepEmail.style.display = 'none';
-      if (stepCode) stepCode.style.display = 'flex';
-      if (stepPassword) stepPassword.style.display = 'none'; // Garante que a 3 esteja oculta
+    // 2. Preenche a variável global com o email da URL
+    recoveryEmail = decodeURIComponent(emailParam);
 
-      // 5. Feedback visual
-      showAppToast('Código enviado! Verifique seu e-mail.');
+    // 3. Atualiza a UI visual
+    if (emailEnviadoEl) emailEnviadoEl.textContent = recoveryEmail;
 
-      // 6. CORREÇÃO DO FOCO: Espera a animação/renderização e foca no input
-      setTimeout(() => {
-          if (codeInputs.length > 0) {
-              codeInputs[0].focus();
-          }
-      }, 500);
+    // 4. Manipula as etapas (Esconde etapa 1, Mostra etapa 2)
+    if (stepEmail) stepEmail.style.display = 'none';
+    if (stepCode) stepCode.style.display = 'flex';
+    if (stepPassword) stepPassword.style.display = 'none'; // Garante que a 3 esteja oculta
 
-      // 7. Limpa a URL para não ficar em loop se der F5
-      window.history.replaceState({}, document.title, "index.html");
+    // 5. Feedback visual
+    showAppToast('Código enviado! Verifique seu e-mail.');
+
+    // 6. CORREÇÃO DO FOCO: Espera a animação/renderização e foca no input
+    setTimeout(() => {
+      if (codeInputs.length > 0) {
+        codeInputs[0].focus();
+      }
+    }, 500);
+
+    // 7. Limpa a URL para não ficar em loop se der F5
+    window.history.replaceState({}, document.title, "index.html");
   }
 
 
@@ -151,27 +180,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Função para resetar o formulário inteiro de recuperação
   function resetRecoveryForm() {
     recoveryEmail = '';
-    if(stepEmail) stepEmail.style.display = 'flex';
-    if(stepCode) stepCode.style.display = 'none';
-    if(stepPassword) stepPassword.style.display = 'none';
-    
-    if(formRecuperarEmail) formRecuperarEmail.reset();
-    if(formRecuperarCode) formRecuperarCode.reset();
-    if(formRecuperarPassword) formRecuperarPassword.reset();
+    if (stepEmail) stepEmail.style.display = 'flex';
+    if (stepCode) stepCode.style.display = 'none';
+    if (stepPassword) stepPassword.style.display = 'none';
+
+    if (formRecuperarEmail) formRecuperarEmail.reset();
+    if (formRecuperarCode) formRecuperarCode.reset();
+    if (formRecuperarPassword) formRecuperarPassword.reset();
   }
 
   // Animação "Esqueci a Senha"
   if (botaoEsqueciSenha && botoesLembreiSenha.length > 0 && caixa) {
     // Listener para ABRIR o painel
     botaoEsqueciSenha.addEventListener('click', (e) => {
-      e.preventDefault(); 
+      e.preventDefault();
       caixa.classList.add('recuperar-ativo');
     });
 
     // Listeners para FECHAR o painel (em qualquer etapa)
     botoesLembreiSenha.forEach(botao => {
       botao.addEventListener('click', (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         caixa.classList.remove('recuperar-ativo');
         // Reseta o formulário após a animação de saída
         setTimeout(resetRecoveryForm, 500);
@@ -228,12 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (existingProfiles && existingProfiles.length > 0) {
           if (existingProfiles.some(p => p.username === username)) {
-             formCadastroContainer.classList.remove('loading');
-             return showAppToast('Erro: Este nome de usuário já está em uso.');
+            formCadastroContainer.classList.remove('loading');
+            return showAppToast('Erro: Este nome de usuário já está em uso.');
           }
           if (existingProfiles.some(p => p.email === email)) {
-             formCadastroContainer.classList.remove('loading');
-             return showAppToast('Erro: Este email já está cadastrado.');
+            formCadastroContainer.classList.remove('loading');
+            return showAppToast('Erro: Este email já está cadastrado.');
           }
         }
 
@@ -347,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
           .from('user_bans')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle(); 
+          .maybeSingle();
 
         if (banData) {
           let isBanned = false;
@@ -431,9 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Só submete se tiver 6 dígitos
     if (code.length === 6) {
-      if(!recoveryEmail) {
-          showAppToast('Erro: E-mail não identificado. Por favor, reinicie o processo.');
-          return;
+      if (!recoveryEmail) {
+        showAppToast('Erro: E-mail não identificado. Por favor, reinicie o processo.');
+        return;
       }
 
       formRecuperarContainer.classList.add('loading');
@@ -457,12 +486,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('OTP verificado com sucesso!', data);
 
         // Transição para a Etapa 3
-        if(stepCode) stepCode.style.display = 'none';
-        if(stepPassword) stepPassword.style.display = 'flex';
-        
+        if (stepCode) stepCode.style.display = 'none';
+        if (stepPassword) stepPassword.style.display = 'flex';
+
         // Foca na nova senha
-        if(novaSenhaInput) {
-            setTimeout(() => novaSenhaInput.focus(), 100);
+        if (novaSenhaInput) {
+          setTimeout(() => novaSenhaInput.focus(), 100);
         }
       }
     }
@@ -496,21 +525,21 @@ document.addEventListener('DOMContentLoaded', () => {
     codeInputsContainer.addEventListener('paste', (e) => {
       e.preventDefault();
       const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().slice(0, 6);
-      
+
       // Verifica se são apenas números
       if (/^\d+$/.test(pasteData)) {
         pasteData.split('').forEach((char, index) => {
           if (codeInputs[index]) {
-              codeInputs[index].value = char;
+            codeInputs[index].value = char;
           }
         });
-        
+
         // Se colou 6 dígitos, tenta submeter
         if (pasteData.length === 6) {
-             checkAndSubmitCode(); 
+          checkAndSubmitCode();
         } else if (codeInputs[pasteData.length]) {
-             // Se colou menos, foca no próximo vazio
-             codeInputs[pasteData.length].focus();
+          // Se colou menos, foca no próximo vazio
+          codeInputs[pasteData.length].focus();
         }
       }
     });
@@ -547,14 +576,14 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         // Sucesso!
         recoveryEmail = email; // Guarda o e-mail
-        if(emailEnviadoEl) emailEnviadoEl.textContent = email;
+        if (emailEnviadoEl) emailEnviadoEl.textContent = email;
 
         // Transição para a Etapa 2
-        if(stepEmail) stepEmail.style.display = 'none';
-        if(stepCode) stepCode.style.display = 'flex';
-        
+        if (stepEmail) stepEmail.style.display = 'none';
+        if (stepCode) stepCode.style.display = 'flex';
+
         // Foca no primeiro input
-        if(codeInputs.length > 0) codeInputs[0].focus();
+        if (codeInputs.length > 0) codeInputs[0].focus();
       }
     });
   }
@@ -607,4 +636,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+
+  /* ============================================================
+   LÓGICA DE ENTRAR SEM CONTA (GUEST)
+   ============================================================ */
+  const btnGuestLogin = document.getElementById('btn-guest-login');
+
+  if (btnGuestLogin) {
+    btnGuestLogin.addEventListener('click', async (e) => {
+      e.preventDefault(); // Impede o link de navegar imediatamente
+
+      // Se o client do Supabase não estiver pronto, tenta pegar global ou falha seguro
+      const client = supabase || (window.supabase && window.supabase.createClient ? window.initSupabaseClient() : null);
+
+      // Adiciona classe de loading visualmente
+      const formContainer = document.querySelector('.formulario-login');
+      if (formContainer) formContainer.classList.add('loading');
+
+      try {
+        if (client) {
+          // 1. Força o Logout no Supabase
+          await client.auth.signOut();
+        }
+
+        // 2. Limpa dados locais de sessão antiga
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('sb-xhzdyatnfaxnvvrllhvs-auth-token'); // Limpa token padrão do Supabase se houver
+
+        // 3. Redireciona para a home
+        window.location.href = 'inicial.html';
+
+      } catch (err) {
+        console.error("Erro ao sair:", err);
+        // Mesmo com erro, força o redirecionamento
+        window.location.href = 'inicial.html';
+      }
+    });
+  }
 });
