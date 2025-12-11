@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCopiarPix = document.getElementById('btn-copiar-pix');
     const btnFecharConfirmacao = document.getElementById('btn-fechar-confirmacao');
     const btnVoltarInicio = document.getElementById('btn-voltar-inicio');
-    const btnAbrirWhats = document.getElementById('btn-abrir-whats');
+    const btnEnviarEmail = document.getElementById('btn-enviar-email');
 
     const modalSelecaoTelefone = document.getElementById('modal-selecionar-telefone');
     const listaTelefonesContainer = document.getElementById('lista-telefones-container');
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const cardEl = document.createElement('div');
                 cardEl.className = 'cartao-salvo-opcao';
-                
+
                 // ALTERAÇÃO AQUI: Removemos "${card.is_default ? 'checked' : ''}" do input abaixo
                 // Agora nenhum cartão vem marcado por padrão, forçando o usuário a escolher.
                 cardEl.innerHTML = `
@@ -877,12 +877,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- (NOVO) Listeners para Modais de Sucesso e Telefone ---
 
     // Modal 1: Confirmação de Pedido
-    function closeAndRedirect() {
+    function closeAndRedirect(type) {
         if (modalPedidoConfirmado) modalPedidoConfirmado.style.display = 'none';
+
+        // Define qual mensagem mostrar na próxima página
+        if (type === 'email') {
+            sessionStorage.setItem('toastMessage', 'Compra concluída, você recebeu um email com mais informações.');
+        } else {
+            sessionStorage.setItem('toastMessage', 'Sua compra foi concluída com sucesso!');
+        }
+
         window.location.href = 'inicial.html';
     }
-    if (btnFecharConfirmacao) btnFecharConfirmacao.addEventListener('click', closeAndRedirect);
-    if (btnVoltarInicio) btnVoltarInicio.addEventListener('click', closeAndRedirect);
+    if (btnFecharConfirmacao) btnFecharConfirmacao.addEventListener('click', () => closeAndRedirect('default'));
+    if (btnVoltarInicio) btnVoltarInicio.addEventListener('click', () => closeAndRedirect('default'));
 
     if (btnCopiarPix) {
         btnCopiarPix.addEventListener('click', () => {
@@ -902,12 +910,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (btnAbrirWhats) {
-        btnAbrirWhats.addEventListener('click', () => {
-            if (userPhones.length === 0) {
-                openAddPhoneModal(); // Abre modal de adição se não tiver números
-            } else {
-                openPhoneSelectorModal(); // Abre modal de seleção se já tiver números
+    if (btnEnviarEmail) {
+        btnEnviarEmail.addEventListener('click', async () => {
+            // Verifica se tem ID do pedido
+            if (!g_pedidoConfirmadoId) {
+                return showToast("Erro: ID do pedido não encontrado.");
+            }
+
+            // Pega o e-mail do usuário logado
+            const userEmail = currentUser ? currentUser.email : '';
+            if (!userEmail) {
+                return showToast("Erro: E-mail do usuário não encontrado.");
+            }
+
+            // Muda texto do botão para feedback visual
+            const originalText = btnEnviarEmail.innerHTML;
+            btnEnviarEmail.innerHTML = 'Enviando... <i class="ri-loader-4-line ri-spin"></i>';
+            btnEnviarEmail.disabled = true;
+
+            try {
+                const supabase = await initSupabaseClient();
+
+                // Busca dados do pedido
+                const { data: order } = await supabase.from('orders').select('*').eq('id', g_pedidoConfirmadoId).single();
+                const { data: items } = await supabase.from('order_items').select('*').eq('order_id', g_pedidoConfirmadoId);
+
+                // Formata lista de itens para o template HTML do email
+                const itemsListHtml = items.map(i =>
+                    `- ${i.nome} (Tam: ${i.size || 'U'}, Cor: ${i.color || 'Padrão'}) x${i.quantity} - R$ ${i.price}`
+                ).join('\n');
+
+                // Parâmetros que devem ser iguais aos configurados no EmailJS
+                const templateParams = {
+                    to_name: currentUser.user_metadata?.full_name || "Cliente",
+                    to_email: userEmail, // Email para onde vai
+                    order_id: order.id,
+                    total_value: formatPriceBR(order.total),
+                    items_list: itemsListHtml
+                };
+
+                // ENVIA O EMAIL (Substitua pelos seus IDs)
+                await emailjs.send("SEU_SERVICE_ID", "SEU_TEMPLATE_ID", templateParams);
+
+                // Redireciona com mensagem de Email
+                closeAndRedirect('email');
+
+            } catch (error) {
+                console.error("Erro email:", error);
+                showToast("Erro ao enviar e-mail. Tente novamente.");
+
+                // Restaura botão em caso de erro
+                btnEnviarEmail.innerHTML = originalText;
+                btnEnviarEmail.disabled = false;
             }
         });
     }

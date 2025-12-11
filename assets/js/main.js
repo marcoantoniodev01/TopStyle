@@ -665,11 +665,11 @@ function createColorRow(color = {}) {
   return row;
 }
 
-/* ============ HELPER GESTÃO DE CORES GLOBAL (SELECT) ============ */
-let globalColorCache = []; // Cache do main.js
+/* ============ HELPER GESTÃO DE CORES GLOBAL (CORRIGIDO E EXPOSTO) ============ */
+window.globalColorCache = []; // Exposto no window para acesso da dashboard
 
-// Função para buscar cores (Garante que busca se o cache estiver vazio)
-async function fetchColorsForSelect() {
+// Função para buscar cores
+window.fetchColorsForSelect = async function() {
   try {
     const supabase = await window.initSupabaseClient();
     const { data, error } = await supabase
@@ -678,79 +678,70 @@ async function fetchColorsForSelect() {
       .order('name', { ascending: true });
 
     if (!error && data) {
-      globalColorCache = data;
+      window.globalColorCache = data;
       return data;
     }
   } catch (err) {
     console.error("Erro ao buscar cores:", err);
   }
   return [];
-}
+};
 
-// Função CORRIGIDA para preencher um select
-async function populateColorSelectElement(selectEl, selectedValue = null) {
+// Função para preencher um select específico
+window.populateColorSelectElement = async function(selectEl, selectedValue = null) {
   // Se o cache estiver vazio, busca primeiro
-  if (globalColorCache.length === 0) {
-      selectEl.innerHTML = '<option value="">Carregando...</option>';
-      await fetchColorsForSelect();
+  if (!window.globalColorCache || window.globalColorCache.length === 0) {
+      // Coloca um loading visual
+      if(selectEl.options.length === 0) selectEl.innerHTML = '<option value="">Carregando...</option>';
+      await window.fetchColorsForSelect();
   }
 
-  const currentVal = selectedValue || selectEl.value;
+  // Limpa e adiciona opção padrão
   selectEl.innerHTML = '<option value="">Selecione...</option>';
+  const currentVal = selectedValue || selectEl.value;
+  let found = false;
 
-  globalColorCache.forEach(c => {
+  window.globalColorCache.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.name; 
     opt.textContent = c.name;
     
-    // Seleciona se bater o nome
-    if (currentVal && c.name.toLowerCase() === currentVal.toLowerCase()) {
+    // Tenta selecionar se bater o nome (case insensitive)
+    if (currentVal && c.name.toLowerCase().trim() === currentVal.toLowerCase().trim()) {
       opt.selected = true;
+      found = true;
     }
-    selectEl.appendChild(opt);
-  });
-}
-
-// Função para preencher um select específico
-function populateColorSelectElement(selectEl, selectedValue = null) {
-  const currentVal = selectEl.value || selectedValue;
-  selectEl.innerHTML = '<option value="">Selecione...</option>';
-
-  globalColorCache.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.name; // Salva o NOME no banco do produto
-    opt.textContent = c.name;
-    // Tenta selecionar se bater o nome
-    if (currentVal && c.name.toLowerCase() === currentVal.toLowerCase()) {
-      opt.selected = true;
-    }
-    // Mostra uma bolinha de cor no fundo da opção (suportado em alguns browsers)
-    opt.style.backgroundColor = '#fff';
+    
+    // Bolinha de cor visual (funciona em alguns navegadores desktop)
     opt.style.color = '#000';
     selectEl.appendChild(opt);
   });
 
-  // Se o produto tem uma cor antiga que não está no banco (ex: digitada manualmente antes)
-  if (currentVal && !globalColorCache.find(c => c.name.toLowerCase() === currentVal.toLowerCase())) {
+  // Lógica do "Legado": Se existe um valor selecionado, mas ele NÃO está na lista do banco
+  if (currentVal && !found) {
     const opt = document.createElement('option');
     opt.value = currentVal;
     opt.textContent = currentVal + " (Legado)";
     opt.selected = true;
+    opt.style.fontWeight = "bold";
+    opt.style.color = "red";
     selectEl.appendChild(opt);
   }
-}
+};
 
 // Escuta global para atualizar todos os selects quando uma cor nova for criada
 document.addEventListener('colors-updated', async () => {
-  await fetchColorsForSelect(); // Recarrega do banco
+  await window.fetchColorsForSelect(); 
   document.querySelectorAll('.color-select-input').forEach(select => {
-    populateColorSelectElement(select);
+    // Preserva o valor que estava selecionado
+    const val = select.value;
+    window.populateColorSelectElement(select, val);
   });
 });
 
 // Inicializa cache ao carregar
 document.addEventListener('DOMContentLoaded', () => {
-  fetchColorsForSelect();
+  window.fetchColorsForSelect();
 });
 
 /* ============ LÓGICA DE CATEGORIAS (NOVA) ============ */
@@ -2042,4 +2033,24 @@ async function initRealtimeBanMonitor() {
 // Inicializa o monitor quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
   initRealtimeBanMonitor();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Verifica se existe uma mensagem salva
+    const message = sessionStorage.getItem('toastMessage');
+
+    if (message) {
+        // Exibe o Toast usando sua função global
+        if (typeof showToast === 'function') {
+            // Pequeno delay para garantir que a página carregou visualmente
+            setTimeout(() => {
+                showToast(message, 'success'); // ou 'info'
+            }, 500);
+        } else {
+            alert(message); // Fallback caso showToast não esteja pronto
+        }
+
+        // Limpa a mensagem para não aparecer de novo se recarregar a página
+        sessionStorage.removeItem('toastMessage');
+    }
 });

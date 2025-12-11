@@ -491,14 +491,13 @@
 
             <div id="view-pix-confirmacao" class="sucesso-view" style="display: none;">
                 <div class="sucesso-icon-wrapper qr">
-                    <img src="https://i.ibb.co/84T5HK5R/Em-Contrucao.png"
-                        alt="QR Code PIX">
+                    <img src="https://i.ibb.co/84T5HK5R/Em-Contrucao.png" alt="QR Code PIX">
                 </div>
                 <h2>Escaneie o QR Code para pagar</h2>
                 <p>Ou copie o código abaixo:</p>
                 <div class="pix-copia-cola">
-                    <input type="text" id="pix-code-input"
-                        value="https://topstyle.vercel.app/emconstrucao.html" readonly>
+                    <input type="text" id="pix-code-input" value="https://topstyle.vercel.app/emconstrucao.html"
+                        readonly>
                     <button id="btn-copiar-pix" type="button">
                         <i class="ri-file-copy-line"></i>
                         <span id="copy-text">Copiar</span>
@@ -507,9 +506,10 @@
             </div>
 
             <div class="sucesso-actions">
-                <button id="btn-abrir-whats" class="btn-whatsapp" type="button">
-                    Deseja receber os detalhes do pedido via WhatsApp?
-                    <i class="ri-whatsapp-line"></i>
+                <button id="btn-enviar-email" class="btn-email" type="button"
+                    style="background-color: #191D28; color: white;">
+                    Receber comprovante por E-mail
+                    <i class="ri-mail-send-line"></i>
                 </button>
                 <button id="btn-voltar-inicio" class="btn-voltar-home" type="button">
                     Voltar à página inicial
@@ -629,6 +629,13 @@
         </div>
     </footer>
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            // Substitua pela sua Public Key que você pegou no Passo 1
+            emailjs.init("-EljTymn4v8f4cLYg");
+        })();
+    </script>
     <script src="assets/js/admiconedash.js"></script>
     <script src="assets/js/loader.js"></script>
     <script src="assets/js/coupon-manager.js"></script>
@@ -639,10 +646,8 @@
     <script src="assets/js/header-cell.js"></script>
     <script src="assets/js/drops.js"></script>
     <script src="assets/js/header-control.js"></script>
-  <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/collection-linker.js"></script>
 </body>
 
 
 </html>
-
-

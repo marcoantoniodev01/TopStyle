@@ -149,6 +149,11 @@ document.querySelectorAll('.submenu li').forEach(li => {
             initCategoryPage();
         }
 
+        // >>> ADICIONE ISSO AQUI: <<<
+        if (target === 'cores-produto') {
+            initColorPage();
+        }
+
         // Marca item ativo
         document.querySelectorAll('.submenu li').forEach(i => i.classList.remove('active'));
         li.classList.add('active');
@@ -711,23 +716,19 @@ async function confirmBanUser() {
     }
 
     if (!duration) {
-        if (window.showToast) window.showToast("Selecione a duração do banimento.");
-        else alert("Selecione a duração.");
+        if (window.showToast) window.showToast("Selecione a duração do banimento.", "error");
         return;
     }
     if (!reason) {
-        if (window.showToast) window.showToast("Digite um motivo.");
-        else alert("Digite um motivo.");
+        if (window.showToast) window.showToast("Digite um motivo.", "error");
         return;
     }
 
     let bannedUntil = null;
 
-    // Se for temporário, valida e formata a data
     if (duration === 'temporary') {
         if (!dateInput) {
-            if (window.showToast) window.showToast("Selecione a data final.");
-            else alert("Selecione a data final.");
+            if (window.showToast) window.showToast("Selecione a data final.", "error");
             return;
         }
         bannedUntil = new Date(dateInput).toISOString();
@@ -908,7 +909,7 @@ function renderProducts(products) {
 
 function openLink(link) {
     if (!link || link === "#") {
-        alert("Nenhum link definido para este produto.");
+        if (window.showToast) window.showToast("Nenhum link definido para este produto.", "error");
         return;
     }
     window.open(link, "_blank");
@@ -2926,12 +2927,19 @@ function navigateToReports() {
    MODAL DE EDIÇÃO "GÊMEO" DO MAIN.JS (PARA DASHBOARD)
    ========================================================= */
 
-// Função Principal chamada pelo botão "Editar" na tabela
+// Função Principal chamada pelo botão "Editar" na tabela da Dashboard
 async function dashEditProduct(id) {
     if (window.showToast) window.showToast("Carregando dados...");
 
+    await forceFetchColorsForDashboard();
+
     try {
-        // 1. Buscar dados frescos do Supabase
+        // 1. GARANTE QUE AS CORES ESTÃO CARREGADAS ANTES DE ABRIR O MODAL
+        if (typeof window.fetchColorsForSelect === 'function') {
+            await window.fetchColorsForSelect();
+        }
+
+        // 2. Buscar dados do produto
         const { data: product, error } = await client
             .from('products')
             .select('*')
@@ -2940,7 +2948,7 @@ async function dashEditProduct(id) {
 
         if (error) throw error;
 
-        // 2. Montar o Modal (HTML IDÊNTICO AO MAIN.JS)
+        // 3. Montar o Modal (HTML)
         let modal = document.getElementById('admin-modal');
         if (!modal) {
             modal = document.createElement('div');
@@ -2948,20 +2956,17 @@ async function dashEditProduct(id) {
             document.body.appendChild(modal);
         }
 
+        // ... (O HTML do modal permanece o mesmo, mantendo aqui resumido para focar na lógica) ...
         modal.innerHTML = `
         <div class="modal-content">
             <h2 id="modal-title">Editar Produto</h2>
-            
-            <label>Título:</label>
-            <input type="text" id="modal-title-input" value="${product.nome || ''}">
-            
-            <label>Preço:</label>
-            <input type="text" id="modal-price-input" value="${product.preco || ''}">
+            <label>Título:</label> <input type="text" id="modal-title-input" value="${product.nome || ''}">
+            <label>Preço:</label> <input type="text" id="modal-price-input" value="${product.preco || ''}">
             
             <label>Categoria:</label>
             <div style="display: flex; gap: 8px; align-items: center;">
                 <select id="modal-category-input" style="flex: 1;"></select>
-                </div>
+            </div>
 
             <label>Gênero:</label>
             <select id="modal-gender-input">
@@ -2970,77 +2975,65 @@ async function dashEditProduct(id) {
                 <option value="U">Unissex</option>
             </select>
 
-            <label>Imagem Padrão (se não houver cores):</label>
-            <input type="text" id="modal-img-input" value="${product.img || ''}">
-
-            <label>Tamanhos (separados por vírgula):</label>
-            <input type="text" id="modal-sizes-input" value="${product.tamanhos || ''}">
-            
-            <label>Descrição:</label>
-            <textarea id="modal-description-input" style="min-height: 80px;">${product.description || ''}</textarea>
-            
-            <label>Informações Complementares:</label>
-            <textarea id="modal-additional-info-input" style="min-height: 60px;">${product.additional_info || ''}</textarea>
+            <label>Imagem Padrão:</label> <input type="text" id="modal-img-input" value="${product.img || ''}">
+            <label>Tamanhos:</label> <input type="text" id="modal-sizes-input" value="${product.tamanhos || ''}">
+            <label>Descrição:</label> <textarea id="modal-description-input">${product.description || ''}</textarea>
+            <label>Info Complementar:</label> <textarea id="modal-additional-info-input">${product.additional_info || ''}</textarea>
             
             <label>Cores:</label>
             <div id="modal-colors-container"></div>
             
-            <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
-                <button type="button" id="modal-add-color-btn" style="margin-top: 10px; padding: 8px 16px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer;">+ Adicionar Cor</button>
-                
-                <button type="button" id="modal-dash-new-color-btn" title="Gerenciar Cores" style="padding: 10px; background:#fff; border:1px solid #ccc; border-radius:6px; cursor:pointer;">
-                    <i class="ri-settings-3-fill" style="font-size: 1.2rem; color: #333;"></i>
-                </button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="button" id="modal-add-color-btn" style="padding: 8px 16px; background:#333; color:#fff; border:none; cursor:pointer;">+ Adicionar Cor</button>
+                <button type="button" id="modal-dash-new-color-btn" title="Gerenciar Cores" style="padding: 10px; border:1px solid #ccc; cursor:pointer;"><i class="bi bi-gear-fill"></i></button>
             </div>
 
             <div class="modal-actions">
-                <button id="modal-delete" onclick="dashDeleteProductInsideModal('${product.id}')">Excluir Produto</button>
+                <button id="modal-delete" onclick="dashDeleteProductInsideModal('${product.id}')">Excluir</button>
                 <button id="modal-cancel" onclick="closeDashModal()">Cancelar</button>
-                <button id="modal-save">Salvar Alterações</button>
+                <button id="modal-save">Salvar</button>
             </div>
         </div>`;
 
-        // 3. Preencher Selects e Dados
+        // Preencher Inputs Básicos
         document.getElementById('modal-gender-input').value = product.gender || 'U';
-        
+
         // Popula Categoria
         const catSelect = document.getElementById('modal-category-input');
         await dashPopulateCategories(catSelect, product.category);
 
-        // Popula Cores
+        // --- AQUI ESTÁ A CORREÇÃO PRINCIPAL DAS CORES ---
         const colorsContainer = document.getElementById('modal-colors-container');
+        colorsContainer.innerHTML = ''; // Limpa antes
+
         if (product.cores && product.cores.length > 0) {
-            product.cores.forEach(cor => colorsContainer.appendChild(dashCreateColorRow(cor)));
+            // Cria uma linha para cada cor existente
+            product.cores.forEach(cor => {
+                const row = dashCreateColorRow(cor);
+                colorsContainer.appendChild(row);
+            });
         } else {
+            // Cria uma vazia
             colorsContainer.appendChild(dashCreateColorRow());
         }
 
-        // Listener da Engrenagem
+        // Listeners dos botões
         document.getElementById('modal-dash-new-color-btn').onclick = () => {
-            // Chama a função global que abre o modal de criação de cores
-            if (typeof window.colorOpenFormModal === 'function') {
-                window.colorOpenFormModal('add'); 
-                // Nota: Certifique-se que o z-index do modal de cores é maior que o modal de edição
-                // No CSS, coloque z-index: 100000 para .cat-modal-overlay
-            }
+            if (typeof window.colorOpenFormModal === 'function') window.colorOpenFormModal('add');
         };
-
-        // Listener Adicionar Cor
         document.getElementById('modal-add-color-btn').onclick = () => {
             colorsContainer.appendChild(dashCreateColorRow());
         };
-
-        // Listener Salvar
         document.getElementById('modal-save').onclick = () => dashSaveProduct(product.id);
 
-        // 4. Exibir Modal
-        modal.classList.add('flex'); // Usa flex para centralizar
-        modal.style.display = 'flex'; // Garante display
+        // Exibir Modal
+        modal.classList.add('flex');
+        modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
 
     } catch (err) {
         console.error(err);
-        alert("Erro ao abrir modal: " + err.message);
+        if (window.showToast) window.showToast("Erro ao abrir modal: " + err.message, "error");
     }
 }
 
@@ -3064,10 +3057,10 @@ function dashCreateColorRow(color = {}) {
         <input type="text" placeholder="URL Hover (Opcional)" value="${color.img2 || ''}" style="flex:2;">
         <button type="button" class="remove-color-btn" title="Remover cor">&times;</button>
     `;
-    
+
     // Remove linha ao clicar no X
     row.querySelector('.remove-color-btn').onclick = () => row.remove();
-    
+
     // Anexa método para extrair dados facilmente
     row.getColorObject = () => {
         const inputs = row.querySelectorAll('input');
@@ -3083,14 +3076,14 @@ function dashCreateColorRow(color = {}) {
 // --- Helper: Popular Categorias ---
 async function dashPopulateCategories(selectElement, selectedValue) {
     selectElement.innerHTML = '<option value="">Carregando...</option>';
-    
+
     const { data: categories } = await client
         .from('categories')
         .select('*')
         .order('name', { ascending: true });
 
     selectElement.innerHTML = '<option value="">Selecione...</option>';
-    
+
     if (categories) {
         categories.forEach(cat => {
             const option = document.createElement('option');
@@ -3118,7 +3111,10 @@ async function dashSaveProduct(id) {
     const colorRows = Array.from(document.querySelectorAll('.color-row'));
     const cores = colorRows.map(row => row.getColorObject()).filter(c => c.nome && c.img1);
 
-    if (!nome) return alert("O nome do produto é obrigatório.");
+    if (!nome) {
+        if (window.showToast) window.showToast("O nome do produto é obrigatório.", "error");
+        return;
+    }
 
     const updates = {
         nome, preco, category, gender, img, tamanhos, description, additional_info, cores,
@@ -3129,14 +3125,14 @@ async function dashSaveProduct(id) {
         const { error } = await client.from('products').update(updates).eq('id', id);
         if (error) throw error;
 
-        if(window.showToast) window.showToast("Produto salvo com sucesso!");
-        
+        if (window.showToast) window.showToast("Produto salvo com sucesso!", "success");
+
         closeDashModal();
         loadProducts(); // Atualiza a tabela da dashboard
 
     } catch (err) {
         console.error(err);
-        alert("Erro ao salvar: " + err.message);
+        if (window.showToast) window.showToast("Erro ao salvar: " + err.message, "error");
     }
 }
 
@@ -3153,152 +3149,43 @@ async function dashDeleteProductInsideModal(id) {
         const { error } = await client.from('products').delete().eq('id', id);
         if(error) throw error;
         
-        if(window.showToast) window.showToast("Produto excluído.");
+        if(window.showToast) window.showToast("Produto excluído com sucesso.", "success");
         closeDashModal();
         loadProducts();
     } catch(err) {
-        alert("Erro ao excluir: " + err.message);
+        if(window.showToast) window.showToast("Erro ao excluir: " + err.message, "error");
     }
 }
 
 /* =============================================================
-   LÓGICA DE GESTÃO DE CORES
+   GESTÃO DE CORES BLINDADA (USANDO SUPABASE ADMIN)
    ============================================================= */
 
-// Listener do Menu
-document.querySelectorAll('.submenu li[data-content="cores-produto"]').forEach(li => {
-    li.addEventListener('click', () => {
-        loadColorsPage();
-    });
-});
+// Variável local para cache das cores na dashboard
+let dashboardColorCache = [];
 
-async function loadColorsPage() {
-    const loader = document.getElementById('color-loader');
-    const content = document.getElementById('color-content');
-    const listBody = document.getElementById('color-list-body');
-    const emptyState = document.getElementById('color-empty-state');
+// Função que busca cores usando a chave MESTRA (Ignora RLS se houver erro)
+async function forceFetchColorsForDashboard() {
+    try {
+        // Usa supabaseAdmin em vez de client comum
+        const { data, error } = await supabaseAdmin
+            .from('product_colors')
+            .select('name, hex_code')
+            .order('name', { ascending: true });
 
-    if(!loader) return;
+        if (error) throw error;
 
-    loader.classList.remove('hidden');
-    content.classList.add('hidden');
-
-    const { data: colors, error } = await client
-        .from('product_colors')
-        .select('*')
-        .order('name', { ascending: true });
-
-    if (error) {
-        alert('Erro ao carregar cores: ' + error.message);
-        return;
-    }
-
-    listBody.innerHTML = '';
-
-    if (!colors || colors.length === 0) {
-        emptyState.classList.remove('hidden');
-        content.querySelector('.cat-table-wrapper').classList.add('hidden');
-    } else {
-        emptyState.classList.add('hidden');
-        content.querySelector('.cat-table-wrapper').classList.remove('hidden');
-
-        colors.forEach(c => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <div style="width: 30px; height: 30px; border-radius: 50%; background-color: ${c.hex_code}; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
-                </td>
-                <td style="font-weight:600; color:#333;">${c.name}</td>
-                <td style="font-family:monospace; color:#666;">${c.hex_code}</td>
-                <td style="text-align:right;">
-                    <button onclick="colorOpenFormModal('edit', '${c.id}', '${c.name}', '${c.hex_code}')" class="cat-action-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-                    <button onclick="colorDelete('${c.id}')" class="cat-action-btn delete" title="Excluir"><i class="bi bi-trash3-fill"></i></button>
-                </td>
-            `;
-            listBody.appendChild(tr);
-        });
-    }
-
-    loader.classList.add('hidden');
-    content.classList.remove('hidden');
-}
-
-// Abrir Modal
-window.colorOpenFormModal = function(mode, id='', name='', hex='#000000') {
-    document.getElementById('color-input-mode').value = mode;
-    document.getElementById('color-input-id').value = id;
-    document.getElementById('color-input-name').value = name;
-    document.getElementById('color-input-hex').value = hex;
-    document.getElementById('color-input-picker').value = hex;
-    document.getElementById('color-form-title').innerText = mode === 'add' ? 'Nova Cor' : 'Editar Cor';
-    
-    document.getElementById('color-modal-form').classList.add('open');
-}
-
-window.colorCloseModals = function() {
-    document.getElementById('color-modal-form').classList.remove('open');
-}
-
-// Salvar Cor
-window.colorHandleSave = async function() {
-    const mode = document.getElementById('color-input-mode').value;
-    const id = document.getElementById('color-input-id').value;
-    const name = document.getElementById('color-input-name').value.trim();
-    const hex = document.getElementById('color-input-hex').value.trim();
-
-    if (!name || !hex) return alert("Preencha nome e cor.");
-
-    const payload = { name, hex_code: hex };
-
-    let error;
-    if (mode === 'add') {
-        const { error: e } = await client.from('product_colors').insert([payload]);
-        error = e;
-    } else {
-        const { error: e } = await client.from('product_colors').update(payload).eq('id', id);
-        error = e;
-    }
-
-    if (error) {
-        alert("Erro: " + error.message);
-    } else {
-        if(window.showToast) window.showToast("Cor salva com sucesso!");
-        colorCloseModals();
-        loadColorsPage(); // Recarrega tabela de cores
-        
-        // === O SEGREDO DO TEMPO REAL ===
-        // Dispara o evento que o main.js está ouvindo para atualizar os selects
-        document.dispatchEvent(new Event('colors-updated'));
+        dashboardColorCache = data || [];
+        console.log("Cores carregadas na Dashboard:", dashboardColorCache);
+        return dashboardColorCache;
+    } catch (err) {
+        console.error("Erro crítico ao buscar cores na Dash:", err);
+        return [];
     }
 }
 
-// Deletar Cor
-window.colorDelete = async function(id) {
-    if(!confirm("Tem certeza? Produtos usando esta cor manterão o nome antigo, mas perderão a referência dinâmica.")) return;
-    
-    const { error } = await client.from('product_colors').delete().eq('id', id);
-    if(error) alert(error.message);
-    else {
-        if(window.showToast) window.showToast("Cor excluída.");
-        loadColorsPage();
-    }
-}
-
-/* =============================================================
-   INTEGRAÇÃO NO MODAL DE PRODUTOS (SELECT + ENGRENAGEM)
-   ============================================================= */
-
-// Cache de cores para não buscar toda hora
-let cachedColors = [];
-
-async function fetchColorsForSelect() {
-    const { data } = await client.from('product_colors').select('*').order('name');
-    cachedColors = data || [];
-    return cachedColors;
-}
-
-// Substitua ou Atualize a função dashCreateColorRow existente
-window.dashCreateColorRow = function(color = {}) {
+// Substituição da função dashCreateColorRow
+window.dashCreateColorRow = function (color = {}) {
     const row = document.createElement('div');
     row.className = 'color-row';
     row.style.display = 'flex';
@@ -3318,36 +3205,52 @@ window.dashCreateColorRow = function(color = {}) {
             <i class="ri-close-line"></i>
         </button>
     `;
-    
-    const select = row.querySelector('.color-select-input');
 
-    // Usa a função do main.js se disponível, senão tenta buscar direto
-    if (typeof populateColorSelectElement === 'function') {
-         if (typeof mainColorCache !== 'undefined' && mainColorCache.length > 0) {
-            populateColorSelectElement(select, color.nome);
-         } else if (typeof fetchColorsForSelect === 'function') {
-            fetchColorsForSelect().then(() => populateColorSelectElement(select, color.nome));
-         }
+    const select = row.querySelector('.color-select-input');
+    const btnRemove = row.querySelector('.remove-color-btn');
+
+    // Função interna para popular este select específico usando o cache local
+    const populateThisSelect = () => {
+        select.innerHTML = '<option value="">Selecione...</option>';
+        let found = false;
+        const currentVal = color.nome || ''; // Cor que veio do banco (ex: "Preto")
+
+        dashboardColorCache.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name;
+
+            // Verifica se é a cor selecionada (Case Insensitive)
+            if (currentVal && c.name.toLowerCase().trim() === currentVal.toLowerCase().trim()) {
+                opt.selected = true;
+                found = true;
+            }
+            select.appendChild(opt);
+        });
+
+        // Se a cor do produto não está na lista do banco, mostra como Legado
+        if (currentVal && !found) {
+            const opt = document.createElement('option');
+            opt.value = currentVal;
+            opt.textContent = `${currentVal} (Legado - Salve para atualizar)`;
+            opt.selected = true;
+            opt.style.color = "red";
+            select.appendChild(opt);
+        }
+    };
+
+    // Se já temos cache, popula agora. Se não, busca e depois popula.
+    if (dashboardColorCache.length > 0) {
+        populateThisSelect();
     } else {
-        // Fallback robusto se main.js não carregou
-        initSupabaseClient().then(supa => {
-            supa.from('product_colors').select('name').order('name').then(({data}) => {
-                if(data) {
-                    select.innerHTML = '<option value="">Selecione...</option>';
-                    data.forEach(c => {
-                        const opt = document.createElement('option');
-                        opt.value = c.name; 
-                        opt.textContent = c.name;
-                        if(c.name === color.nome) opt.selected = true;
-                        select.appendChild(opt);
-                    });
-                }
-            });
+        forceFetchColorsForDashboard().then(() => {
+            populateThisSelect();
         });
     }
 
-    row.querySelector('.remove-color-btn').onclick = () => row.remove();
-    
+    btnRemove.onclick = () => row.remove();
+
+    // Método para o botão Salvar pegar os dados
     row.getColorObject = () => {
         const selectVal = row.querySelector('select').value;
         const inputs = row.querySelectorAll('input');
@@ -3357,19 +3260,20 @@ window.dashCreateColorRow = function(color = {}) {
             img2: inputs[1].value.trim()
         };
     };
+
     return row;
-}
+};
 
 // Fallback específico do Dashboard se necessário
 async function fetchColorsForSelectDashboard(selectEl, selectedVal) {
     const { data } = await client.from('product_colors').select('name').order('name');
     selectEl.innerHTML = '<option value="">Selecione...</option>';
-    if(data) {
+    if (data) {
         data.forEach(c => {
             const opt = document.createElement('option');
             opt.value = c.name;
             opt.textContent = c.name;
-            if(c.name === selectedVal) opt.selected = true;
+            if (c.name === selectedVal) opt.selected = true;
             selectEl.appendChild(opt);
         });
     }
@@ -3377,3 +3281,191 @@ async function fetchColorsForSelectDashboard(selectEl, selectedVal) {
 
 // Adicione esta linha no final do dashboard.js (ou após a função de busca)
 window.dashPopulateColorSelects = fetchColorsForSelectDashboard;
+
+/* =============================================================
+   GESTÃO DE TABELA DE CORES (ATUALIZADO: EDIÇÃO + MODAIS PRO)
+   ============================================================= */
+
+// 1. Função chamada ao clicar na aba "Cores"
+async function initColorPage() {
+    await colorLoadColors();
+}
+
+// 2. Carregar e Renderizar a Tabela
+async function colorLoadColors() {
+    const loader = document.getElementById('color-loader');
+    const content = document.getElementById('color-content');
+    const listBody = document.getElementById('color-list-body');
+    const emptyState = document.getElementById('color-empty-state');
+
+    if (!loader || !content) return;
+
+    loader.classList.remove('hidden');
+    content.classList.add('hidden');
+
+    try {
+        // Usa o client (ou supabaseAdmin se preferir permissão total)
+        const { data: colors, error } = await client
+            .from('product_colors')
+            .select('*')
+            .order('name', { ascending: true });
+
+        if (error) throw error;
+
+        listBody.innerHTML = '';
+
+        if (!colors || colors.length === 0) {
+            emptyState.classList.remove('hidden');
+            const wrapper = content.querySelector('.cat-table-wrapper');
+            if (wrapper) wrapper.classList.add('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+            const wrapper = content.querySelector('.cat-table-wrapper');
+            if (wrapper) wrapper.classList.remove('hidden');
+
+            colors.forEach(cor => {
+                const tr = document.createElement('tr');
+                // Adicionado o botão de editar (Lápis) abaixo
+                tr.innerHTML = `
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="
+                                width: 32px; 
+                                height: 32px; 
+                                border-radius: 50%; 
+                                background-color: ${cor.hex_code}; 
+                                border: 1px solid #e2e8f0;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            "></div>
+                        </div>
+                    </td>
+                    <td style="font-weight: 600; color: #334155;">${cor.name}</td>
+                    <td style="font-family: monospace; color: #64748b;">${cor.hex_code}</td>
+                    <td style="text-align:right;">
+                        <button onclick="colorOpenFormModal('edit', '${cor.id}', '${cor.name}', '${cor.hex_code}')" class="cat-action-btn" title="Editar">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button onclick="colorDelete('${cor.id}', '${cor.name}')" class="cat-action-btn delete" title="Excluir">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </td>
+                `;
+                listBody.appendChild(tr);
+            });
+        }
+    } catch (err) {
+        console.error("Erro ao carregar cores:", err);
+        if (window.showToast) window.showToast("Erro ao carregar cores: " + err.message, "error");
+    } finally {
+        loader.classList.add('hidden');
+        content.classList.remove('hidden');
+    }
+}
+
+// 3. Abrir Modal de Criar/Editar Cor
+window.colorOpenFormModal = function (mode, id = '', name = '', hex = '#000000') {
+    const modal = document.getElementById('color-modal-form');
+    const title = document.getElementById('color-form-title'); // Certifique-se de ter esse ID no H2 do modal
+
+    // Preenche Inputs Ocultos
+    document.getElementById('color-input-mode').value = mode;
+    document.getElementById('color-input-id').value = id;
+
+    // Preenche Inputs Visíveis
+    document.getElementById('color-input-name').value = name;
+    document.getElementById('color-input-hex').value = hex;
+    document.getElementById('color-input-picker').value = hex;
+
+    // Atualiza Título
+    if (title) {
+        title.innerText = mode === 'edit' ? "Editar Cor" : "Nova Cor";
+    }
+
+    modal.classList.add('open');
+}
+
+window.colorCloseModals = function () {
+    document.querySelectorAll('.cat-modal-overlay').forEach(m => m.classList.remove('open'));
+}
+
+// 4. Salvar Cor (Criar ou Editar)
+window.colorHandleSave = async function () {
+    const mode = document.getElementById('color-input-mode').value;
+    const id = document.getElementById('color-input-id').value;
+    const name = document.getElementById('color-input-name').value.trim();
+    const hex = document.getElementById('color-input-hex').value.trim();
+
+    if (!name || !hex) {
+        if (window.showToast) window.showToast("Preencha o nome e o código Hex.", "error");
+        return;
+    }
+
+    try {
+        let error = null;
+
+        // Verifica se é Edição ou Criação
+        if (mode === 'edit' && id) {
+            const res = await supabaseAdmin
+                .from('product_colors')
+                .update({ name: name, hex_code: hex })
+                .eq('id', id);
+            error = res.error;
+        } else {
+            const res = await supabaseAdmin
+                .from('product_colors')
+                .insert([{ name: name, hex_code: hex }]);
+            error = res.error;
+        }
+
+        if (error) throw error;
+
+        const msg = mode === 'edit' ? "Cor atualizada com sucesso!" : "Cor adicionada com sucesso!";
+        if (window.showToast) window.showToast(msg, "success");
+
+        colorCloseModals();
+
+        // Recarrega a tabela visual
+        await colorLoadColors();
+
+        // Atualiza o cache do Select do modal de produtos
+        if (typeof forceFetchColorsForDashboard === 'function') {
+            await forceFetchColorsForDashboard();
+        }
+
+    } catch (err) {
+        console.error(err);
+        if (window.showToast) window.showToast("Erro ao salvar cor: " + err.message, "error");
+    }
+}
+
+// 5. Excluir Cor (Com Modal Customizado)
+window.colorDelete = async function (id, name) {
+    // Substitui confirm() nativo pelo modal customizado
+    const confirmed = await window.showConfirmationModal(
+        `Tem certeza que deseja excluir a cor "${name}"?`,
+        { okText: 'Sim, Excluir', cancelText: 'Cancelar' }
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const { error } = await supabaseAdmin
+            .from('product_colors')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        if (window.showToast) window.showToast("Cor excluída.", "success");
+
+        await colorLoadColors();
+
+        // Atualiza cache
+        if (typeof forceFetchColorsForDashboard === 'function') {
+            await forceFetchColorsForDashboard();
+        }
+
+    } catch (err) {
+        if (window.showToast) window.showToast("Erro ao excluir: " + err.message, "error");
+    }
+}
