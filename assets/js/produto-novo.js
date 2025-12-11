@@ -255,12 +255,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     const qtyControls = document.querySelector('.model-qty-controls');
+    const qtyInput = document.querySelector('.model-qty-controls input[type="number"]'); // Seletor direto
+
+    // 1. Bloqueio ao digitar (Input manual)
+    if (qtyInput) {
+      qtyInput.addEventListener('change', (e) => {
+        let val = parseInt(e.target.value);
+        // Se for menor que 1 ou não for número, força 1
+        if (isNaN(val) || val < 1) {
+          e.target.value = 1;
+          window.showToast("A quantidade mínima é 1 item."); // Feedback visual
+        }
+      });
+
+      // Impede digitar sinal de menos
+      qtyInput.addEventListener('keydown', (e) => {
+        if (e.key === '-' || e.key === 'e') {
+          e.preventDefault();
+        }
+      });
+    }
+
+    // 2. Bloqueio nos botões (+ e -)
     if (qtyControls) {
       qtyControls.addEventListener('click', (e) => {
-        let currentValue = parseInt(quantityInput.value) || 1;
-        if (e.target.textContent === '+') currentValue++;
-        else if (e.target.textContent === '−' && currentValue > 1) currentValue--;
-        quantityInput.value = currentValue;
+        // Usa o input capturado acima ou busca novamente
+        const input = qtyControls.querySelector('input');
+        let currentValue = parseInt(input.value) || 1;
+
+        if (e.target.textContent === '+') {
+          currentValue++;
+        } else if (e.target.textContent === '−' || e.target.textContent === '-') { // Copie o caractere exato do seu HTML
+          if (currentValue > 1) {
+            currentValue--;
+          } else {
+            // Opcional: Feedback se tentar baixar de 1
+            // window.showToast("Quantidade mínima alcançada.");
+          }
+        }
+        input.value = currentValue;
       });
     }
 

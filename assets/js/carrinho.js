@@ -192,17 +192,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- AÇÕES DO USUÁRIO ---
 
     window.updateItemQty = async (itemId, newQty) => {
+        // Se a quantidade for menor que 1 (ex: clicou menos quando tinha 1, ou digitou 0/-5)
         if (newQty < 1) {
+            // Usa o Modal de Confirmação em vez de permitir negativo
             const item = currentCartItems.find(i => i.id == itemId);
-            if (item) deleteCartItem(itemId, item.nome);
+            if (item) {
+                deleteCartItem(itemId, item.nome);
+            }
             return;
         }
+
+        // Segurança extra: Garante que é inteiro positivo
+        const safeQty = Math.max(1, parseInt(newQty));
 
         if (window.showToast) window.showToast('Atualizando...');
 
         const { error } = await supabase
             .from('user_cart_items')
-            .update({ quantity: newQty })
+            .update({ quantity: safeQty })
             .eq('id', itemId);
 
         if (error) {

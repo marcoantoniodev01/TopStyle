@@ -221,73 +221,78 @@ window.refreshCartCount = async function () {
   }
 };
 
+// ATUALIZAÇÃO DA FUNÇÃO ADD TO CART PARA USAR O GUARD
 async function addToCart(item) {
-  try {
-    const supabase = await window.initSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        const supabase = await window.initSupabaseClient();
+        const { data: { user } } = await supabase.auth.getUser();
 
-    // === ALTERAÇÃO AQUI ===
-    if (!user) {
-      // Exibe o modal de confirmação igual ao das páginas protegidas
-      const irParaLogin = await window.showConfirmationModal(
-        "Você precisa estar logado para adicionar itens ao carrinho. Deseja entrar agora?",
-        {
-          okText: 'Entrar / Criar Conta',
-          cancelText: 'Continuar Navegando'
+        if (!user) {
+            const irParaLogin = await window.showConfirmationModal(
+                "Você precisa estar logado para comprar. Deseja entrar agora?",
+                { okText: 'Entrar', cancelText: 'Cancelar' }
+            );
+            if (irParaLogin) window.location.href = 'index.html';
+            return;
         }
-      );
 
-      if (irParaLogin) {
-        window.location.href = 'index.html'; // Redireciona para o login
-      }
-      return; // Interrompe a função aqui
+        // --- NOVO: BLOQUEIO DE SEGURANÇA ---
+        // Verifica se o usuário foi banido nos últimos milissegundos antes de inserir
+        if (await checkIfBanned(user.id)) return; 
+        // -----------------------------------
+
+        // Validação extra de quantidade negativa no main.js também
+        if (item.quantity < 1) {
+             showToast('Quantidade inválida ajustada para 1.', { duration: 2000 });
+             item.quantity = 1;
+        }
+
+        // ... (Resto do código original do addToCart continua aqui: const newItem = ...)
+        const newItem = {
+            user_id: user.id,
+            product_id: item.productId || item.id || item.product_id,
+            nome: item.nome || item.name,
+            price: Number(item.price || item.preco),
+            size: item.size || 'U',
+            color: item.color || item.colorName || 'Padrão',
+            img: item.img || item.imgUrl || '',
+            quantity: item.quantity || 1
+        };
+
+        const { data: existingItem, error: fetchError } = await supabase
+            .from('user_cart_items')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('product_id', newItem.product_id)
+            .eq('size', newItem.size)
+            .eq('color', newItem.color)
+            .maybeSingle();
+
+        if (fetchError) throw fetchError;
+
+        let resultError;
+        if (existingItem) {
+            const newQuantity = existingItem.quantity + newItem.quantity;
+            const { error } = await supabase
+                .from('user_cart_items')
+                .update({ quantity: newQuantity })
+                .eq('id', existingItem.id);
+            resultError = error;
+        } else {
+            const { error } = await supabase
+                .from('user_cart_items')
+                .insert(newItem);
+            resultError = error;
+        }
+
+        if (resultError) throw resultError;
+        showToast(`${newItem.nome} adicionado!`, { duration: 1500 });
+        await window.refreshCartCount();
+
+    } catch (err) {
+        console.error('addToCart Error:', err);
+        showToast('Erro ao adicionar: ' + err.message, { duration: 2500 });
     }
-
-    const newItem = {
-      user_id: user.id,
-      product_id: item.productId || item.id || item.product_id,
-      nome: item.nome || item.name,
-      price: Number(item.price || item.preco),
-      size: item.size || 'U',
-      color: item.color || item.colorName || 'Padrão',
-      img: item.img || item.imgUrl || '',
-      quantity: item.quantity || 1
-    };
-
-    const { data: existingItem, error: fetchError } = await supabase
-      .from('user_cart_items')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('product_id', newItem.product_id)
-      .eq('size', newItem.size)
-      .eq('color', newItem.color)
-      .maybeSingle();
-
-    if (fetchError) throw fetchError;
-
-    let resultError;
-    if (existingItem) {
-      const newQuantity = existingItem.quantity + newItem.quantity;
-      const { error } = await supabase
-        .from('user_cart_items')
-        .update({ quantity: newQuantity })
-        .eq('id', existingItem.id);
-      resultError = error;
-    } else {
-      const { error } = await supabase
-        .from('user_cart_items')
-        .insert(newItem);
-      resultError = error;
-    }
-
-    if (resultError) throw resultError;
-    showToast(`${newItem.nome} adicionado!`, { duration: 1500 });
-    await window.refreshCartCount();
-
-  } catch (err) {
-    console.error('addToCart Error:', err);
-    showToast('Erro ao adicionar: ' + err.message, { duration: 2500 });
-  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1976,58 +1981,79 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-/* ============ MONITORAMENTO DE BANIMENTO EM TEMPO REAL ============ */
+/* ============ MONITORAMENTO DE BANIMENTO EM TEMPO REAL (AGRESSIVO) ============ */
 async function initRealtimeBanMonitor() {
-  try {
-    const supabase = await initSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        const supabase = await initSupabaseClient();
+        const { data: { user } } = await supabase.auth.getUser();
 
-    // Se não tem usuário logado, não precisa monitorar
-    if (!user) return;
+        // Se não tem usuário logado, não precisa monitorar
+        if (!user) return;
 
-    // 1. Função auxiliar para processar o banimento
-    const handleBanTrigger = async (reason = "Violação dos termos") => {
-      console.warn("Banimento detectado. Encerrando sessão...");
-      await supabase.auth.signOut();
-      localStorage.removeItem('userRole'); // Limpa permissões locais
-      // Redireciona para index com flag de banido
-      window.location.href = `index.html?banned=true&reason=${encodeURIComponent(reason)}`;
-    };
+        // Função de expulsão imediata
+        const executeBan = async (reason) => {
+            console.warn("BANIMENTO DETECTADO! ENCERRANDO SESSÃO...");
+            await supabase.auth.signOut();
+            localStorage.removeItem('userRole'); 
+            // Redireciona imediatamente
+            window.location.href = `index.html?banned=true&reason=${encodeURIComponent(reason || "Violação dos termos")}`;
+        };
 
-    // 2. Verificação Inicial (Caso tenha sido banido enquanto estava offline/navegando)
-    const { data: banData } = await supabase
-      .from('user_bans')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
+        // 1. Verificação Inicial (Ao carregar a página)
+        const { data: banData } = await supabase
+            .from('user_bans')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
 
-    if (banData) {
-      // Verifica validade se for temporário
-      let isActive = true;
-      if (banData.ban_type === 'temporary' && banData.banned_until) {
-        if (new Date() > new Date(banData.banned_until)) isActive = false;
-      }
-
-      if (isActive) {
-        await handleBanTrigger(banData.reason);
-        return;
-      }
-    }
-
-    // 3. Listener em Tempo Real (Ouve INSERT na tabela user_bans)
-    supabase.channel('public:user_bans_monitor')
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'user_bans', filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          // Se inseriu um banimento para este ID, tchau!
-          handleBanTrigger(payload.new.reason);
+        if (banData) {
+            // Verifica se o banimento temporário ainda é válido
+            let isActive = true;
+            if (banData.ban_type === 'temporary' && banData.banned_until) {
+                if (new Date() > new Date(banData.banned_until)) isActive = false;
+            }
+            if (isActive) {
+                await executeBan(banData.reason);
+                return; 
+            }
         }
-      )
-      .subscribe();
 
-  } catch (err) {
-    console.error("Erro no monitor de banimento:", err);
-  }
+        // 2. Listener em Tempo Real (Dispara em < 1 segundo na maioria das conexões)
+        const banChannel = supabase.channel('public:user_bans_monitor')
+            .on('postgres_changes',
+                { 
+                    event: 'INSERT', 
+                    schema: 'public', 
+                    table: 'user_bans', 
+                    filter: `user_id=eq.${user.id}` 
+                },
+                (payload) => {
+                    // Assim que o admin clicar em "Banir", isso dispara
+                    executeBan(payload.new.reason);
+                }
+            )
+            .subscribe((status) => {
+                if(status === 'SUBSCRIBED') console.log(" Monitoramento de banimento ativo.");
+            });
+
+    } catch (err) {
+        console.error("Erro no monitor de banimento:", err);
+    }
+}
+
+/* ============ GUARD: BLOQUEIO DE AÇÕES PARA BANIDOS ============ */
+// Esta função verifica se o usuário está banido antes de realizar ações críticas
+async function checkIfBanned(user_id) {
+    if(!user_id) return false;
+    const supabase = await initSupabaseClient();
+    const { data } = await supabase.from('user_bans').select('id').eq('user_id', user_id).maybeSingle();
+    if (data) {
+        // Se encontrar banimento, força logout na hora
+        await supabase.auth.signOut();
+        window.location.href = "index.html?banned=true";
+        return true; // Está banido
+    }
+    return false;
 }
 
 // Inicializa o monitor quando o DOM estiver pronto
