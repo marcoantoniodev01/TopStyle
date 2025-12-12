@@ -322,6 +322,50 @@
   <!-- script da página de coleção -->
   <script type="module" src="assets/js/colecao.js"></script>
   <script src="assets/js/search-modal.js" type="module"></script>
+  <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterBtn = document.getElementById('toggle-filtros-btn');
+            const closeFilterBtn = document.getElementById('close-filtros-btn');
+            const container = document.getElementById('main-product-container');
+            const btnText = filterBtn; // O próprio botão
+
+            // Função para alternar o filtro
+            function toggleFilter() {
+                container.classList.toggle('filters-open');
+
+                // Mudar texto do botão
+                if (container.classList.contains('filters-open')) {
+                    filterBtn.innerHTML = '<i class="bi bi-filter"></i> Esconder Filtros';
+                } else {
+                    filterBtn.innerHTML = '<i class="bi bi-filter"></i> Mostrar Filtros';
+                }
+            }
+
+            // Evento de clique no botão "Mostrar/Esconder"
+            if (filterBtn) {
+                filterBtn.addEventListener('click', toggleFilter);
+            }
+
+            // Evento de clique no botão "X" (Mobile e Desktop)
+            if (closeFilterBtn) {
+                closeFilterBtn.addEventListener('click', function () {
+                    container.classList.remove('filters-open');
+                    filterBtn.innerHTML = '<i class="bi bi-filter"></i> Mostrar Filtros';
+                });
+            }
+
+            // Fechar ao clicar fora (Apenas Mobile)
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth <= 1024 && container.classList.contains('filters-open')) {
+                    // Se clicou fora do .filtros e fora do botão de abrir
+                    if (!e.target.closest('.filtros') && !e.target.closest('#toggle-filtros-btn')) {
+                        container.classList.remove('filters-open');
+                        filterBtn.innerHTML = '<i class="bi bi-filter"></i> Mostrar Filtros';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
