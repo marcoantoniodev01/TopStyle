@@ -1022,6 +1022,227 @@
 }
 
 /* ==========================================================================
+   RESPONSIVIDADE: GESTÃO DE DROPS (#drop-produto)
+   Foco: Transformação Tabela -> Cards, Botões Full-Width e Modais Seguros
+   ========================================================================== */
+
+/* --- Ajuste Geral do Container --- */
+
+/* 1. TABLET E NOTEBOOKS PEQUENOS (max-width: 1024px) */
+@media (max-width: 1024px) {
+    
+    /* Header: Ajusta espaçamento */
+    .drop-header-section {
+        padding-bottom: 2rem !important; /* Corrige o 30rem do CSS original */
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* Stats: Grid mais flexível */
+    .drop-stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 por linha no tablet */
+        gap: 15px;
+    }
+}
+
+/* 2. MOBILE (max-width: 768px) */
+@media (max-width: 768px) {
+
+    /* --- Header (Título + Botão) --- */
+    .drop-header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding-bottom: 20px !important;
+    }
+
+    .drop-header-section > div {
+        width: 100%;
+    }
+
+    .drop-header-section h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .drop-subtitle {
+        text-align: center;
+    }
+
+    .drop-header-section .drop-btn-primary {
+        width: 100%; /* Botão full width */
+        justify-content: center;
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    /* --- Stats (Cards de Contagem) --- */
+    .drop-stats-grid {
+        grid-template-columns: 1fr; /* 1 por linha no celular */
+    }
+
+    .drop-stat-card {
+        padding: 15px;
+    }
+
+    /* --- TABELA TRANSFORMADA EM CARDS (A Mágica) --- */
+    
+    /* Esconde o cabeçalho da tabela */
+    .drop-table thead {
+        display: none;
+    }
+
+    .drop-table-wrapper {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow: visible; /* Remove scroll interno, deixa a página rolar */
+        max-height: none;
+    }
+
+    .drop-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .drop-table tr {
+        display: flex;
+        flex-direction: column; /* Empilha o conteúdo da linha */
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        width: auto;
+    }
+
+    .drop-table td {
+        display: flex;
+        padding: 5px 0;
+        border-bottom: none;
+        width: 100%;
+    }
+
+    /* Ajuste da primeira coluna (Nome + Ícone) */
+    .drop-table td:nth-child(1) {
+        order: 1;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 10px;
+    }
+    
+    .drop-table td:nth-child(1) > div {
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    .drop-table td:nth-child(1) span {
+        font-size: 1.1rem;
+        font-weight: 700 !important;
+        color: #1e293b;
+    }
+
+    /* Ajuste da segunda coluna (Badge de Quantidade) */
+    .drop-table td:nth-child(2) {
+        order: 2;
+        justify-content: flex-start; /* Alinha a esquerda */
+        margin-bottom: 10px;
+    }
+
+    /* Ajuste da terceira coluna (Ações) */
+    .drop-table td:nth-child(3) {
+        order: 3;
+        justify-content: space-between; /* Botões separados */
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    /* Botões de Ação Grandes para Touch */
+    .drop-action-btn {
+        flex: 1; /* Ocupa metade cada */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    /* Adiciona texto aos botões que só tinham ícones para melhor UX */
+    .drop-action-btn::after {
+        font-size: 0.85rem;
+        margin-left: 8px;
+        font-weight: 600;
+    }
+    
+    /* Hack CSS para adicionar texto via CSS no mobile */
+    button[title="Editar"].drop-action-btn::after {
+        content: "Editar";
+    }
+    button[title="Excluir"].drop-action-btn::after {
+        content: "Excluir";
+    }
+
+    /* --- MODAIS DE DROP --- */
+    .drop-modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .drop-modal-footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .drop-modal-footer .drop-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 587px) {
+    .drop-table small {
+        display: none;
+    }
+    
+}
+
+/* 3. IPHONE SE / TELAS MUITO PEQUENAS (max-width: 375px) */
+@media (max-width: 375px) {
+    .drop-stat-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .drop-stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .drop-stat-info h3 {
+        font-size: 1.3rem;
+    }
+    
+    .drop-header-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .drop-table tr {
+        padding: 12px;
+    }
+}
+
+/* ==========================================================================
    RESPONSIVIDADE: GESTÃO DE CUPONS (#cupom) - VERSÃO FINAL CORRIGIDA
    Foco: Centralização total, Modal limpo sem scroll horizontal e UX Touch
    ========================================================================== */
@@ -1954,4 +2175,5 @@
     .btn-show-more-dash {
         font-size: 0.85rem;
     }
+
 }
