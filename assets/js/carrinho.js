@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ${itemsHtml}
                 </ul>
                 <div class="confirm-buttons">
-                    <button class="confirm-button-ok" style="width: 100%;">Entendi, revisar carrinho</button>
+                    <button class="confirm-button-ok" style="width: 100%;">Fechar</button>
                 </div>
             </div>
         `;
@@ -363,3 +363,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inicializa
     fetchCart();
 });
+
