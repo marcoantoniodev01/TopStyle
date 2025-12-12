@@ -65,7 +65,6 @@ Grandes telas - acim 1200px
   }
 
   #email{
-    max-width: 117px;
     overflow: hidden;
   }
 
@@ -73,5 +72,6 @@ Grandes telas - acim 1200px
     display: block;
     margin-left: 15px;
   }
+
 
 }
