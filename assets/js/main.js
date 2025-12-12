@@ -222,77 +222,131 @@ window.refreshCartCount = async function () {
 };
 
 // ATUALIZAÇÃO DA FUNÇÃO ADD TO CART PARA USAR O GUARD
+// ATUALIZAÇÃO DA FUNÇÃO ADD TO CART COM VERIFICAÇÃO DE ESTOQUE
 async function addToCart(item) {
-    try {
-        const supabase = await window.initSupabaseClient();
-        const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const supabase = await window.initSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-            const irParaLogin = await window.showConfirmationModal(
-                "Você precisa estar logado para comprar. Deseja entrar agora?",
-                { okText: 'Entrar', cancelText: 'Cancelar' }
-            );
-            if (irParaLogin) window.location.href = 'index.html';
-            return;
-        }
-
-        // --- NOVO: BLOQUEIO DE SEGURANÇA ---
-        // Verifica se o usuário foi banido nos últimos milissegundos antes de inserir
-        if (await checkIfBanned(user.id)) return; 
-        // -----------------------------------
-
-        // Validação extra de quantidade negativa no main.js também
-        if (item.quantity < 1) {
-             showToast('Quantidade inválida ajustada para 1.', { duration: 2000 });
-             item.quantity = 1;
-        }
-
-        // ... (Resto do código original do addToCart continua aqui: const newItem = ...)
-        const newItem = {
-            user_id: user.id,
-            product_id: item.productId || item.id || item.product_id,
-            nome: item.nome || item.name,
-            price: Number(item.price || item.preco),
-            size: item.size || 'U',
-            color: item.color || item.colorName || 'Padrão',
-            img: item.img || item.imgUrl || '',
-            quantity: item.quantity || 1
-        };
-
-        const { data: existingItem, error: fetchError } = await supabase
-            .from('user_cart_items')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('product_id', newItem.product_id)
-            .eq('size', newItem.size)
-            .eq('color', newItem.color)
-            .maybeSingle();
-
-        if (fetchError) throw fetchError;
-
-        let resultError;
-        if (existingItem) {
-            const newQuantity = existingItem.quantity + newItem.quantity;
-            const { error } = await supabase
-                .from('user_cart_items')
-                .update({ quantity: newQuantity })
-                .eq('id', existingItem.id);
-            resultError = error;
-        } else {
-            const { error } = await supabase
-                .from('user_cart_items')
-                .insert(newItem);
-            resultError = error;
-        }
-
-        if (resultError) throw resultError;
-        showToast(`${newItem.nome} adicionado!`, { duration: 1500 });
-        await window.refreshCartCount();
-
-    } catch (err) {
-        console.error('addToCart Error:', err);
-        showToast('Erro ao adicionar: ' + err.message, { duration: 2500 });
+    if (!user) {
+      const irParaLogin = await window.showConfirmationModal(
+        "Você precisa estar logado para comprar. Deseja entrar agora?",
+        { okText: 'Entrar', cancelText: 'Cancelar' }
+      );
+      if (irParaLogin) window.location.href = 'index.html';
+      return;
     }
+
+    // Verifica se o usuário foi banido
+    if (await checkIfBanned(user.id)) return;
+
+    // 1. VERIFICAÇÃO DE ESTOQUE EM TEMPO REAL
+    // Buscamos o estoque atual no banco de dados para garantir precisão
+    const productId = item.productId || item.id || item.product_id;
+
+    const { data: productDb, error: stockError } = await supabase
+      .from('products')
+      .select('stock, nome')
+      .eq('id', productId)
+      .single();
+
+    if (stockError || !productDb) {
+      showToast('Erro ao verificar estoque do produto.', { duration: 2500 });
+      return;
+    }
+
+    const currentStock = productDb.stock;
+    const requestedQty = item.quantity || 1;
+
+    // --- CENÁRIO A: Item Esgotado ---
+    if (currentStock <= 0) {
+      showToast('🚫 Item sem estoque no momento.', { duration: 3000 });
+      return;
+    }
+
+    let quantityToAdd = requestedQty;
+    let toastMessage = `${item.nome || productDb.nome} adicionado!`;
+    let isPartial = false;
+
+    // --- CENÁRIO B: Cliente quer 60, mas só tem 50 ---
+    if (requestedQty > currentStock) {
+      quantityToAdd = currentStock; // Ajusta para o máximo disponível
+      isPartial = true;
+      toastMessage = `⚠️ Adicionado apenas ${quantityToAdd} unidades. (Falta no estoque para ${requestedQty})`;
+    }
+
+    const newItem = {
+      user_id: user.id,
+      product_id: productId,
+      nome: item.nome || item.name,
+      price: Number(item.price || item.preco),
+      size: item.size || 'U',
+      color: item.color || item.colorName || 'Padrão',
+      img: item.img || item.imgUrl || '',
+      quantity: quantityToAdd // Usa a quantidade ajustada pelo estoque
+    };
+
+    // Verifica se o item já existe no carrinho para somar
+    const { data: existingItem, error: fetchError } = await supabase
+      .from('user_cart_items')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('product_id', newItem.product_id)
+      .eq('size', newItem.size)
+      .eq('color', newItem.color)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+
+    let resultError;
+
+    if (existingItem) {
+      // Se já existe, verifica se a SOMA (antigo + novo) ultrapassa o estoque
+      const totalDesired = existingItem.quantity + quantityToAdd;
+
+      if (totalDesired > currentStock) {
+        const availableSpace = currentStock - existingItem.quantity;
+
+        if (availableSpace <= 0) {
+          showToast(`🚫 Você já possui todo o estoque disponível (${currentStock}) no carrinho.`);
+          return;
+        }
+
+        // Adiciona apenas o que falta para completar o estoque
+        newItem.quantity = availableSpace;
+        toastMessage = `Completamos seu carrinho com as últimas ${availableSpace} unidades disponíveis.`;
+
+        const { error } = await supabase
+          .from('user_cart_items')
+          .update({ quantity: existingItem.quantity + newItem.quantity })
+          .eq('id', existingItem.id);
+        resultError = error;
+      } else {
+        // Soma normal
+        const { error } = await supabase
+          .from('user_cart_items')
+          .update({ quantity: existingItem.quantity + newItem.quantity })
+          .eq('id', existingItem.id);
+        resultError = error;
+      }
+    } else {
+      // Item novo no carrinho
+      const { error } = await supabase
+        .from('user_cart_items')
+        .insert(newItem);
+      resultError = error;
+    }
+
+    if (resultError) throw resultError;
+
+    // Exibe o Toast com a mensagem lógica (parcial ou sucesso)
+    showToast(toastMessage, { duration: isPartial ? 4000 : 1500 });
+    await window.refreshCartCount();
+
+  } catch (err) {
+    console.error('addToCart Error:', err);
+    showToast('Erro ao processar: ' + err.message, { duration: 2500 });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -674,7 +728,7 @@ function createColorRow(color = {}) {
 window.globalColorCache = []; // Exposto no window para acesso da dashboard
 
 // Função para buscar cores
-window.fetchColorsForSelect = async function() {
+window.fetchColorsForSelect = async function () {
   try {
     const supabase = await window.initSupabaseClient();
     const { data, error } = await supabase
@@ -693,12 +747,12 @@ window.fetchColorsForSelect = async function() {
 };
 
 // Função para preencher um select específico
-window.populateColorSelectElement = async function(selectEl, selectedValue = null) {
+window.populateColorSelectElement = async function (selectEl, selectedValue = null) {
   // Se o cache estiver vazio, busca primeiro
   if (!window.globalColorCache || window.globalColorCache.length === 0) {
-      // Coloca um loading visual
-      if(selectEl.options.length === 0) selectEl.innerHTML = '<option value="">Carregando...</option>';
-      await window.fetchColorsForSelect();
+    // Coloca um loading visual
+    if (selectEl.options.length === 0) selectEl.innerHTML = '<option value="">Carregando...</option>';
+    await window.fetchColorsForSelect();
   }
 
   // Limpa e adiciona opção padrão
@@ -708,15 +762,15 @@ window.populateColorSelectElement = async function(selectEl, selectedValue = nul
 
   window.globalColorCache.forEach(c => {
     const opt = document.createElement('option');
-    opt.value = c.name; 
+    opt.value = c.name;
     opt.textContent = c.name;
-    
+
     // Tenta selecionar se bater o nome (case insensitive)
     if (currentVal && c.name.toLowerCase().trim() === currentVal.toLowerCase().trim()) {
       opt.selected = true;
       found = true;
     }
-    
+
     // Bolinha de cor visual (funciona em alguns navegadores desktop)
     opt.style.color = '#000';
     selectEl.appendChild(opt);
@@ -736,7 +790,7 @@ window.populateColorSelectElement = async function(selectEl, selectedValue = nul
 
 // Escuta global para atualizar todos os selects quando uma cor nova for criada
 document.addEventListener('colors-updated', async () => {
-  await window.fetchColorsForSelect(); 
+  await window.fetchColorsForSelect();
   document.querySelectorAll('.color-select-input').forEach(select => {
     // Preserva o valor que estava selecionado
     const val = select.value;
@@ -891,6 +945,11 @@ function openCategoryManagerModal() {
 /* ============ main.js - ATUALIZAÇÃO ============ */
 
 // Torna a função global para ser usada no Dashboard
+
+// ============================================
+// FUNÇÃO DE ADICIONAR PRODUTO (CORRIGIDA)
+// ============================================
+
 window.openAddProductModal = function (slotId = null) {
   let modal = document.querySelector('#admin-modal');
   if (!modal) {
@@ -900,10 +959,10 @@ window.openAddProductModal = function (slotId = null) {
     document.body.appendChild(modal);
   }
 
-  // Se slotId for null (veio do dashboard), marcamos uma flag
   modal.__targetSlotId = slotId;
   const isDashboardMode = (slotId === null);
 
+  // 1. Renderiza o HTML (Com o campo de estoque incluso)
   modal.innerHTML = `
     <div class="modal-content">
       <h2 id="modal-title">${isDashboardMode ? 'Adicionar Produto (Loja)' : `Adicionar Produto (Slot ${slotId})`}</h2>
@@ -917,8 +976,17 @@ window.openAddProductModal = function (slotId = null) {
 
       <label>Título:</label>
       <input type="text" id="modal-title-input">
-      <label>Preço:</label>
-      <input type="text" id="modal-price-input" placeholder="Ex: 139.99">
+
+      <div style="display:flex; gap: 15px;">
+        <div style="flex: 1;">
+            <label>Preço:</label>
+            <input type="text" id="modal-price-input" placeholder="Ex: 139.99">
+        </div>
+        <div style="width: 120px;">
+            <label>Estoque:</label>
+            <input type="number" id="modal-stock-input" value="0" min="0" style="font-weight: bold; border: 2px solid #333;">
+        </div>
+      </div>
       
       <label>Categoria:</label>
       <div style="display: flex; gap: 8px; align-items: center;">
@@ -952,9 +1020,8 @@ window.openAddProductModal = function (slotId = null) {
       
       <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
           <button type="button" id="modal-add-color-btn">+ Adicionar Cor</button>
-          
-          <button type="button" id="modal-manage-colors-btn" title="Criar nova cor" style="padding: 8px; background: #fff; border: 1px solid #ccc; border-radius: 6px; cursor: pointer;">
-            <i class="ri-settings-3-line" style="font-size: 1.2rem; color: #333;"></i> 
+          <button type="button" id="modal-manage-colors-btn" title="Criar nova cor" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+            <i class="ri-settings-3-line"></i> 
           </button>
       </div>
       
@@ -964,97 +1031,122 @@ window.openAddProductModal = function (slotId = null) {
       </div>
     </div>`;
 
-  // ...
-  modal.querySelector('#modal-add-color-btn').onclick = () => {
-    const container = modal.querySelector('#modal-colors-container');
-    container.appendChild(createColorRow());
-  };
-
-  // NOVO: Botão da Engrenagem chama o modal de Cores
-  modal.querySelector('#modal-manage-colors-btn').onclick = () => {
-    // Verifica se a função global do dashboard existe (se estiver no dash)
-    if (typeof window.colorOpenFormModal === 'function') {
-      window.colorOpenFormModal('add');
-    } else {
-      // Fallback se estiver na home (talvez precise implementar um modal simples de cor na home ou avisar)
-      alert("A criação de cores deve ser feita pelo Painel Admin -> Cores.");
-    }
-  };
-  // ...
-
-  // ... (O restante da lógica de preencher Selects continua igual) ...
-  const catSelect = modal.querySelector('#modal-category-input');
-  populateCategorySelect(catSelect); // Função já existente no main.js
-
-  // Botão fechar
-  modal.querySelector('#modal-cancel').onclick = () => {
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-  };
-
-  // Botão gerenciar categorias
-  modal.querySelector('#btn-manage-cats-add').onclick = () => openCategoryManagerModal();
-
-  // Inicializa cores
-  const colorsContainer = modal.querySelector('#modal-colors-container');
-  colorsContainer.appendChild(createColorRow()); // Usa a função do main.js
-  modal.querySelector('#modal-add-color-btn').onclick = () => colorsContainer.appendChild(createColorRow());
-
-  // Show modal
+  // 2. Abre o modal IMEDIATAMENTE (para não parecer que travou)
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  // Lógica de Salvar
-  modal.querySelector('#modal-save').onclick = async () => {
-    // ... (Validações de nome, etc) ...
-    const nomeProduto = modal.querySelector('#modal-title-input').value.trim();
-    if (!nomeProduto) return showToast('Título obrigatório');
-
-    const generatedId = nomeProduto.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50) + '-' + Date.now();
-
-    // Se targetSlotId for null, slot é null. Se não, converte pra int.
-    const finalSlot = modal.__targetSlotId ? parseInt(modal.__targetSlotId) : null;
-
-    const newProduct = {
-      id: generatedId,
-      nome: nomeProduto,
-      preco: parseFloat(modal.querySelector('#modal-price-input').value.replace(',', '.')) || 0,
-      img: modal.querySelector('#modal-img-input').value.trim(),
-      tamanhos: modal.querySelector('#modal-sizes-input').value.trim(),
-      description: modal.querySelector('#modal-description-input').value.trim(),
-      additional_info: modal.querySelector('#modal-additional-info-input').value.trim(),
-      // Pega cores usando a função auxiliar do main.js
-      cores: Array.from(modal.querySelectorAll('.color-row')).map(row => row.getColorObject()).filter(c => c.nome && c.img1),
-      slot: finalSlot,
-      category: modal.querySelector('#modal-category-input').value,
-      gender: modal.querySelector('#modal-gender-input').value
-    };
-
-    try {
-      const supabase = await window.initSupabaseClient();
-      const { error } = await supabase.from('products').insert([newProduct]);
-
-      if (error) throw error;
-
-      showToast('Produto criado com sucesso!');
-      modal.style.display = 'none';
-      document.body.style.overflow = '';
-
-      // Se estiver no dashboard, recarrega a tabela
-      if (typeof loadProducts === 'function') {
-        loadProducts();
-      }
-      // Se estiver na home, recarrega os slots
-      if (typeof applyProductsFromDBToDOM === 'function') {
-        applyProductsFromDBToDOM();
+  // 3. Inicializa Lógica com Proteção de Erros
+  try {
+      // --- LÓGICA DE CATEGORIAS ---
+      const catSelect = modal.querySelector('#modal-category-input');
+      // Prioriza a função da Dashboard se existir
+      if(typeof window.dashPopulateCategories === 'function') {
+          window.dashPopulateCategories(catSelect, '');
+      } else if(typeof populateCategorySelect === 'function') {
+          populateCategorySelect(catSelect);
       }
 
-    } catch (err) {
-      console.error(err);
-      showToast('Erro: ' + err.message);
-    }
-  };
+      // --- LÓGICA DE CORES (AQUI ESTAVA O PROBLEMA) ---
+      const colorsContainer = modal.querySelector('#modal-colors-container');
+      const btnAddColor = modal.querySelector('#modal-add-color-btn');
+
+      // Verifica qual função de criar linha usar
+      let createRowFn;
+      if (typeof window.dashCreateColorRow === 'function') {
+          createRowFn = window.dashCreateColorRow; // Usa a da Dashboard (Admin)
+      } else if (typeof createColorRow === 'function') {
+          createRowFn = createColorRow; // Usa a da Loja (Main)
+      }
+
+      if (createRowFn) {
+          // Cria a primeira linha vazia
+          colorsContainer.appendChild(createRowFn());
+          // Configura o botão de +
+          btnAddColor.onclick = () => colorsContainer.appendChild(createRowFn());
+      } else {
+          colorsContainer.innerHTML = '<p style="color:red;">Erro: Função de cores não carregada.</p>';
+      }
+
+      // --- OUTROS BOTÕES ---
+      modal.querySelector('#modal-manage-colors-btn').onclick = () => {
+        if (typeof window.colorOpenFormModal === 'function') window.colorOpenFormModal('add');
+        else alert("A gestão de cores deve ser feita pelo Painel Admin.");
+      };
+
+      modal.querySelector('#modal-cancel').onclick = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      };
+
+      modal.querySelector('#btn-manage-cats-add').onclick = () => {
+          if(typeof window.openCategoryManagerModal === 'function') window.openCategoryManagerModal();
+          else if(typeof openCategoryManagerModal === 'function') openCategoryManagerModal();
+      };
+
+      // --- LÓGICA DE SALVAR ---
+      modal.querySelector('#modal-save').onclick = async () => {
+        const nomeProduto = modal.querySelector('#modal-title-input').value.trim();
+        if (!nomeProduto) return showToast('Título obrigatório');
+
+        const generatedId = nomeProduto.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50) + '-' + Date.now();
+        const finalSlot = modal.__targetSlotId ? parseInt(modal.__targetSlotId) : null;
+
+        // Captura cores usando o método seguro
+        const colorRows = Array.from(modal.querySelectorAll('.color-row'));
+        const coresData = colorRows.map(row => {
+            if (row.getColorObject) return row.getColorObject(); // Método injetado na criação
+            // Fallback manual se algo falhou
+            const inputs = row.querySelectorAll('input');
+            const select = row.querySelector('select');
+            return { 
+                nome: select ? select.value : '', 
+                img1: inputs[0] ? inputs[0].value : '', 
+                img2: inputs[1] ? inputs[1].value : '' 
+            };
+        }).filter(c => c.nome && c.img1);
+
+        const newProduct = {
+          id: generatedId,
+          nome: nomeProduto,
+          preco: parseFloat(modal.querySelector('#modal-price-input').value.replace(',', '.')) || 0,
+          stock: parseInt(modal.querySelector('#modal-stock-input').value) || 0,
+          img: modal.querySelector('#modal-img-input').value.trim(),
+          tamanhos: modal.querySelector('#modal-sizes-input').value.trim(),
+          description: modal.querySelector('#modal-description-input').value.trim(),
+          additional_info: modal.querySelector('#modal-additional-info-input').value.trim(),
+          cores: coresData,
+          slot: finalSlot,
+          category: modal.querySelector('#modal-category-input').value,
+          gender: modal.querySelector('#modal-gender-input').value
+        };
+
+        try {
+          const supabase = await window.initSupabaseClient();
+          const { error } = await supabase.from('products').insert([newProduct]);
+
+          if (error) throw error;
+
+          showToast('Produto criado com sucesso!');
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+
+          // Atualiza a tela correta dependendo de onde estamos
+          if (typeof loadProducts === 'function') loadProducts(); // Dashboard
+          if (typeof applyProductsFromDBToDOM === 'function') applyProductsFromDBToDOM(); // Loja
+
+        } catch (err) {
+          console.error(err);
+          showToast('Erro: ' + err.message);
+        }
+      };
+
+  } catch (err) {
+      console.error("Erro Crítico no Modal:", err);
+      alert("Ocorreu um erro ao inicializar o formulário: " + err.message);
+  }
 };
+
+// ... (Mantenha o restante do main.js inalterado, como funções de filtro, renderização, etc.) ...
 
 function openEditModalForProduct(productNode) {
   const meta = productNode.__productMeta;
@@ -1068,14 +1160,23 @@ function openEditModalForProduct(productNode) {
     document.body.appendChild(modal);
   }
 
-  // HTML com o Select Dinâmico e botão de engrenagem
+  // --- ATUALIZAÇÃO HTML: CAMPO ESTOQUE INSERIDO ---
   modal.innerHTML = `
     <div class="modal-content">
       <h2 id="modal-title">Editar Produto</h2>
       <label>Título:</label>
       <input type="text" id="modal-title-input" value="${meta.nome || ''}">
-      <label>Preço:</label>
-      <input type="text" id="modal-price-input" value="${meta.preco || ''}">
+      
+      <div style="display:flex; gap: 15px;">
+        <div style="flex: 1;">
+            <label>Preço:</label>
+            <input type="text" id="modal-price-input" value="${meta.preco || ''}">
+        </div>
+        <div style="width: 120px;">
+            <label>Estoque:</label>
+            <input type="number" id="modal-stock-input" value="${meta.stock !== undefined ? meta.stock : 0}" min="0" style="font-weight: bold; border: 2px solid #333;">
+        </div>
+      </div>
       
       <label for="modal-category-input">Categoria:</label>
       <div style="display: flex; gap: 8px; align-items: center;">
@@ -1101,7 +1202,7 @@ function openEditModalForProduct(productNode) {
       <textarea id="modal-description-input" style="min-height: 80px;">${meta.description || ''}</textarea>
       <label>Informações Complementares:</label>
       <textarea id="modal-additional-info-input" style="min-height: 60px;">${meta.additional_info || ''}</textarea>
-      // ... dentro do innerHTML do modal ...
+      
       <label>Cores:</label>
       <div id="modal-colors-container"></div>
       
@@ -1123,28 +1224,22 @@ function openEditModalForProduct(productNode) {
 
   qs('#modal-gender-input').value = meta.gender || 'U';
 
-  // ...
   modal.querySelector('#modal-add-color-btn').onclick = () => {
     const container = modal.querySelector('#modal-colors-container');
     container.appendChild(createColorRow());
   };
 
-  // NOVO: Botão da Engrenagem chama o modal de Cores
   modal.querySelector('#modal-manage-colors-btn').onclick = () => {
-    // Verifica se a função global do dashboard existe (se estiver no dash)
     if (typeof window.colorOpenFormModal === 'function') {
       window.colorOpenFormModal('add');
     } else {
-      // Fallback se estiver na home (talvez precise implementar um modal simples de cor na home ou avisar)
       alert("A criação de cores deve ser feita pelo Painel Admin -> Cores.");
     }
   };
 
-  // POPULA O SELECT DE CATEGORIA E SELECIONA A ATUAL
   const catSelect = qs('#modal-category-input');
   populateCategorySelect(catSelect, meta.category);
 
-  // BOTÃO DE GERENCIAR
   qs('#btn-manage-cats-edit').onclick = () => {
     openCategoryManagerModal();
   };
@@ -1211,16 +1306,21 @@ function openEditModalForProduct(productNode) {
     }
   };
 
+  // --- LÓGICA DE SALVAR ATUALIZADA ---
   modal.querySelector('#modal-save').onclick = async () => {
     const productUpdate = {
       nome: qs('#modal-title-input').value.trim(),
       preco: parseFloat(qs('#modal-price-input').value.replace(',', '.')) || 0,
+
+      // >>> ATUALIZAÇÃO: CAPTURA O ESTOQUE DO INPUT <<<
+      stock: parseInt(qs('#modal-stock-input').value) || 0,
+
       img: qs('#modal-img-input').value.trim(),
       tamanhos: qs('#modal-sizes-input').value.trim(),
       description: qs('#modal-description-input').value.trim(),
       additional_info: qs('#modal-additional-info-input').value.trim(),
       cores: qsa('.color-row').map(row => row.getColorObject()).filter(c => c.nome && c.img1),
-      category: qs('#modal-category-input').value, // PEGA DO SELECT DINÂMICO
+      category: qs('#modal-category-input').value,
       gender: qs('#modal-gender-input').value,
       updated_at: new Date()
     };
@@ -1983,77 +2083,77 @@ document.addEventListener('click', async (e) => {
 
 /* ============ MONITORAMENTO DE BANIMENTO EM TEMPO REAL (AGRESSIVO) ============ */
 async function initRealtimeBanMonitor() {
-    try {
-        const supabase = await initSupabaseClient();
-        const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const supabase = await initSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-        // Se não tem usuário logado, não precisa monitorar
-        if (!user) return;
+    // Se não tem usuário logado, não precisa monitorar
+    if (!user) return;
 
-        // Função de expulsão imediata
-        const executeBan = async (reason) => {
-            console.warn("BANIMENTO DETECTADO! ENCERRANDO SESSÃO...");
-            await supabase.auth.signOut();
-            localStorage.removeItem('userRole'); 
-            // Redireciona imediatamente
-            window.location.href = `index.html?banned=true&reason=${encodeURIComponent(reason || "Violação dos termos")}`;
-        };
+    // Função de expulsão imediata
+    const executeBan = async (reason) => {
+      console.warn("BANIMENTO DETECTADO! ENCERRANDO SESSÃO...");
+      await supabase.auth.signOut();
+      localStorage.removeItem('userRole');
+      // Redireciona imediatamente
+      window.location.href = `index.html?banned=true&reason=${encodeURIComponent(reason || "Violação dos termos")}`;
+    };
 
-        // 1. Verificação Inicial (Ao carregar a página)
-        const { data: banData } = await supabase
-            .from('user_bans')
-            .select('*')
-            .eq('user_id', user.id)
-            .maybeSingle();
+    // 1. Verificação Inicial (Ao carregar a página)
+    const { data: banData } = await supabase
+      .from('user_bans')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-        if (banData) {
-            // Verifica se o banimento temporário ainda é válido
-            let isActive = true;
-            if (banData.ban_type === 'temporary' && banData.banned_until) {
-                if (new Date() > new Date(banData.banned_until)) isActive = false;
-            }
-            if (isActive) {
-                await executeBan(banData.reason);
-                return; 
-            }
-        }
-
-        // 2. Listener em Tempo Real (Dispara em < 1 segundo na maioria das conexões)
-        const banChannel = supabase.channel('public:user_bans_monitor')
-            .on('postgres_changes',
-                { 
-                    event: 'INSERT', 
-                    schema: 'public', 
-                    table: 'user_bans', 
-                    filter: `user_id=eq.${user.id}` 
-                },
-                (payload) => {
-                    // Assim que o admin clicar em "Banir", isso dispara
-                    executeBan(payload.new.reason);
-                }
-            )
-            .subscribe((status) => {
-                if(status === 'SUBSCRIBED') console.log(" Monitoramento de banimento ativo.");
-            });
-
-    } catch (err) {
-        console.error("Erro no monitor de banimento:", err);
+    if (banData) {
+      // Verifica se o banimento temporário ainda é válido
+      let isActive = true;
+      if (banData.ban_type === 'temporary' && banData.banned_until) {
+        if (new Date() > new Date(banData.banned_until)) isActive = false;
+      }
+      if (isActive) {
+        await executeBan(banData.reason);
+        return;
+      }
     }
+
+    // 2. Listener em Tempo Real (Dispara em < 1 segundo na maioria das conexões)
+    const banChannel = supabase.channel('public:user_bans_monitor')
+      .on('postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'user_bans',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          // Assim que o admin clicar em "Banir", isso dispara
+          executeBan(payload.new.reason);
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') console.log(" Monitoramento de banimento ativo.");
+      });
+
+  } catch (err) {
+    console.error("Erro no monitor de banimento:", err);
+  }
 }
 
 /* ============ GUARD: BLOQUEIO DE AÇÕES PARA BANIDOS ============ */
 // Esta função verifica se o usuário está banido antes de realizar ações críticas
 async function checkIfBanned(user_id) {
-    if(!user_id) return false;
-    const supabase = await initSupabaseClient();
-    const { data } = await supabase.from('user_bans').select('id').eq('user_id', user_id).maybeSingle();
-    if (data) {
-        // Se encontrar banimento, força logout na hora
-        await supabase.auth.signOut();
-        window.location.href = "index.html?banned=true";
-        return true; // Está banido
-    }
-    return false;
+  if (!user_id) return false;
+  const supabase = await initSupabaseClient();
+  const { data } = await supabase.from('user_bans').select('id').eq('user_id', user_id).maybeSingle();
+  if (data) {
+    // Se encontrar banimento, força logout na hora
+    await supabase.auth.signOut();
+    window.location.href = "index.html?banned=true";
+    return true; // Está banido
+  }
+  return false;
 }
 
 // Inicializa o monitor quando o DOM estiver pronto
@@ -2062,21 +2162,62 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Verifica se existe uma mensagem salva
-    const message = sessionStorage.getItem('toastMessage');
+  // Verifica se existe uma mensagem salva
+  const message = sessionStorage.getItem('toastMessage');
 
-    if (message) {
-        // Exibe o Toast usando sua função global
-        if (typeof showToast === 'function') {
-            // Pequeno delay para garantir que a página carregou visualmente
-            setTimeout(() => {
-                showToast(message, 'success'); // ou 'info'
-            }, 500);
-        } else {
-            alert(message); // Fallback caso showToast não esteja pronto
-        }
-
-        // Limpa a mensagem para não aparecer de novo se recarregar a página
-        sessionStorage.removeItem('toastMessage');
+  if (message) {
+    // Exibe o Toast usando sua função global
+    if (typeof showToast === 'function') {
+      // Pequeno delay para garantir que a página carregou visualmente
+      setTimeout(() => {
+        showToast(message, 'success'); // ou 'info'
+      }, 500);
+    } else {
+      alert(message); // Fallback caso showToast não esteja pronto
     }
+
+    // Limpa a mensagem para não aparecer de novo se recarregar a página
+    sessionStorage.removeItem('toastMessage');
+  }
+});
+
+/* ============ MONITORAMENTO DE ESTOQUE EM TEMPO REAL ============ */
+document.addEventListener('DOMContentLoaded', async () => {
+  // Pequeno delay para garantir que supabaseClient esteja pronto
+  setTimeout(async () => {
+    try {
+      const supabase = await window.initSupabaseClient();
+
+      // Escuta qualquer UPDATE na tabela 'products'
+      const stockChannel = supabase.channel('public:products_stock_monitor')
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'products' },
+          (payload) => {
+            const newProduct = payload.new;
+
+            // 1. Se o modal de edição desse produto estiver aberto, atualiza o input
+            const modalTitleInput = document.getElementById('modal-title-input');
+            const modalStockInput = document.getElementById('modal-stock-input');
+
+            // Checagem simples pelo nome para saber se é o produto do modal
+            if (modalTitleInput && modalStockInput && modalTitleInput.value === newProduct.nome) {
+              // Só atualiza se o usuário não estiver focado digitando nele
+              if (document.activeElement !== modalStockInput) {
+                modalStockInput.value = newProduct.stock;
+                modalStockInput.style.backgroundColor = '#e6fffa'; // Flash verde sutil
+                setTimeout(() => modalStockInput.style.backgroundColor = '', 1000);
+              }
+            }
+
+            // 2. Se estiver na Dashboard, atualiza a célula da tabela (se existir célula com ID específico)
+            // (Você precisaria adicionar IDs nas células da dashboard para isso funcionar 100% lá)
+          }
+        )
+        .subscribe();
+
+    } catch (err) {
+      console.error("Erro no monitoramento de estoque:", err);
+    }
+  }, 1000);
 });
