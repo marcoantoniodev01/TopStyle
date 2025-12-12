@@ -3814,7 +3814,6 @@ hr {
 /* 1. O container principal da página
    (Define o alinhamento ao topo, como na sua foto) */
 .selecao-products {
-    top: 12vh;
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
@@ -4260,7 +4259,7 @@ hr {
     background: #fff;
     border: 1px solid #eee;
     transition: transform 0.3s;
-    max-width: 400px;
+    max-width: 450px;
 }
 
 .product:hover {
