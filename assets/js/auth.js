@@ -74,29 +74,33 @@ document.addEventListener('DOMContentLoaded', () => {
 const urlParams = new URLSearchParams(window.location.search);
   
   // === LÓGICA DE EXIBIÇÃO DE BANIMENTO (NOVO) ===
+  // === LÓGICA DE EXIBIÇÃO DE BANIMENTO (NOVO) ===
   if (urlParams.get('banned') === 'true') {
     const motivo = urlParams.get('reason') || 'Violação dos termos de uso.';
     
-    // Usa o showConfirmationModal do main.js que você já tem
-    // Colocamos num timeout pequeno para garantir que o DOM/CSS carregou
+    // Usa o showConfirmationModal do main.js
     setTimeout(() => {
         if (window.showConfirmationModal) {
             window.showConfirmationModal(
                 `ACESSO SUSPENSO. Sua conta foi desconectada imediatamente.\n\nMotivo: ${motivo}`, 
                 { 
                     okText: 'Entendi', 
-                    cancelText: 'Falar com Suporte' // Opcional
+                    cancelText: 'Falar com Suporte' // Este é o botão da esquerda
                 }
-            ).then((contatarSuporte) => {
-                if (!contatarSuporte) { // Se clicou em "Falar com Suporte" (botão da esquerda retorna false na sua lógica atual)
-                   // Opcional: Redirecionar para página de suporte
-                   // window.location.href = 'suporte.html';
+            ).then((usuarioClicouEmEntendi) => {
+                // Se usuarioClicouEmEntendi for false, significa que ele clicou em "Falar com Suporte"
+                if (!usuarioClicouEmEntendi) { 
+                   // Redireciona para a página de suporte
+                   window.location.href = 'suporte.html';
+                } else {
+                   // Se clicou em "Entendi", apenas limpa a URL para o modal não aparecer de novo
+                   window.history.replaceState({}, document.title, "index.html");
                 }
-                // Limpa a URL para o modal não aparecer se der F5
-                window.history.replaceState({}, document.title, "index.html");
             });
         } else {
+            // Fallback caso o modal não carregue
             alert(`ACESSO SUSPENSO\nMotivo: ${motivo}`);
+            window.location.href = 'suporte.html'; // Redireciona após o OK do alert simples
         }
     }, 500);
   }
