@@ -291,6 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
 //  DASHBOARD FINANCEIRO (VIA POLÍTICA RLS)
 // =========================================================
 
+// =========================================================
+//  DASHBOARD FINANCEIRO (MODIFICADO: ABREVIAÇÃO + MODAL)
+// =========================================================
+
+// Estado global para guardar os valores exatos
 let dashboardState = {
     vendasTotais: 0,
     lucroBruto: 0,
@@ -298,52 +303,42 @@ let dashboardState = {
     lucroLiquido: 0
 };
 
-// Função de Animação (Mantida igual)
-function animarValor(idElemento, valorFinal, isMoeda = true) {
-    const elemento = document.getElementById(idElemento);
-    if (!elemento) return;
-
-    let chaveEstado = '';
-    if (idElemento === 'valor-vendas-totais') chaveEstado = 'vendasTotais';
-    else if (idElemento === 'valor-lucro-bruto') chaveEstado = 'lucroBruto';
-    else if (idElemento === 'valor-custo-total') chaveEstado = 'custoTotal';
-    else if (idElemento === 'valor-lucro-liquido') chaveEstado = 'lucroLiquido';
-
-    const valorInicial = dashboardState[chaveEstado] || 0;
-    const duracao = 1500;
-    const startTime = performance.now();
-
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duracao, 1);
-        const ease = 1 - Math.pow(1 - progress, 4);
-        const valorAtual = valorInicial + (valorFinal - valorInicial) * ease;
-
-        if (isMoeda) {
-            elemento.innerText = valorAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        } else {
-            elemento.innerText = Math.floor(valorAtual) + " itens";
-        }
-
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        } else {
-            dashboardState[chaveEstado] = valorFinal;
-            if (isMoeda) {
-                elemento.innerText = valorFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            } else {
-                elemento.innerText = valorFinal + " itens";
-            }
-        }
+// 1. Função Formatadora (Milhões, Bilhões, Trilhões)
+function formatarAbreviado(valor, isMoeda = true) {
+    // Se não for moeda (ex: quantidade de itens), formata normal se for pequeno
+    if (!isMoeda) {
+        if (valor < 1000000) return Math.floor(valor) + " itens";
     }
-    requestAnimationFrame(update);
+
+    // Converter para absoluto para calcular a magnitude
+    let val = Math.abs(valor);
+    let sufixo = "";
+    let divisor = 1;
+
+    if (val >= 1e12) { // Trilhões
+        sufixo = " Trilhões";
+        divisor = 1e12;
+    } else if (val >= 1e9) { // Bilhões
+        sufixo = " Bilhões";
+        divisor = 1e9;
+    } else if (val >= 1e6) { // Milhões
+        sufixo = " Milhões";
+        divisor = 1e6;
+    } else {
+        // Se for menor que 1 milhão, usa formatação padrão de moeda
+        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Calcula o valor abreviado
+    let valorAbreviado = (valor / divisor).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    
+    // Retorna string final (Ex: "R$ 1,52 Milhões" ou apenas "1,52 Milhões")
+    return (isMoeda ? "R$ " : "") + valorAbreviado + sufixo;
 }
 
-// 🔹 AGORA USAMOS 'client' NORMAL
-// Como configuramos a política no SQL, o Supabase vai deixar o Admin ver tudo.
+// 2. Função de Atualização Principal
 async function atualizarMetricasFinanceiras() {
     try {
-        // Usa client normal. O RLS no banco vai liberar os dados se você for Admin.
         const { data: itens, error } = await client
             .from('order_items')
             .select('quantity, price');
@@ -361,27 +356,61 @@ async function atualizarMetricasFinanceiras() {
             receitaBruta += (preco * qtd);
         });
 
+        // Simulação de custos (Exemplo: 40% de custo)
         const custoTotal = receitaBruta * 0.40;
         const lucroLiquido = receitaBruta - custoTotal;
 
-        animarValor('valor-vendas-totais', qtdTotal, false);
-        animarValor('valor-lucro-bruto', receitaBruta, true);
-        animarValor('valor-custo-total', custoTotal, true);
-        animarValor('valor-lucro-liquido', lucroLiquido, true);
+        // --- SALVA NO ESTADO GLOBAL (Valores Cheios) ---
+        dashboardState.vendasTotais = qtdTotal;
+        dashboardState.lucroBruto = receitaBruta;
+        dashboardState.custoTotal = custoTotal;
+        dashboardState.lucroLiquido = lucroLiquido;
+
+        // --- ATUALIZA A TELA (Valores Abreviados) ---
+        // Aqui atualizamos diretamente o texto para garantir a formatação correta "Mi/Bi"
+        
+        const elVendas = document.getElementById('valor-vendas-totais');
+        const elBruto = document.getElementById('valor-lucro-bruto');
+        const elCusto = document.getElementById('valor-custo-total');
+        const elLiquido = document.getElementById('valor-lucro-liquido');
+
+        if(elVendas) elVendas.innerText = formatarAbreviado(qtdTotal, false); // False = não é moeda
+        if(elBruto) elBruto.innerText = formatarAbreviado(receitaBruta, true);
+        if(elCusto) elCusto.innerText = formatarAbreviado(custoTotal, true);
+        if(elLiquido) elLiquido.innerText = formatarAbreviado(lucroLiquido, true);
 
     } catch (err) {
         console.error("Erro financeiro:", err);
     }
 }
 
-// O Realtime
+// 3. Funções do Modal "Ver Tudo"
+window.openFinanceModal = function() {
+    // Preenche o modal com os valores exatos do dashboardState
+    document.getElementById('modal-fin-vendas').innerText = dashboardState.vendasTotais.toLocaleString('pt-BR') + " itens";
+    document.getElementById('modal-fin-bruto').innerText = dashboardState.lucroBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    document.getElementById('modal-fin-custo').innerText = dashboardState.custoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    document.getElementById('modal-fin-liquido').innerText = dashboardState.lucroLiquido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    const modal = document.getElementById('modal-finance-details');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+window.closeFinanceModal = function() {
+    const modal = document.getElementById('modal-finance-details');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+// O Realtime permanece igual
 function iniciarRealtimeFinanceiro() {
     client
         .channel('realtime:financeiro_geral')
         .on('postgres_changes',
             { event: '*', schema: 'public', table: 'order_items' },
             (payload) => {
-                console.log('Movimentação detectada:', payload);
+                // console.log('Movimentação financeira detectada');
                 atualizarMetricasFinanceiras();
             }
         )
