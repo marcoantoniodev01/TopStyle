@@ -47,6 +47,8 @@ Grandes telas - acim 1200px
     transition: opacity .3s ease, visibility .3s ease !important;
   }
 
+  /* MODIFIQUEI */
+
   .nav__menu {
     background-color: var(--second-color-opacity) !important;
     height: 100% !important;
@@ -59,9 +61,9 @@ Grandes telas - acim 1200px
     padding: 0 !important;
     opacity: 0 !important;
     visibility: hidden !important;
-    transition: opacity .3s ease, visibility .3s ease, right .5s ease !important;
+    transition: opacity .3s ease, visibility .3s ease, left .5s ease !important;
     z-index: 1 !important;
-    right: -100% !important;
+    left: -100% !important;
     overflow-y: auto !important;
   }
 
@@ -69,8 +71,10 @@ Grandes telas - acim 1200px
     opacity: 1 !important;
     visibility: visible !important;
     top: 0% !important;
-    right: 0 !important;
+    left: 0 !important;
   }
+
+  /* ATÉ AQUI */
 
   .nav__menu::-webkit-scrollbar {
     width: 6px !important;
@@ -155,9 +159,13 @@ Grandes telas - acim 1200px
     gap: 10px !important;
   }
 
+  /* MODIFIQUEI */
+
   .social-header {
-    width: auto !important;
+    width: 71px !important;
   }
+
+  /* ATÉ AQUI */
 
   .bi-caret-down-fill {
     display: block !important;
@@ -338,10 +346,22 @@ Grandes telas - acim 1200px
     width: 100% !important;
     border-bottom: 2px solid var(--fourth-color-opacity) !important;
   }
+
+  /* ADICIONEI */
+
+  .desktop {
+    display: none !important;
+  }
+
+  .mobile__icons{
+    display: flex;
+  }
+
+  /* ATÉ AQUI */
 }
 
 @media screen and (max-width: 490px) {
-    .logo-text span{
+  .logo-text span {
     display: none !important;
   }
 }

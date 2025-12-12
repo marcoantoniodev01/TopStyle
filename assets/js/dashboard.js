@@ -129,36 +129,50 @@ menuItems.forEach((item, index) => {
     });
 });
 
-// ✅ Carregar conteúdo na direita
+// assets/js/dashboard.js
+
+// ... (código anterior mantido)
+
 document.querySelectorAll('.submenu li').forEach(li => {
     li.addEventListener('click', () => {
         const target = li.getAttribute('data-content');
         if (!target) return;
 
-        // --- NOVO: Fecha o menu lateral automaticamente no Mobile ---
+        // Fecha sidebar no mobile
         if (window.innerWidth <= 1430) {
             const sidebar = document.querySelector('.body-left');
             if (sidebar.classList.contains('dash-open')) {
-                toggleDashSidebar(); // Chama sua função existente que fecha e remove o overlay
+                toggleDashSidebar();
             }
         }
-        // -----------------------------------------------------------
 
-        // Se for a página de categorias, carrega a lógica
+        // 1. SE FOR CATEGORIA
         if (target === 'categoria-produto') {
             initCategoryPage();
         }
 
-        // >>> ADICIONE ISSO AQUI: <<<
+        // 2. SE FOR CORES
         if (target === 'cores-produto') {
             initColorPage();
         }
 
-        // Marca item ativo
+        // 3. SE FOR CHAT DE SUPORTE (O CÓDIGO QUE FALTAVA)
+        if (target === 'suporte-chat-admin') {
+            // Pequeno delay para garantir que a div esteja visível (display: block)
+            setTimeout(() => {
+                if (typeof window.initAdminChat === 'function') {
+                    console.log("Iniciando chat admin...");
+                    window.initAdminChat();
+                } else {
+                    console.error("Função initAdminChat não encontrada no support-chat.js");
+                }
+            }, 100);
+        }
+
+        // Lógica de troca de abas (Visual)
         document.querySelectorAll('.submenu li').forEach(i => i.classList.remove('active'));
         li.classList.add('active');
 
-        // Transição de fade suave
         const currentPage = document.querySelector('.page.active');
         const newPage = document.getElementById(target);
 
@@ -168,12 +182,16 @@ document.querySelectorAll('.submenu li').forEach(li => {
             currentPage.style.opacity = 0;
             setTimeout(() => {
                 currentPage.classList.remove('active');
-                newPage.classList.add('active');
-                setTimeout(() => (newPage.style.opacity = 1), 50);
+                if (newPage) {
+                    newPage.classList.add('active');
+                    setTimeout(() => (newPage.style.opacity = 1), 50);
+                }
             }, 300);
         } else {
-            newPage.classList.add('active');
-            setTimeout(() => (newPage.style.opacity = 1), 50);
+            if (newPage) {
+                newPage.classList.add('active');
+                setTimeout(() => (newPage.style.opacity = 1), 50);
+            }
         }
     });
 });

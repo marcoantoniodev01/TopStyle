@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="assets/css/mediaquery-header.css">
   <link rel="stylesheet" href="assets/css/style-header.css">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/support-chat.css">
   <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
 </head>
 
@@ -28,6 +29,7 @@
 
   <header class="header " id="header">
     <nav class="nav__container">
+
       <div class="nav__menu" id="nav-menu">
         <ul class="nav__list">
           <li title="Categorias" class="nav__item dropdown item1" id="nav__item">
@@ -92,63 +94,16 @@
 
             <!-- MEGA MENU INSERIDO AQUI -->
             <div class="mega-menu" id="mega-menu-drops">
-              <div class="mega-content">
-                <div class="column">
-                  <h3><span class="column__title">Vestuário</span></h3>
-                  <a href="#" data-link-id="vestuario-ver-todos">Ver Todos</a>
-                  <a href="#" data-link-id="vestuario-camisetas">Camisetas</a>
-                  <a href="#" data-link-id="vestuario-plus-size">Camiseta Plus-Size</a>
-                  <a href="#" data-link-id="vestuario-manga-longa">Camiseta Manga Longa</a>
-                  <a href="#" data-link-id="vestuario-moletons">Moletons</a>
-                  <a href="#" data-link-id="vestuario-jaquetas">Jaquetas E Casacos</a>
-                  <a href="#" data-link-id="vestuario-camisas">Camisas</a>
-                  <a href="#" data-link-id="vestuario-calcas">Calças</a>
-                  <a href="#" data-link-id="vestuario-shorts">Shorts E Bermudas</a>
+              <div class="mega-content" id="mega-content-drops">
+                <div class="mega-imgs">
+                  <div class="drop-column">
+                    <a href="#" class="drop__img"><img
+                        src="https://www.blog.userefuse.com.br/wp-content/uploads/2023/08/3-Raz%C3%B5es-para-Adotar-o-Estilo-Streetwear-em-Suas-Roupas-scaled.jpg"
+                        alt=""></a>
+                    <p class="drop-name">########</p>
+                  </div>
                 </div>
-
-                <div class="column">
-                  <h3><span class="column__title">Outros</span></h3>
-                  <a href="#" data-link-id="outros-ver-todos">Ver Todos</a>
-                  <a href="#" data-link-id="outros-juvenil">Juvenil</a>
-                  <a href="#" data-link-id="outros-feminino">Feminino</a>
-                  <a href="#" data-link-id="outros-packs">Packs</a>
-                </div>
-
-                <div class="column">
-                  <h3><span class="column__title">Acessórios</span></h3>
-                  <a href="#" data-link-id="acessorios-ver-todos">Ver Todos</a>
-                  <a href="#" data-link-id="acessorios-chaveiros">Chaveiros E Adesivos</a>
-                  <a href="#" data-link-id="acessorios-cuecas">Cuecas</a>
-                  <a href="#" data-link-id="acessorios-gorros">Gorros</a>
-                  <a href="#" data-link-id="acessorios-pochetes">Pochetes</a>
-                  <a href="#" data-link-id="acessorios-mochilas">Mochilas</a>
-                  <a href="#" data-link-id="acessorios-meias">Meias</a>
-                  <a href="#" data-link-id="acessorios-bags">Bags</a>
-                  <a href="#" data-link-id="acessorios-bones">Bonés</a>
-                  <a href="#" data-link-id="acessorios-bucket">Bucket</a>
-                  <a href="#" data-link-id="acessorios-carteiras">Carteiras</a>
-                </div>
-
-                <div class="column">
-                  <h3><span class="column__title">Calçados</span></h3>
-                  <a href="#" data-link-id="calcados-ver-todos">Ver Todos</a>
-                  <a href="#" data-link-id="calcados-chinelos">Chinelos</a>
-                </div>
-              </div>
-            </div>
-          </li>
-
-
-          <li title="Promoções" class="nav__item dropdown item2">
-            <div class="header__link">
-              <a href="#off" class="nav__link">Off</a>
-              <i class="bi bi-caret-down-fill mobile-caret"></i>
-            </div>
-
-            <!-- MEGA MENU INSERIDO AQUI -->
-            <div class="mega-menu" id="mega-menu-off">
-              <div class="mega-content">
-                <div class="column">
+                <div class="column mega-drops">
                   <h3><span class="column__title">Vestuário</span></h3>
                   <a href="#">Ver Todos</a>
                   <a href="#">Camisetas</a>
@@ -161,7 +116,7 @@
                   <a href="#">Shorts E Bermudas</a>
                 </div>
 
-                <div class="column">
+                <div class="column mega-drops">
                   <h3><span class="column__title">Outros</span></h3>
                   <a href="#">Ver Todos</a>
                   <a href="#">Juvenil</a>
@@ -169,7 +124,7 @@
                   <a href="#">Packs</a>
                 </div>
 
-                <div class="column">
+                <div class="column mega-drops">
                   <h3><span class="column__title">Acessórios</span></h3>
                   <a href="#">Ver Todos</a>
                   <a href="#">Chaveiros E Adesivos</a>
@@ -184,7 +139,7 @@
                   <a href="#">Carteiras</a>
                 </div>
 
-                <div class="column">
+                <div class="column mega-drops">
                   <h3><span class="column__title">Calçados</span></h3>
                   <a href="#">Ver Todos</a>
                   <a href="#">Chinelos</a>
@@ -205,13 +160,29 @@
         </div>
       </div>
 
+      <div class="mobile__icons">
+        <div class="nav__burger">
+          <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
+        </div>
+        <div class="nav__search">
+          <a href="javascript:void(0)" id="open-search-btn-mobile">
+            <i class="ri-search-line"></i>
+          </a>
+        </div>
+      </div>
+
       <div class="logo-text-container">
-        <h1><a class="logo-text" href="inicial.html"><b>TopStyle <span>| Dashboard Adm</span></b></a></h1>
+        <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Dashboard</span></a></h1>
       </div>
 
       <div class="social-header">
         <ul>
-          <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+          <li class="social__link" title="Pesquisa">
+            <a href="javascript:void(0)" id="open-search-btn" class="desktop">
+              <i class="ri-search-line"></i>
+            </a>
+          </li>
+
           <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i class="ri-user-line"></i></a>
           </li>
           <li class="social__link" title="Carrinho">
@@ -220,15 +191,27 @@
               <span id="cart-count" class="cart-count">0</span>
             </a>
           </li>
-          <li class="social__link">
-            <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
-          </li>
         </ul>
-
       </div>
     </nav>
     <div class="progress-bar"></div>
+
+    <div id="search-modal" class="search-modal">
+      <div class="search-overlay"></div>
+      <div class="search-content">
+        <div class="search-input-wrapper">
+          <i class="ri-search-line search-icon-input"></i>
+          <input type="text" id="search-input" placeholder="O que você procura? (ex: Camiseta, Streetwear...)">
+          <i class="ri-close-line" id="close-search-btn"></i>
+        </div>
+
+        <div id="search-results" class="search-results">
+        </div>
+      </div>
+    </div>
+
   </header>
+  <div class="progress-bar"></div>
 
   <main>
     <div class="mobile-dash-trigger-container">
@@ -326,13 +309,15 @@
                 <li>Logs de erro ou atividades (se tiver como)</li>
               </ul>
 
-              <li class="menu-item">
-                <span><i class="bi bi-chat-dots-fill"></i> Mensagens / Suporte</span>
+              <li class="menu-item" onclick="limparNotificacaoSuporte()">
+                <span style="position: relative;">
+                  <i class="bi bi-chat-dots-fill"></i> Suporte
+                  <span id="suporte-notif-badge" class="notification-dot" style="display: none;"></span>
+                </span>
                 <span class="arrow">▶</span>
               </li>
               <ul class="submenu">
-                <li>Chat com usuários ou equipe</li>
-                <li>Chat com fornecedor</li>
+                <li data-content="suporte-chat-admin">Chat em Tempo Real</li>
               </ul>
 
               <li class="menu-item">
@@ -355,6 +340,65 @@
         </div>
       </section>
       <section class="body-right">
+
+        <div class="page" id="suporte-chat-admin">
+          <div class="admin-chat-layout">
+
+            <aside class="chat-sidebar">
+              <div class="chat-sidebar-header">
+                <h2>Atendimentos</h2>
+              </div>
+              <div class="chat-contacts-list" id="admin-contacts-list">
+                <div class="loading-contacts">Carregando conversas...</div>
+              </div>
+            </aside>
+
+            <section class="chat-main-window">
+
+              <div class="chat-main-header" id="chat-main-header" style="display:none;">
+
+                <div style="display: flex; align-items: center;">
+
+                  <button class="btn-back-list" onclick="backToContacts()">
+                    <i class="ri-arrow-left-s-line"></i>
+                  </button>
+
+                  <div class="user-profile-trigger" onclick="openProfileFromChat()">
+                    <img id="chat-header-img" src="" alt="">
+                    <div class="chat-header-text">
+                      <h3 id="chat-header-name">Nome do Cliente</h3>
+                      <span id="chat-header-status">Cliente</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="chat-actions">
+                  <button class="btn-end-chat" onclick="endCurrentChat()">
+                    <i class="bi bi-check-circle"></i> <span>Encerrar</span>
+                  </button>
+                </div>
+              </div>
+
+              <div id="chat-empty-state" class="chat-empty-view">
+                <i class="bi bi-chat-square-text"></i>
+                <p>Selecione uma conversa para iniciar o atendimento.</p>
+              </div>
+
+              <div class="chat-messages-area admin-view" id="admin-messages-area" style="display:none;">
+              </div>
+
+              <div class="chat-input-area admin-input" id="admin-input-area" style="display:none;">
+                <form id="admin-chat-form" class="chat-form">
+                  <input type="text" id="admin-message-input" placeholder="Digite sua resposta..." autocomplete="off">
+                  <button type="submit">
+                    <i class="ri-send-plane-fill"></i>
+                  </button>
+                </form>
+              </div>
+
+            </section>
+          </div>
+        </div>
 
         <div class="page active" id="graficos">
           <section class="graficos-body">
@@ -1465,7 +1509,8 @@
   <script src="assets/js/main.js"></script>
   <script src="assets/js/cupons.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <script src="assets/js/dashboard.js"></script>
+  <script src="assets/js/dashboard.js"></script>s
+  <script src="assets/js/support-chat.js"></script>
   <script src="assets/js/header-cell.js"></script>
   <script src="assets/js/menu-hamburger.js"></script>
   <script src="assets/js/header-control.js"></script>
@@ -1476,6 +1521,7 @@
   <script src="assets/js/collection-linker.js"></script>
   <script src="assets/js/drops.js"></script>
   <script src="assets/js/dash-avaliacao.js"></script>
+  <script src="assets/js/search-modal.js" type="module"></script>
 </body>
 
 </html>

@@ -245,12 +245,6 @@ html {
   gap: 14px;
 }
 
-.linha-informations-perfil {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
 .coluna-informations-perfil label {
   display: block;
   font-size: var(--regular-font);

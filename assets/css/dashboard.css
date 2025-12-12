@@ -5825,3 +5825,24 @@ a.profile-link.admin-mode:hover i {
 .cat-modal-overlay {
     z-index: 200000 !important; /* Maior que os 99999 do admin-modal */
 }
+
+/* Bolinha de Notificação Azul Forte */
+.notification-dot {
+    position: absolute;
+    top: -2px;
+    right: -6px;
+    width: 10px;
+    height: 10px;
+    background-color: #007bff; /* Azul forte/padrão do Bootstrap */
+    border: 2px solid #ffffff; /* Borda branca para destacar do ícone */
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    animation: pulseBlue 2s infinite;
+}
+
+@keyframes pulseBlue {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 123, 255, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+}

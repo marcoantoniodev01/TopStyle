@@ -26,11 +26,29 @@
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n));
   }
 
+  // ---------- CORREÇÃO: initSupabaseClient robusta ----------
   async function initSupabaseClient() {
+    // 1) se já criamos um client antes, reutiliza
     if (window.supabaseClient) return window.supabaseClient;
-    if (window.supabase) return window.supabase;
+
+    // 2) se a lib oficial foi carregada via <script> (window.supabase existe e tem createClient), crie um client a partir dela
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        const c = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.supabaseClient = c;
+        return c;
+      } catch (e) {
+        console.warn('initSupabaseClient: erro criando client a partir de window.supabase', e);
+      }
+    }
+
+    // 3) fallback: importar versão estável via esm.sh (mais confiável que +esm do jsdelivr)
     try {
-      const mod = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+      const mod = await import('https://esm.sh/@supabase/supabase-js@2.39.7');
+      if (!mod || typeof mod.createClient !== 'function') {
+        console.error('initSupabaseClient: módulo importado não possui createClient', mod);
+        return null;
+      }
       const c = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       window.supabaseClient = c;
       return c;
@@ -39,6 +57,7 @@
       return null;
     }
   }
+  // ---------------------------------------------------------
 
   async function resolveImageUrl(supabase, imageFieldValue) {
     if (!imageFieldValue) return null;

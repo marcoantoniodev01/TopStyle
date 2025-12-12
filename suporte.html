@@ -1,50 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contato / Suporte – TopStyle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/footer.css">
+    <title>Suporte TopStyle</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/support-chat.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
 </head>
+<body>
+    <div id="client-chat-container" class="client-chat-container">
+        
+        <header class="chat-header">
+            <div class="chat-avatar-support">
+                <img src="https://i.ibb.co/jPt43z3L/logo-background.png" alt="Suporte">
+            </div>
+            <div>
+                <h3>Suporte TopStyle</h3>
+                <p>Online agora</p>
+            </div>
+            <a href="index.html" class="btn-close-chat"><i class="ri-close-line"></i></a>
+        </header>
 
-<body class="page-contato">
-    <div class="container">
-        <h1>Contato / Suporte</h1>
-        <p class="sub">Envie sua dúvida, sugestão ou problema e nossa equipe responderá o mais rápido possível.</p>
+        <main class="chat-messages-area" id="messages-area">
+            </main>
 
-        <form id="supportForm">
-            <select required>
-                <option value="">Selecione o tipo de atendimento</option>
-                <option>Problema com pedido</option>
-                <option>Troca ou devolução</option>
-                <option>Dúvida sobre produto</option>
-                <option>Erro no site</option>
-                <option>Outros</option>
-            </select>
-
-            <input type="text" placeholder="Seu nome" required>
-            <input type="email" placeholder="Seu e-mail" required>
-            <input type="text" placeholder="Número do pedido (opcional)">
-
-            <textarea placeholder="Descreva sua mensagem..." required></textarea>
-
-            <button type="submit">Enviar mensagem</button>
-        </form>
-
-        <div class="success" id="successMessage">
-            ✔ Sua mensagem foi enviada! Retornaremos no seu e-mail em breve.
+        <div class="chat-suggestions" id="chat-suggestions" style="display:none;">
+            <button class="chip" onclick="sendSuggestion('📦 Onde está meu pedido?')">📦 Onde está meu pedido?</button>
+            <button class="chip" onclick="sendSuggestion('💸 Quero solicitar reembolso')">💸 Reembolso</button>
+            <button class="chip" onclick="sendSuggestion('🚫 Por que fui banido?')">🚫 Motivo de banimento</button>
+            <button class="chip" onclick="sendSuggestion('📏 Dúvida sobre tamanhos')">📏 Tamanhos</button>
+            <button class="chip" onclick="sendSuggestion('🚚 Valor do frete')">🚚 Valor do frete</button>
         </div>
+
+        <footer class="chat-input-area">
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="message-input" placeholder="Digite sua mensagem..." autocomplete="off">
+                <button type="submit"><i class="ri-send-plane-fill"></i></button>
+            </form>
+        </footer>
     </div>
 
-    <script>
-        document.getElementById("supportForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-            document.getElementById("successMessage").style.display = "block";
-            this.reset();
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script type="module" src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/support-chat.js"></script>
+    <script src="assets/js/search-modal.js" type="module"></script>
 </body>
-
 </html>

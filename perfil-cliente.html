@@ -35,6 +35,7 @@
 
     <header class="header " id="header">
         <nav class="nav__container">
+
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
                     <li title="Categorias" class="nav__item dropdown item1" id="nav__item">
@@ -165,13 +166,29 @@
                 </div>
             </div>
 
+            <div class="mobile__icons">
+                <div class="nav__burger">
+                    <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
+                </div>
+                <div class="nav__search">
+                        <a href="javascript:void(0)" id="open-search-btn-mobile">
+                            <i class="ri-search-line"></i>
+                        </a>
+                </div>
+            </div>
+
             <div class="logo-text-container">
                 <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Perfil</span></a></h1>
             </div>
 
             <div class="social-header">
                 <ul>
-                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Pesquisa">
+                        <a href="javascript:void(0)" id="open-search-btn" class="desktop">
+                            <i class="ri-search-line"></i>
+                        </a>
+                    </li>
+
                     <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i
                                 class="ri-user-line"></i></a></li>
                     <li class="social__link" title="Carrinho">
@@ -180,19 +197,32 @@
                             <span id="cart-count" class="cart-count">0</span>
                         </a>
                     </li>
-                    <li class="social__link">
-                        <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
-                    </li>
                 </ul>
             </div>
         </nav>
         <div class="progress-bar"></div>
+
+        <div id="search-modal" class="search-modal">
+            <div class="search-overlay"></div>
+            <div class="search-content">
+                <div class="search-input-wrapper">
+                    <i class="ri-search-line search-icon-input"></i>
+                    <input type="text" id="search-input"
+                        placeholder="O que você procura? (ex: Camiseta, Streetwear...)">
+                    <i class="ri-close-line" id="close-search-btn"></i>
+                </div>
+
+                <div id="search-results" class="search-results">
+                </div>
+            </div>
+        </div>
+
     </header>
+    <div class="progress-bar"></div>
 
     <main class="perfil-main">
         <section class="perfil-cliente">
             <div class="painel-cliente-nav">
-                <!-- MODIFIQUEI -->
                 <div class="perfil-page-img">
                     <div class="perfil-photo-wrap">
                         <img id="profilePhoto" src="https://placehold.co/300x300" alt="perfil"
@@ -205,7 +235,6 @@
 
                     <input type="file" id="profileUpload" accept="image/*" style="display: none;">
                 </div>
-                <!-- ATÉ AQUI -->
 
                 <hr class="hr-perfil-client">
                 <ul class="list-page-perfil">
@@ -238,18 +267,24 @@
                 <div id="dados-pessoais" class="window-perfil-cliente">
                     <h1>Dados Pessoais</h1>
                     <form class="form-perfil-list" id="profile-form" data-editable="false">
+                        <!-- MODIFIQUEI -->
                         <div class="linha-informations-perfil">
                             <div class="coluna-informations-perfil">
                                 <label>Username</label>
                                 <p id="username">—</p>
                                 <input id="username-input" class="hidden-input" type="text" />
                             </div>
+                        </div>
+
+                        <div class="linha-informations-perfil">
                             <div class="coluna-informations-perfil">
                                 <label>Email</label>
                                 <p id="email">—</p>
                                 <input id="email-input" class="hidden-input" type="email" />
                             </div>
                         </div>
+
+                        <!-- ATÉ AQUI -->
 
                         <div class="linha-informations-perfil">
                             <div class="coluna-informations-perfil">
@@ -470,7 +505,6 @@
 
     <script src="assets/js/admiconedash.js"></script>
     <script src="assets/js/loader.js"></script>
-    <script src="assets/js/main.js"></script>
     <script type="module" src="assets/js/profile-tabs.js"></script>
     <script src="assets/js/menu-hamburger.js"></script>
     <script type="module" src="assets/js/profile.js" type="module"></script> <!-- Módulo JS Atualizado -->
@@ -479,7 +513,7 @@
     <script src="assets/js/drops.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/search-modal.js" type="module"></script>
+    <script src="assets/js/main.js"></script>
 </body>
-
-
 </html>

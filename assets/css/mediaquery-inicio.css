@@ -502,7 +502,7 @@
         position: absolute;
         left: 0;
         top: 0;
-        height: 64vh;
+        height: 66vh;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -723,7 +723,6 @@
    TV / TELAS GRANDES (1920px+)
    =========================== */
 @media (min-width: 1920px) {}
-
 
 
 

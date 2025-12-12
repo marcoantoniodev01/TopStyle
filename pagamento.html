@@ -38,8 +38,9 @@
         </div>
     </div>
 
-    <header class="header hidden fade-down" id="header">
+    <header class="header " id="header">
         <nav class="nav__container">
+
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
                     <li title="Categorias" class="nav__item dropdown item1" id="nav__item">
@@ -158,61 +159,6 @@
                         </div>
                     </li>
 
-
-                    <li title="Promoções" class="nav__item dropdown item2">
-                        <div class="header__link">
-                            <a href="#off" class="nav__link">Off</a>
-                            <i class="bi bi-caret-down-fill mobile-caret"></i>
-                        </div>
-
-                        <!-- MEGA MENU INSERIDO AQUI -->
-                        <div class="mega-menu" id="mega-menu-off">
-                            <div class="mega-content">
-                                <div class="column">
-                                    <h3><span class="column__title">Vestuário</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Camisetas</a>
-                                    <a href="#">Camiseta Plus-Size</a>
-                                    <a href="#">Camiseta Manga Longa</a>
-                                    <a href="#">Moletons</a>
-                                    <a href="#">Jaquetas E Casacos</a>
-                                    <a href="#">Camisas</a>
-                                    <a href="#">Calças</a>
-                                    <a href="#">Shorts E Bermudas</a>
-                                </div>
-
-                                <div class="column">
-                                    <h3><span class="column__title">Outros</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Juvenil</a>
-                                    <a href="#">Feminino</a>
-                                    <a href="#">Packs</a>
-                                </div>
-
-                                <div class="column">
-                                    <h3><span class="column__title">Acessórios</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Chaveiros E Adesivos</a>
-                                    <a href="#">Cuecas</a>
-                                    <a href="#">Gorros</a>
-                                    <a href="#">Pochetes</a>
-                                    <a href="#">Mochilas</a>
-                                    <a href="#">Meias</a>
-                                    <a href="#">Bags</a>
-                                    <a href="#">Bonés</a>
-                                    <a href="#">Bucket</a>
-                                    <a href="#">Carteiras</a>
-                                </div>
-
-                                <div class="column">
-                                    <h3><span class="column__title">Calçados</span></h3>
-                                    <a href="#">Ver Todos</a>
-                                    <a href="#">Chinelos</a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
                     <li title="Sobre Nós" class="nav__item dropdown item2">
                         <div class="header__link">
                             <a href="#sobre" class="nav__link">Sobre</a>
@@ -225,13 +171,29 @@
                 </div>
             </div>
 
+            <div class="mobile__icons">
+                <div class="nav__burger">
+                    <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
+                </div>
+                <div class="nav__search">
+                        <a href="javascript:void(0)" id="open-search-btn-mobile">
+                            <i class="ri-search-line"></i>
+                        </a>
+                </div>
+            </div>
+
             <div class="logo-text-container">
                 <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Pagamento</span></a></h1>
             </div>
 
             <div class="social-header">
                 <ul>
-                    <li class="social__link" title="Instagram"><a href=""><i class="ri-instagram-fill"></i></a></li>
+                    <li class="social__link" title="Pesquisa">
+                        <a href="javascript:void(0)" id="open-search-btn" class="desktop">
+                            <i class="ri-search-line"></i>
+                        </a>
+                    </li>
+
                     <li class="social__link" title="Seu Perfil"><a href="perfil-cliente.html"><i
                                 class="ri-user-line"></i></a></li>
                     <li class="social__link" title="Carrinho">
@@ -240,15 +202,28 @@
                             <span id="cart-count" class="cart-count">0</span>
                         </a>
                     </li>
-                    <li class="social__link">
-                        <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
-                    </li>
                 </ul>
-
             </div>
         </nav>
         <div class="progress-bar"></div>
+
+        <div id="search-modal" class="search-modal">
+            <div class="search-overlay"></div>
+            <div class="search-content">
+                <div class="search-input-wrapper">
+                    <i class="ri-search-line search-icon-input"></i>
+                    <input type="text" id="search-input"
+                        placeholder="O que você procura? (ex: Camiseta, Streetwear...)">
+                    <i class="ri-close-line" id="close-search-btn"></i>
+                </div>
+
+                <div id="search-results" class="search-results">
+                </div>
+            </div>
+        </div>
+
     </header>
+    <div class="progress-bar"></div>
 
     <main>
         <section class="pagamento">
@@ -647,6 +622,7 @@
     <script src="assets/js/drops.js"></script>
     <script src="assets/js/header-control.js"></script>
     <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/search-modal.js" type="module"></script>
 </body>
 
 
