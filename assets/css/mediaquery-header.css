@@ -47,8 +47,6 @@ Grandes telas - acim 1200px
     transition: opacity .3s ease, visibility .3s ease !important;
   }
 
-  /* MODIFIQUEI */
-
   .nav__menu {
     background-color: var(--second-color-opacity) !important;
     height: 100% !important;
@@ -73,8 +71,6 @@ Grandes telas - acim 1200px
     top: 0% !important;
     left: 0 !important;
   }
-
-  /* ATÉ AQUI */
 
   .nav__menu::-webkit-scrollbar {
     width: 6px !important;
@@ -347,17 +343,13 @@ Grandes telas - acim 1200px
     border-bottom: 2px solid var(--fourth-color-opacity) !important;
   }
 
-  /* ADICIONEI */
-
   .desktop {
     display: none !important;
   }
 
   .mobile__icons{
-    display: flex;
+    display: flex !important;
   }
-
-  /* ATÉ AQUI */
 }
 
 @media screen and (max-width: 490px) {
