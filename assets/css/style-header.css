@@ -401,7 +401,7 @@ a.profile-link.admin-mode:hover i {
 
 #mega-menu-drops .drop__img {
   flex: 1;
-  max-width: 250px;
+  max-width: 210px;
 }
 
 #mega-menu-drops {
@@ -654,3 +654,4 @@ a.profile-link.admin-mode:hover i {
     transition: color .4s !important;
     cursor: pointer !important;
 }
+
