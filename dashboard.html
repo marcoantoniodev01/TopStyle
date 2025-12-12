@@ -463,8 +463,12 @@
                   <h2>Lucro Líquido</h2>
                   <p id="valor-lucro-liquido">0</p>
                 </div>
+
                 <div class="block-button-reports">
-                  <a href="#">Visualizar relatórios</a>
+                  <a href="javascript:void(0)" onclick="openFinanceModal()"
+                    style="display: flex; align-items: center; gap: 5px; cursor: pointer; justify-content: center;">
+                    Ver valores exatos
+                  </a>
                 </div>
               </section>
 
@@ -1502,7 +1506,52 @@
     </div>
   </div>
 
-  <script src="assets/js/menu-hamburger.js"></script>
+  <div id="modal-finance-details" class="custom-modal-overlay hidden" style="z-index: 10020;">
+    <div class="custom-modal-content details-modal-pro" style="max-width: 500px;">
+
+      <div class="details-header-pro">
+        <h3>Detalhamento Financeiro</h3>
+        <button class="close-modal-btn-pro" onclick="closeFinanceModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="details-body-pro" style="padding: 20px;">
+        <p style="text-align: center; color: #64748b; margin-bottom: 20px;">
+          Valores exatos sem arredondamento.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+
+          <div style="width: 100%; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <small style="color: #64748b; font-weight: 600; text-transform: uppercase;">Vendas Totais (Qtd)</small>
+            <div id="modal-fin-vendas" style="font-size: 1.2rem; font-weight: 700; color: #1e293b;">0</div>
+          </div>
+
+          <div style="width: 100%; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <small style="color: #64748b; font-weight: 600; text-transform: uppercase;">Lucro Bruto</small>
+            <div id="modal-fin-bruto" style="font-size: 1.2rem; font-weight: 700; color: #1e293b;">R$ 0,00</div>
+          </div>
+
+          <div style="width: 100%; background: #fff1f2; padding: 15px; border-radius: 8px; border: 1px solid #fecdd3;">
+            <small style="color: #be123c; font-weight: 600; text-transform: uppercase;">Custo Total</small>
+            <div id="modal-fin-custo" style="font-size: 1.2rem; font-weight: 700; color: #be123c;">R$ 0,00</div>
+          </div>
+
+          <div style="width: 100%; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+            <small style="color: #15803d; font-weight: 600; text-transform: uppercase;">Lucro Líquido</small>
+            <div id="modal-fin-liquido" style="font-size: 1.2rem; font-weight: 700; color: #15803d;">R$ 0,00</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="details-footer-pro">
+        <button class="btn-pro-secondary" onclick="closeFinanceModal()" style="width: 100%;">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
@@ -1513,6 +1562,7 @@
   <script src="assets/js/dashboard.js"></script>
   <script src="assets/js/support-chat.js"></script>
   <script src="assets/js/header-cell.js"></script>
+  <script src="assets/js/menu-hamburger.js"></script>
   <script src="assets/js/header-control.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -1526,6 +1576,3 @@
 
 
 </html>
-
-
-
