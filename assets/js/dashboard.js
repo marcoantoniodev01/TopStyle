@@ -856,7 +856,8 @@ function renderProducts(products) {
     grid.innerHTML = '';
 
     products.forEach(p => {
-        const q = p.quantidade_disponível || 0;
+        // MODIFICADO: Agora lê 'stock' conforme sua tabela SQL
+        const q = (p.stock !== undefined && p.stock !== null) ? p.stock : 0;
 
         const card = document.createElement('div');
         card.className = 'ProCard';
@@ -864,7 +865,7 @@ function renderProducts(products) {
         card.innerHTML = `
           <div class="ProTooltip">Clique para copiar ID</div>
 
-          <div class="ProImgBox" onclick="copyId(${p.id})">
+          <div class="ProImgBox" onclick="copyId('${p.id}')">
             ${p.img ? `<img src="${p.img}">` : 'Sem imagem'}
           </div>
 
@@ -2956,12 +2957,22 @@ async function dashEditProduct(id) {
             document.body.appendChild(modal);
         }
 
-        // ... (O HTML do modal permanece o mesmo, mantendo aqui resumido para focar na lógica) ...
+        // --- HTML DO MODAL ATUALIZADO COM CAMPO DE ESTOQUE ---
         modal.innerHTML = `
         <div class="modal-content">
             <h2 id="modal-title">Editar Produto</h2>
             <label>Título:</label> <input type="text" id="modal-title-input" value="${product.nome || ''}">
-            <label>Preço:</label> <input type="text" id="modal-price-input" value="${product.preco || ''}">
+            
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label>Preço:</label> 
+                    <input type="text" id="modal-price-input" value="${product.preco || ''}">
+                </div>
+                <div style="width: 120px;">
+                    <label>Estoque:</label> 
+                    <input type="number" id="modal-dash-stock-input" value="${product.stock !== undefined ? product.stock : 0}" style="font-weight: bold; border: 2px solid #333;" min="0">
+                </div>
+            </div>
             
             <label>Categoria:</label>
             <div style="display: flex; gap: 8px; align-items: center;">
@@ -3002,18 +3013,16 @@ async function dashEditProduct(id) {
         const catSelect = document.getElementById('modal-category-input');
         await dashPopulateCategories(catSelect, product.category);
 
-        // --- AQUI ESTÁ A CORREÇÃO PRINCIPAL DAS CORES ---
+        // Renderiza Cores
         const colorsContainer = document.getElementById('modal-colors-container');
-        colorsContainer.innerHTML = ''; // Limpa antes
+        colorsContainer.innerHTML = ''; 
 
         if (product.cores && product.cores.length > 0) {
-            // Cria uma linha para cada cor existente
             product.cores.forEach(cor => {
                 const row = dashCreateColorRow(cor);
                 colorsContainer.appendChild(row);
             });
         } else {
-            // Cria uma vazia
             colorsContainer.appendChild(dashCreateColorRow());
         }
 
@@ -3024,6 +3033,7 @@ async function dashEditProduct(id) {
         document.getElementById('modal-add-color-btn').onclick = () => {
             colorsContainer.appendChild(dashCreateColorRow());
         };
+        // Aqui chamamos o save passando o ID
         document.getElementById('modal-save').onclick = () => dashSaveProduct(product.id);
 
         // Exibir Modal
@@ -3097,10 +3107,29 @@ async function dashPopulateCategories(selectElement, selectedValue) {
 
 // --- Função de Salvar ---
 async function dashSaveProduct(id) {
-    // Coleta dados dos inputs
+    // 1. Coleta dados dos inputs
     const nome = document.getElementById('modal-title-input').value.trim();
     const preco = parseFloat(document.getElementById('modal-price-input').value.replace(',', '.')) || 0;
-    const category = document.getElementById('modal-category-input').value;
+    
+    // CAPTURA O ESTOQUE
+    let stock = parseInt(document.getElementById('modal-dash-stock-input').value) || 0;
+    
+    // === A VALIDAÇÃO NO JAVASCRIPT ESTÁ AQUI ===
+    // Garante que o valor mínimo seja 0
+    if (stock < 0) {
+        stock = 0;
+        // Opcional: Avisa o usuário que o valor foi corrigido para zero
+        if (window.showToast) window.showToast("Estoque não pode ser negativo. O valor foi definido para 0.", "warning");
+    }
+    // ===========================================
+
+    // Tratamento da Categoria (para permitir null)
+    let category = document.getElementById('modal-category-input').value;
+    if (category === "") {
+        category = null;
+    }
+    // ... (restante da coleta de dados)
+
     const gender = document.getElementById('modal-gender-input').value;
     const img = document.getElementById('modal-img-input').value.trim();
     const tamanhos = document.getElementById('modal-sizes-input').value.trim();
@@ -3111,24 +3140,37 @@ async function dashSaveProduct(id) {
     const colorRows = Array.from(document.querySelectorAll('.color-row'));
     const cores = colorRows.map(row => row.getColorObject()).filter(c => c.nome && c.img1);
 
+    // Validação básica
     if (!nome) {
         if (window.showToast) window.showToast("O nome do produto é obrigatório.", "error");
         return;
     }
 
+    // 3. Objeto de atualização
     const updates = {
-        nome, preco, category, gender, img, tamanhos, description, additional_info, cores,
+        nome, 
+        preco, 
+        stock, // Usa o valor corrigido (>= 0)
+        category, 
+        gender, 
+        img, 
+        tamanhos, 
+        description, 
+        additional_info, 
+        cores,
         updated_at: new Date()
     };
 
     try {
+        // 4. Envia para o Supabase
         const { error } = await client.from('products').update(updates).eq('id', id);
+        
         if (error) throw error;
 
         if (window.showToast) window.showToast("Produto salvo com sucesso!", "success");
 
         closeDashModal();
-        loadProducts(); // Atualiza a tabela da dashboard
+        loadProducts();
 
     } catch (err) {
         console.error(err);
