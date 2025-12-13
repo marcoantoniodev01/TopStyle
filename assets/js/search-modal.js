@@ -1,7 +1,10 @@
+// assets/js/search-modal.js
+import { supabase } from './supabaseClient.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // Usa o cliente Supabase que já está disponível globalmente.
-    const searchClient = window.supabase; 
+
+    // usa o cliente importado
+    const searchClient = supabase;
 
     // Elementos do DOM
     const openSearchBtn = document.getElementById('open-search-btn');
@@ -12,73 +15,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchResults = document.getElementById('search-results');
     const searchOverlay = document.querySelector('.search-overlay');
 
-    // 1. Lógica de Abrir/Fechar Modal
+    // 1. Abrir / Fechar modal
     function openModal() {
-        if(searchModal) {
-            searchModal.classList.add('active');
-            setTimeout(() => searchInput.focus(), 300);
-        }
+        if (!searchModal) return;
+        searchModal.classList.add('active');
+        setTimeout(() => searchInput?.focus(), 300);
     }
 
     function closeModal() {
-        if(searchModal) {
-            searchModal.classList.remove('active');
-            if(searchInput) searchInput.value = '';
-            if(searchResults) searchResults.innerHTML = '';
-        }
+        if (!searchModal) return;
+        searchModal.classList.remove('active');
+        if (searchInput) searchInput.value = '';
+        if (searchResults) searchResults.innerHTML = '';
     }
 
-    if(openSearchBtn) openSearchBtn.addEventListener('click', openModal);
-    if(openSearchBtnMobile) openSearchBtnMobile.addEventListener('click', openModal);
-    if(closeSearchBtn) closeSearchBtn.addEventListener('click', closeModal);
-    if(searchOverlay) searchOverlay.addEventListener('click', closeModal);
+    openSearchBtn?.addEventListener('click', openModal);
+    openSearchBtnMobile?.addEventListener('click', openModal);
+    closeSearchBtn?.addEventListener('click', closeModal);
+    searchOverlay?.addEventListener('click', closeModal);
 
-    // 2. Função de Debounce (Espera o usuário parar de digitar)
-    function debounce(func, wait) {
+    // 2. Debounce
+    function debounce(func, wait = 400) {
         let timeout;
-        return function(...args) {
-            const context = this;
+        return function (...args) {
             clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(context, args), wait);
+            timeout = setTimeout(() => func.apply(this, args), wait);
         };
     }
 
-    // 3. Lógica de Pesquisa no Supabase
+    // 3. Pesquisa
     const performSearch = async (termo) => {
-        if (!termo || termo.length < 2) {
+        if (!searchResults) return;
+        if (!termo || termo.trim().length < 2) {
             searchResults.innerHTML = '';
             return;
         }
+        const q = termo.trim();
 
-        // VERIFICAÇÃO DE SEGURANÇA: Garante que o cliente está pronto
         if (!searchClient || typeof searchClient.from !== 'function') {
-            searchResults.innerHTML = '<div class="no-results">Erro: Configuração do Supabase pendente. Tente recarregar.</div>';
-            console.error('Cliente Supabase não está configurado corretamente para a pesquisa.');
+            searchResults.innerHTML = '<div class="no-results">Erro: Supabase não inicializado.</div>';
+            console.error('Cliente Supabase não está configurado corretamente (import supabase falhou).');
             return;
         }
 
         searchResults.innerHTML = '<div class="no-results">Buscando...</div>';
 
         try {
-            // Agora usamos o cliente global (searchClient = window.supabase)
             const { data, error } = await searchClient
                 .from('products')
                 .select('*')
-                .or(`nome.ilike.%${termo}%,category.ilike.%${termo}%,dropName.ilike.%${termo}%`)
-                .limit(10); 
+                .or(`nome.ilike.%${q}%,category.ilike.%${q}%,dropName.ilike.%${q}%`)
+                .limit(10);
 
             if (error) throw error;
 
             renderResults(data);
-
-        } catch (error) {
-            console.error('Erro na pesquisa:', error);
+        } catch (err) {
+            console.error('Erro na pesquisa:', err);
             searchResults.innerHTML = '<div class="no-results">Erro ao buscar. Tente novamente.</div>';
         }
     };
 
-    // 4. Renderizar os resultados na tela (Função anterior, apenas mantida)
+    // 4. Renderizar resultados
     function renderResults(produtos) {
+        if (!searchResults) return;
         searchResults.innerHTML = '';
 
         if (!produtos || produtos.length === 0) {
@@ -87,21 +87,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         produtos.forEach(prod => {
-            // ATENÇÃO: Ajuste 'imagem' para o nome da sua coluna de foto no banco se necessário
-            const imgUrl = prod.img || prod.cores; 
-            
+            const imgUrl = prod.img || prod.image || (prod.cores && (Array.isArray(prod.cores) ? prod.cores[0] : prod.cores)) || '';
+            const nome = prod.nome || prod.name || prod.title || 'Produto';
+            const category = prod.category || '';
+            const dropName = prod.dropName || '';
+            const preco = (prod.preco ?? prod.price ?? prod['preço'] ?? 0);
+
             const item = document.createElement('a');
             item.className = 'search-item';
-            item.href = `Blusa-modelo02.html?id=${prod.id}`; 
-            
+            item.href = `Blusa-modelo02.html?id=${encodeURIComponent(prod.id)}`;
+
             item.innerHTML = `
-                <img src="${imgUrl}" alt="${prod.nome}">
+                <img src="${escapeHtml(imgUrl) || ''}" alt="${escapeHtml(nome)}">
                 <div class="search-item-info">
-                    <h4>${prod.nome}</h4>
-                    <span>${prod.category || ''} ${prod.dropName ? '| ' + prod.dropName : ''}</span>
+                    <h4>${escapeHtml(nome)}</h4>
+                    <span>${escapeHtml(category)}${dropName ? ' | ' + escapeHtml(dropName) : ''}</span>
                 </div>
                 <div class="search-item-price">
-                    R$ ${parseFloat(prod.preco).toFixed(2)}
+                    ${isFinite(Number(preco)) ? 'R$ ' + Number(preco).toFixed(2) : ''}
                 </div>
             `;
 
@@ -109,18 +112,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. Event Listeners do Input
+    // small helper (escape)
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    // 5. Input listeners
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
             performSearch(e.target.value);
-        }, 400));
+        }, 350));
 
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const termo = searchInput.value;
+                const termo = searchInput.value.trim();
                 if (termo.length > 0) {
-                    // Redireciona para a página de resultados completos
                     window.location.href = `pesquisa.html?q=${encodeURIComponent(termo)}`;
                 }
             }
