@@ -599,25 +599,24 @@ main {
   display: none !important;
 }
 
+/* Substitua o bloco .model-cloth-info existente por este */
 .model-cloth-info {
   width: 45%;
+  /* O segredo do sticky: */
+  position: -webkit-sticky; /* Para Safari */
   position: sticky;
-  top: 0;
-  /* ponto de fixação no topo */
-  height: fit-content;
-  /* ajusta à altura do conteúdo */
-  max-height: 100vh;
-  /* mas garante pelo menos a altura da tela */
-  padding: 80px 0px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  top: 100px; /* Distância do topo (ajustado para não bater no header) */
+  align-self: flex-start; /* Impede que o container estique até o fim da div pai */
+  
+  height: auto; /* IMPORTANTE: Removemos o 200vh para ele ter o tamanho do conteúdo */
+  padding: 20px 0; /* Ajuste o padding conforme gosto */
+  z-index: 10;
 }
 
-.container {
+
+.model-cloth-info .container {
   width: 100%;
-  margin: -10px auto;
-  padding: 0 15px;
+  margin: 0 auto;
 }
 
 
@@ -685,9 +684,13 @@ main {
   }
 
   .model-cloth-info {
-    width: 100%;
+    width: 100%; /* Ocupa largura total no mobile */
+    position: relative; /* Desativa o sticky */
+    top: 0;
+    height: auto;
     justify-content: center;
     align-items: center;
+    padding: 40px 20px; /* Um pouco de respiro nas laterais */
   }
 
   .container {
@@ -2197,6 +2200,7 @@ progress::-webkit-progress-value {
 	width: 100%;
  	 max-width: 1100px;
 }
+
 
 
 
