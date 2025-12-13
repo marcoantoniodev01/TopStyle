@@ -2,47 +2,32 @@
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- CSS: caminhos relativos garantidos; use servidor (Live Server / http) -->
-  <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/mediaquery.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/mediaquery-colecoes.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/mediaquery-header.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/style-header.css" />
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png" />
-  <title>TopStyle - Coleção</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/mediaquery-header.css">
+    <link rel="stylesheet" href="assets/css/style-header.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>TopStyle | Categorias</title>
 </head>
-<style>
-  .selecao-products {
-    top: 12vh;
-    padding: 0;
-  }
-</style>
-<body>
-  <!-- (mantive exatamente seu header e restante do HTML) -->
-  <!-- Carrossel de desconto -->
-  <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
-    <div class="carrossel-wrapper">
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
-    </div>
-    <div class="carrossel-wrapper">
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
-    </div>
-  </div>
 
-  <header class="header " id="header">
+<body>
+
+    <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+    </div>
+
+
+    <header class="header " id="header">
         <nav class="nav__container">
 
             <div class="nav__menu" id="nav-menu">
@@ -187,7 +172,7 @@
             </div>
 
             <div class="logo-text-container">
-                <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Coleções</span></a></h1>
+                <h1><a class="logo-text" href="inicial.html">TopStyle <span>| Categoria</span></a></h1>
             </div>
 
             <div class="social-header">
@@ -229,107 +214,160 @@
     </header>
     <div class="progress-bar"></div>
 
-  <main>
-    <section class="selecao-products">
-      <div class="selecao-content">
-        <i class="bi bi-filter" id="filter-icon" onclick="clickFilter()"></i>
-        <div class="filtros" id="filter">
-          <div class="filtros-content">
-            <h3 class="filtro-titulo">Filtros</h3>
-            <div class="filtro-grupo" id="grupo-preco">
-              <h4>Faixa de Preço</h4>
-              <div class="filtro-preco-inputs">
-                <input type="number" id="filtro-preco-min" placeholder="R$ Min">
-                <input type="number" id="filtro-preco-max" placeholder="R$ Max">
-              </div>
-              <button type="button" id="btn-aplicar-preco">Aplicar Preço</button>
+    <main>
+        <div class="filter-trigger-wrapper">
+            <button id="toggle-filtros-btn" class="filter-trigger-btn">
+                <i class="bi bi-filter"></i> Mostrar Filtros
+            </button>
+        </div>
+
+        <section class="selecao-products" id="main-product-container">
+
+            <div class="filtros">
+                <div class="filtros-content">
+
+                    <div class="filter-header-mobile">
+                        <h3 class="filtro-titulo">Filtros</h3>
+                        <button id="close-filtros-btn" class="close-filter-btn">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+
+                    <div class="filtro-grupo" id="grupo-preco">
+                        <h4>Faixa de Preço</h4>
+                        <div class="filtro-preco-inputs">
+                            <input type="number" id="filtro-preco-min" placeholder="Min">
+                            <input type="number" id="filtro-preco-max" placeholder="R$ Max">
+                        </div>
+                        <button type="button" id="btn-aplicar-preco">Aplicar Preço</button>
+                    </div>
+
+                    <div class="filtro-grupo" id="grupo-cores">
+                        <h4>Cor</h4>
+                        <div class="filtro-opcoes" id="filtro-cores-container">
+                            <label><input type="checkbox"> Preto</label>
+                            <label><input type="checkbox"> Branco</label>
+                            <label><input type="checkbox"> Cinza</label>
+                        </div>
+                    </div>
+
+                    <button id="btn-limpar-filtros">Limpar Filtros</button>
+                </div>
             </div>
-            <div class="filtro-grupo" id="grupo-cores">
-              <h4>Cor</h4>
-              <div class="filtro-opcoes" id="filtro-cores-container"></div>
+
+            <div class="product-content product-content-selecao">
+                <div class="product">
+                    <a href="#" class="product-link-selecao">
+                        <img src="https://via.placeholder.com/300x400" alt="Produto">
+                        <div class="product-text">
+                            <span class="product-title">CAMISA WONDERLAND</span>
+                            <span class="product-price">R$ 139,90</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="product">
+                    <a href="#" class="product-link-selecao">
+                        <img src="https://via.placeholder.com/300x400" alt="Produto">
+                        <div class="product-text">
+                            <span class="product-title">SHORTS STREET WEAR</span>
+                            <span class="product-price">R$ 40,90</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="product">
+                    <a href="#" class="product-link-selecao">
+                        <img src="https://via.placeholder.com/300x400" alt="Produto">
+                        <div class="product-text">
+                            <span class="product-title">CALÇA CARGO</span>
+                            <span class="product-price">R$ 409,90</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="product">
+                    <a href="#" class="product-link-selecao">
+                        <img src="https://via.placeholder.com/300x400" alt="Produto">
+                        <div class="product-text">
+                            <span class="product-title">CAMISA CANGURU</span>
+                            <span class="product-price">R$ 129,80</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="product">
+                    <a href="#" class="product-link-selecao">
+                        <img src="https://via.placeholder.com/300x400" alt="Produto">
+                        <div class="product-text">
+                            <span class="product-title">CAMISA PRETA</span>
+                            <span class="product-price">R$ 129,80</span>
+                        </div>
+                    </a>
+                </div>
             </div>
-            <button id="btn-limpar-filtros">Limpar Filtros</button>
-          </div>
+
+        </section>
+
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="ri-arrow-up-line"></i>
+        </a>
+    </main>
+
+    <footer class="footer">
+
+        <div class="footer-main">
+            <div class="footer-brand">
+                <h2>TopStyle</h2>
+                <p>Mais que moda, é movimento.
+                    Drops exclusivos, feitos para quem cria tendência.</p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>Coleções</h4>
+                    <ul>
+                        <li><a href="#promotions-day">Novidades</a></li>
+                        <li><a href="#">Drops</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Marca</h4>
+                    <ul>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Na mídia</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Ajuda</h4>
+                    <ul>
+                        <li><a href="medidas.html">Guia de tamanhos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                        <li><a href="devolucao.html">Política de devolução</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="product-content product-content-selecao">
-          <!-- produtos serão renderizados aqui pelo JS -->
-          <div class="product-slot"></div>
+
+        <div class="footer-bottom">
+            <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+            <div class="footer-legal">
+                <a href="termos.html">Termos / Privacidade / Cookies</a>
+            </div>
         </div>
-      </div>
+    </footer>
 
-    </section>
+    <script src="assets/js/admiconedash.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/parallax.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/menu-hamburger.js"></script>
+    <script src="assets/js/header-cell.js"></script>
+    <script src="assets/js/header-control.js"></script>
+    <script src="assets/js/drops.js"></script>
+    <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/search-modal.js" type="module"></script>
+    <script type="module" src="assets/js/colecao.js"></script>
 
-    <a href="#" class="scrollup" id="scroll-up">
-      <i class="ri-arrow-up-line"></i>
-    </a>
-  </main>
-
-  <footer class="footer">
-
-    <div class="footer-main hidden zoom-in">
-      <div class="footer-brand">
-        <h2>TopStyle</h2>
-        <p>Mais que moda, é movimento.
-          Drops exclusivos, feitos para quem cria tendência.</p>
-      </div>
-
-      <div class="footer-links">
-        <div>
-          <h4>Coleções</h4>
-          <ul>
-            <li><a href="#">Novidades</a></li>
-            <li><a href="#">Drops</a></li>
-            <li><a href="#">Collabs</a></li>
-            <li><a href="#">Lookbook</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Marca</h4>
-          <ul>
-            <li><a href="#">Sobre nós</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Carreiras</a></li>
-            <li><a href="#">Na mídia</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Ajuda</h4>
-          <ul>
-            <li><a href="guia-tamanho.html">Guia de tamanhos</a></li>
-            <li><a href="#">Suporte</a></li>
-            <li><a href="#">Política de devolução</a></li>
-            <li><a href="faq.html">FAQ</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 TopStyle. Todos os direitos reservados.</p>
-      <div class="footer-legal">
-        <a href="#">Termos</a>
-        <a href="#">Privacidade</a>
-        <a href="#">Cookies</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- suas libs (mantive a ordem que você usa) -->
-  <script src="assets/js/admiconedash.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/drops.js"></script>
-  <script src="assets/js/auth.js"></script>
-  <script type="module" src="assets/js/collection-linker.js"></script>
-  <script src="assets/js/header-cell.js"></script>
-  <script src="assets/js/menu-hamburger.js"></script>
-  <script src="assets/js/header-control.js"></script>
-
-  <!-- script da página de coleção -->
-  <script type="module" src="assets/js/colecao.js"></script>
-  <script src="assets/js/search-modal.js" type="module"></script>
-  <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const filterBtn = document.getElementById('toggle-filtros-btn');
             const closeFilterBtn = document.getElementById('close-filtros-btn');
@@ -373,6 +411,169 @@
             });
         });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  // elementos
+  const inputMin = document.getElementById('filtro-preco-min');
+  const inputMax = document.getElementById('filtro-preco-max');
+  const btnAplicar = document.getElementById('btn-aplicar-preco');
+  const btnLimpar = document.getElementById('btn-limpar-filtros');
+  const coresContainer = document.getElementById('filtro-cores-container');
+  const productsContainer = document.querySelector('.product-content-selecao') || document.querySelector('.product-content');
+
+  // util: parse "R$ 129,90" => Number(129.90)
+  function parsePrice(text) {
+    if (!text) return NaN;
+    // remove non-digits except comma/dot
+    const cleaned = String(text).replace(/\s/g, '').replace(/R\$|r\$|R|[\u00A0]/g, '').replace(/\./g,'').replace(',', '.');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? NaN : n;
+  }
+
+  // obtém lista de cores checadas (assume inputs dentro de #filtro-cores-container com value)
+  function getCheckedColors() {
+    if (!coresContainer) return [];
+    return Array.from(coresContainer.querySelectorAll('input[type="checkbox"]:checked')).map(i => i.value.trim()).filter(Boolean);
+  }
+
+  // Função que tenta delegar para implementação dinâmica existente (se houver)
+  function tryDelegateToDynamic() {
+    // se existe uma função global applyFilters (da versão dinâmica), usa ela
+    if (typeof window.applyFilters === 'function') {
+      try {
+        window.applyFilters(); // muitas implementações pegam valores dos inputs diretamente
+        return true;
+      } catch (e) {
+        console.warn('Delegação applyFilters falhou:', e);
+        return false;
+      }
+    }
+    // ou se há um objeto global que exporta algo (por ex. colecaoSlots.applyFilters)
+    return false;
+  }
+
+  // Filtra produtos que já estão no DOM (.product)
+  function filterStaticDOM() {
+    if (!productsContainer) return;
+    const products = Array.from(productsContainer.querySelectorAll('.product'));
+    const min = parseFloat(inputMin?.value ?? '');
+    const max = parseFloat(inputMax?.value ?? '');
+    const checkedColors = getCheckedColors();
+
+    // para cada produto decide se mostra ou esconde
+    products.forEach(prod => {
+      let show = true;
+
+      // price: procura elemento com classe .product-price (pode ter "R$ ..." ou só numero)
+      const priceEl = prod.querySelector('.product-price, .product-price span, .product .product-text .product-price');
+      let priceNum = NaN;
+      if (priceEl) priceNum = parsePrice(priceEl.textContent || priceEl.innerText);
+
+      if (!isNaN(min)) {
+        if (isNaN(priceNum) || priceNum < min) show = false;
+      }
+      if (!isNaN(max)) {
+        if (isNaN(priceNum) || priceNum > max) show = false;
+      }
+
+      // color filtering: only if checkboxes exist AND the product has a color attribute
+      if (checkedColors.length > 0) {
+        // tenta extrair cor do produto: pode estar como data-color, ou em .product-text .color, ou classe
+        const dataColor = prod.dataset.color || prod.getAttribute('data-color');
+        let prodColor = (dataColor || '').trim();
+        if (!prodColor) {
+          const colorEl = prod.querySelector('.product-color, .color');
+          prodColor = colorEl ? colorEl.textContent.trim() : '';
+        }
+        // se não encontrou cor, assume não bate
+        if (!prodColor) {
+          show = false;
+        } else {
+          // compara (case-insensitive), se nenhum dos checkedColors combina => esconde
+          const match = checkedColors.some(c => c.toLowerCase() === prodColor.toLowerCase());
+          if (!match) show = false;
+        }
+      }
+
+      prod.style.display = show ? '' : 'none';
+    });
+
+    // se nenhum produto visível, mostra mensagem
+    const anyVisible = products.some(p => p.style.display !== 'none');
+    const noResId = 'no-results-filter-msg';
+    let existing = document.getElementById(noResId);
+    if (!anyVisible) {
+      if (!existing) {
+        const div = document.createElement('div');
+        div.id = noResId;
+        div.className = 'empty';
+        div.textContent = 'Nenhum produto corresponde aos filtros.';
+        productsContainer.appendChild(div);
+      }
+    } else {
+      if (existing) existing.remove();
+    }
+  }
+
+  // Ação ao aplicar
+  function onApply(ev) {
+    ev?.preventDefault?.();
+    // se há implementação dinâmica, delega (preferível)
+    const delegated = tryDelegateToDynamic();
+    if (delegated) return;
+    // senão, aplica filtragem no DOM estático
+    filterStaticDOM();
+    // rola pra container (opcional)
+    productsContainer?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Ação ao limpar
+  function onClear(ev) {
+    ev?.preventDefault?.();
+    if (inputMin) inputMin.value = '';
+    if (inputMax) inputMax.value = '';
+    if (coresContainer) {
+      const checks = coresContainer.querySelectorAll('input[type="checkbox"]');
+      checks.forEach(c => { c.checked = false; });
+    }
+    // se existe implementação dinâmica, delega limpeza (talvez window.resetFilters)
+    if (typeof window.resetFilters === 'function') {
+      try { window.resetFilters(); return; } catch (e) { /* ignore */ }
+    }
+    // senão, mostra todos produtos estáticos
+    const products = Array.from((productsContainer?.querySelectorAll('.product')) || []);
+    products.forEach(p => p.style.display = '');
+    const existing = document.getElementById('no-results-filter-msg');
+    if (existing) existing.remove();
+  }
+
+  // liga handlers (somente se botões existem)
+  if (btnAplicar) btnAplicar.addEventListener('click', onApply);
+  if (btnLimpar) btnLimpar.addEventListener('click', onClear);
+
+  // também permite aplicar ao pressionar Enter em qualquer input de preço
+  [inputMin, inputMax].forEach(inp => {
+    if (!inp) return;
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        onApply(e);
+      }
+    });
+  });
+
+  // se a página usa checkboxes dinamicamente (ex.: geradas depois), delega: observe parent e rebind checkboxes to re-filter automatically
+  if (coresContainer) {
+    coresContainer.addEventListener('change', () => {
+      // aplicacao automática quando o usuário marca cores
+      // apenas quando não há implementação dinâmica
+      if (typeof window.applyFilters !== 'function') filterStaticDOM();
+    });
+  }
+
+});
+</script>
+
 </body>
 
 </html>
