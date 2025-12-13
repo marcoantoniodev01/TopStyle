@@ -464,7 +464,6 @@ main {
 
 main {
     position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -4496,6 +4495,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
