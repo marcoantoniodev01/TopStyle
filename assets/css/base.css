@@ -2086,6 +2086,7 @@ progress::-webkit-progress-value {
   display: flex;
   align-items: center;
   transition: color 0.2s;
+	margin-top: 10px;
 }
 
 .review-actions button:hover {
@@ -2195,6 +2196,7 @@ progress::-webkit-progress-value {
 	width: 100%;
  	 max-width: 1100px;
 }
+
 
 
 
