@@ -1025,6 +1025,7 @@ main {
   padding: 8px 12px;
   font-size: 13px;
   display: none;
+  white-space: pre-line;
 }
 
 .model-accordion-content img {
@@ -2193,6 +2194,7 @@ progress::-webkit-progress-value {
 	width: 100%;
  	 max-width: 1100px;
 }
+
 
 
 
