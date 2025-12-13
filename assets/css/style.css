@@ -4278,7 +4278,7 @@ hr {
 
 .product-text {
     padding: 10px;
-    background-color: #304878;
+    background-color: #000020;
     color: white;
     text-align: center;
     display: flex;
@@ -4496,6 +4496,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
