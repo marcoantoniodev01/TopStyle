@@ -1665,6 +1665,7 @@ progress::-webkit-progress-value {
 .stars {
   font-size: 2rem;
   color: #ccc;
+	cursor: default;
 }
 
 .stars span{
@@ -2196,6 +2197,7 @@ progress::-webkit-progress-value {
 	width: 100%;
  	 max-width: 1100px;
 }
+
 
 
 
