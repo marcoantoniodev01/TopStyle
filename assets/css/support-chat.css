@@ -21,9 +21,9 @@
     flex-direction: column;
     height: 100vh;
     width: 100vw;
-    background-color: var(--ts-bg);
+    /* MUDANÇA: Cor de fundo mais escura para contraste (tipo WhatsApp/Telegram Web) */
+    background-color: #eef0f5; 
     font-family: 'Inter', sans-serif;
-    /* Fonte mais moderna */
 }
 
 /* Header Limpo */
@@ -35,6 +35,9 @@
     gap: 15px;
     border-bottom: 1px solid var(--ts-border);
     height: 70px;
+    /* MUDANÇA: Sombra para separar do fundo */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    z-index: 10;
 }
 
 .chat-avatar-support img {
@@ -55,20 +58,27 @@
 .chat-header p {
     margin: 0;
     font-size: 0.85rem;
-    color: #10b981;
-    /* Verde "Online" */
+    color: #10b981; /* Verde "Online" */
     font-weight: 500;
 }
 
 .btn-close-chat {
     margin-left: auto;
-    font-size: 1.5rem;
-    color: #94a3b8;
+    font-size: 1.8rem; /* Aumentei um pouco para facilitar o toque */
+    color: #64748b;
     transition: color 0.2s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
 
 .btn-close-chat:hover {
     color: var(--ts-black);
+    background-color: #f1f5f9;
 }
 
 /* Área de Mensagens Clean */
@@ -79,7 +89,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background-color: #ffffff;
+    /* MUDANÇA: Transparente para mostrar o fundo cinza da container */
+    background-color: transparent; 
 }
 
 /* Balões de Mensagem */
@@ -91,10 +102,11 @@
     line-height: 1.5;
     position: relative;
     word-wrap: break-word;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    /* MUDANÇA: Sombra mais nítida nos balões */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
 }
 
-/* Mensagem Enviada (Preta) */
+/* Mensagem Enviada (Preta) - Mantém */
 .message-bubble.sent {
     align-self: flex-end;
     background-color: var(--ts-bubble-sent);
@@ -102,14 +114,16 @@
     border-bottom-right-radius: 2px;
 }
 
-/* Mensagem Recebida (Cinza Claro) */
-.message-bubble.received {
+/* Mensagem Recebida (Branco no Cliente para destacar do fundo cinza) */
+.client-chat-container .message-bubble.received {
     align-self: flex-start;
-    background-color: var(--ts-bubble-received);
+    /* MUDANÇA: Branco puro para contrastar com o fundo #eef0f5 */
+    background-color: #ffffff; 
     color: var(--ts-text-received);
     border-bottom-left-radius: 2px;
 }
 
+/* Timestamp */
 .msg-time {
     font-size: 0.7rem;
     display: block;
@@ -118,16 +132,17 @@
     opacity: 0.7;
 }
 
+/* Mensagem do Sistema */
 .msg-system {
     align-self: center;
-    background: #f1f5f9;
+    background: rgba(0,0,0,0.05); /* Escureci levemente */
     color: #64748b;
     padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.8rem;
     margin: 15px 0;
     font-weight: 500;
-    border: 1px solid var(--ts-border);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 /* Input Area Minimalista */
@@ -135,22 +150,26 @@
     background: #fff;
     padding: 15px 20px;
     border-top: 1px solid var(--ts-border);
+    /* MUDANÇA: Sombra invertida para separar da área de msg */
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.03); 
+    z-index: 10;
 }
 
 .chat-form {
     display: flex;
     width: 100%;
     gap: 12px;
-    background: var(--ts-light-gray);
+    background: #f1f5f9; /* Cinza claro no input */
     padding: 8px;
     border-radius: 30px;
     border: 1px solid transparent;
-    transition: border 0.2s;
+    transition: border 0.2s, background 0.2s;
 }
 
 .chat-form:focus-within {
-    border-color: var(--ts-black);
+    border-color: #cbd5e1;
     background: #fff;
+    box-shadow: 0 0 0 2px rgba(25, 29, 40, 0.05);
 }
 
 .chat-form input {
@@ -179,25 +198,35 @@
 
 .chat-form button:hover {
     transform: scale(1.05);
+    background: #333;
 }
 
 /* Chips de Sugestão */
 .chat-suggestions {
     position: absolute;
-    bottom: 80px;
+    bottom: 85px; /* Subi um pouco para desgrudar do input */
     left: 0;
     width: 100%;
     display: flex;
     gap: 10px;
     padding: 10px 20px;
     overflow-x: auto;
-    background: linear-gradient(to top, #ffffff 80%, transparent);
-    z-index: 5;
+    /* Gradiente para suavizar o fundo atrás dos botões */
+    background: linear-gradient(to top, #eef0f5 40%, rgba(238, 240, 245, 0)); 
+    z-index: 20; /* AUMENTEI O Z-INDEX (Era 5, agora é 20 para ficar acima do input) */
+    
+    /* Esconde barra de rolagem */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+
+.chat-suggestions::-webkit-scrollbar { 
+    display: none; 
 }
 
 .chip {
     background: #fff;
-    border: 1px solid var(--ts-border);
+    border: 1px solid #cbd5e1;
     border-radius: 20px;
     padding: 8px 16px;
     font-size: 0.85rem;
@@ -205,13 +234,15 @@
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
-    font-weight: 500;
+    font-weight: 600; /* Deixei a letra um pouco mais gordinha */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra mais forte para destacar do fundo */
 }
 
 .chip:hover {
     background: var(--ts-black);
     color: #fff;
     border-color: var(--ts-black);
+    transform: translateY(-2px);
 }
 
 /* ============ ADMIN DASHBOARD CHAT ============ */

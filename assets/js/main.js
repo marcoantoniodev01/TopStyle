@@ -724,6 +724,39 @@ function createColorRow(color = {}) {
   return row;
 }
 
+// Função auxiliar para preencher o Select de Drops
+async function populateDropSelect(selectElement, selectedValue = null) {
+  selectElement.innerHTML = '<option value="">Carregando...</option>';
+
+  try {
+    const supabase = await window.initSupabaseClient();
+    // Puxa da tabela 'drops'
+    const { data: drops, error } = await supabase
+      .from('drops')
+      .select('name_drop')
+      .order('name_drop', { ascending: true });
+
+    if (error) throw error;
+
+    selectElement.innerHTML = '<option value="">Nenhum Drop</option>';
+
+    drops.forEach(d => {
+      const option = document.createElement('option');
+      option.value = d.name_drop; // Salvaremos o NOME do drop
+      option.textContent = d.name_drop;
+
+      // Verifica se é o drop selecionado
+      if (selectedValue && d.name_drop === selectedValue) {
+        option.selected = true;
+      }
+      selectElement.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Erro ao carregar drops:", err);
+    selectElement.innerHTML = '<option value="">Erro ao carregar</option>';
+  }
+}
+
 /* ============ HELPER GESTÃO DE CORES GLOBAL (CORRIGIDO E EXPOSTO) ============ */
 window.globalColorCache = []; // Exposto no window para acesso da dashboard
 
@@ -996,6 +1029,9 @@ window.openAddProductModal = function (slotId = null) {
           </button>
       </div>
 
+      <label>Drop (Coleção):</label>
+      <select id="modal-drop-input" style="width: 100%;"></select>
+
       <label>Gênero:</label>
       <select id="modal-gender-input">
         <option value="F">Feminino</option>
@@ -1035,114 +1071,119 @@ window.openAddProductModal = function (slotId = null) {
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
+
+  const dropSelect = modal.querySelector('#modal-drop-input');
+  populateDropSelect(dropSelect);
+
   // 3. Inicializa Lógica com Proteção de Erros
   try {
-      // --- LÓGICA DE CATEGORIAS ---
-      const catSelect = modal.querySelector('#modal-category-input');
-      // Prioriza a função da Dashboard se existir
-      if(typeof window.dashPopulateCategories === 'function') {
-          window.dashPopulateCategories(catSelect, '');
-      } else if(typeof populateCategorySelect === 'function') {
-          populateCategorySelect(catSelect);
-      }
+    // --- LÓGICA DE CATEGORIAS ---
+    const catSelect = modal.querySelector('#modal-category-input');
+    // Prioriza a função da Dashboard se existir
+    if (typeof window.dashPopulateCategories === 'function') {
+      window.dashPopulateCategories(catSelect, '');
+    } else if (typeof populateCategorySelect === 'function') {
+      populateCategorySelect(catSelect);
+    }
 
-      // --- LÓGICA DE CORES (AQUI ESTAVA O PROBLEMA) ---
-      const colorsContainer = modal.querySelector('#modal-colors-container');
-      const btnAddColor = modal.querySelector('#modal-add-color-btn');
+    // --- LÓGICA DE CORES (AQUI ESTAVA O PROBLEMA) ---
+    const colorsContainer = modal.querySelector('#modal-colors-container');
+    const btnAddColor = modal.querySelector('#modal-add-color-btn');
 
-      // Verifica qual função de criar linha usar
-      let createRowFn;
-      if (typeof window.dashCreateColorRow === 'function') {
-          createRowFn = window.dashCreateColorRow; // Usa a da Dashboard (Admin)
-      } else if (typeof createColorRow === 'function') {
-          createRowFn = createColorRow; // Usa a da Loja (Main)
-      }
+    // Verifica qual função de criar linha usar
+    let createRowFn;
+    if (typeof window.dashCreateColorRow === 'function') {
+      createRowFn = window.dashCreateColorRow; // Usa a da Dashboard (Admin)
+    } else if (typeof createColorRow === 'function') {
+      createRowFn = createColorRow; // Usa a da Loja (Main)
+    }
 
-      if (createRowFn) {
-          // Cria a primeira linha vazia
-          colorsContainer.appendChild(createRowFn());
-          // Configura o botão de +
-          btnAddColor.onclick = () => colorsContainer.appendChild(createRowFn());
-      } else {
-          colorsContainer.innerHTML = '<p style="color:red;">Erro: Função de cores não carregada.</p>';
-      }
+    if (createRowFn) {
+      // Cria a primeira linha vazia
+      colorsContainer.appendChild(createRowFn());
+      // Configura o botão de +
+      btnAddColor.onclick = () => colorsContainer.appendChild(createRowFn());
+    } else {
+      colorsContainer.innerHTML = '<p style="color:red;">Erro: Função de cores não carregada.</p>';
+    }
 
-      // --- OUTROS BOTÕES ---
-      modal.querySelector('#modal-manage-colors-btn').onclick = () => {
-        if (typeof window.colorOpenFormModal === 'function') window.colorOpenFormModal('add');
-        else alert("A gestão de cores deve ser feita pelo Painel Admin.");
+    // --- OUTROS BOTÕES ---
+    modal.querySelector('#modal-manage-colors-btn').onclick = () => {
+      if (typeof window.colorOpenFormModal === 'function') window.colorOpenFormModal('add');
+      else alert("A gestão de cores deve ser feita pelo Painel Admin.");
+    };
+
+    modal.querySelector('#modal-cancel').onclick = () => {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    modal.querySelector('#btn-manage-cats-add').onclick = () => {
+      if (typeof window.openCategoryManagerModal === 'function') window.openCategoryManagerModal();
+      else if (typeof openCategoryManagerModal === 'function') openCategoryManagerModal();
+    };
+
+    // --- LÓGICA DE SALVAR ---
+    modal.querySelector('#modal-save').onclick = async () => {
+      const nomeProduto = modal.querySelector('#modal-title-input').value.trim();
+      if (!nomeProduto) return showToast('Título obrigatório');
+
+      const generatedId = nomeProduto.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50) + '-' + Date.now();
+      const finalSlot = modal.__targetSlotId ? parseInt(modal.__targetSlotId) : null;
+
+      // Captura cores usando o método seguro
+      const colorRows = Array.from(modal.querySelectorAll('.color-row'));
+      const coresData = colorRows.map(row => {
+        if (row.getColorObject) return row.getColorObject(); // Método injetado na criação
+        // Fallback manual se algo falhou
+        const inputs = row.querySelectorAll('input');
+        const select = row.querySelector('select');
+        return {
+          nome: select ? select.value : '',
+          img1: inputs[0] ? inputs[0].value : '',
+          img2: inputs[1] ? inputs[1].value : ''
+        };
+      }).filter(c => c.nome && c.img1);
+
+      const newProduct = {
+        id: generatedId,
+        nome: nomeProduto,
+        preco: parseFloat(modal.querySelector('#modal-price-input').value.replace(',', '.')) || 0,
+        stock: parseInt(modal.querySelector('#modal-stock-input').value) || 0,
+        img: modal.querySelector('#modal-img-input').value.trim(),
+        tamanhos: modal.querySelector('#modal-sizes-input').value.trim(),
+        description: modal.querySelector('#modal-description-input').value.trim(),
+        additional_info: modal.querySelector('#modal-additional-info-input').value.trim(),
+        cores: coresData,
+        slot: finalSlot,
+        category: modal.querySelector('#modal-category-input').value,
+        dropName: modal.querySelector('#modal-drop-input').value,
+        gender: modal.querySelector('#modal-gender-input').value
       };
 
-      modal.querySelector('#modal-cancel').onclick = () => {
+      try {
+        const supabase = await window.initSupabaseClient();
+        const { error } = await supabase.from('products').insert([newProduct]);
+
+        if (error) throw error;
+
+        showToast('Produto criado com sucesso!');
         modal.style.display = 'none';
         document.body.style.overflow = '';
-      };
 
-      modal.querySelector('#btn-manage-cats-add').onclick = () => {
-          if(typeof window.openCategoryManagerModal === 'function') window.openCategoryManagerModal();
-          else if(typeof openCategoryManagerModal === 'function') openCategoryManagerModal();
-      };
+        // Atualiza a tela correta dependendo de onde estamos
+        if (typeof loadProducts === 'function') loadProducts(); // Dashboard
+        if (typeof applyProductsFromDBToDOM === 'function') applyProductsFromDBToDOM(); // Loja
 
-      // --- LÓGICA DE SALVAR ---
-      modal.querySelector('#modal-save').onclick = async () => {
-        const nomeProduto = modal.querySelector('#modal-title-input').value.trim();
-        if (!nomeProduto) return showToast('Título obrigatório');
-
-        const generatedId = nomeProduto.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 50) + '-' + Date.now();
-        const finalSlot = modal.__targetSlotId ? parseInt(modal.__targetSlotId) : null;
-
-        // Captura cores usando o método seguro
-        const colorRows = Array.from(modal.querySelectorAll('.color-row'));
-        const coresData = colorRows.map(row => {
-            if (row.getColorObject) return row.getColorObject(); // Método injetado na criação
-            // Fallback manual se algo falhou
-            const inputs = row.querySelectorAll('input');
-            const select = row.querySelector('select');
-            return { 
-                nome: select ? select.value : '', 
-                img1: inputs[0] ? inputs[0].value : '', 
-                img2: inputs[1] ? inputs[1].value : '' 
-            };
-        }).filter(c => c.nome && c.img1);
-
-        const newProduct = {
-          id: generatedId,
-          nome: nomeProduto,
-          preco: parseFloat(modal.querySelector('#modal-price-input').value.replace(',', '.')) || 0,
-          stock: parseInt(modal.querySelector('#modal-stock-input').value) || 0,
-          img: modal.querySelector('#modal-img-input').value.trim(),
-          tamanhos: modal.querySelector('#modal-sizes-input').value.trim(),
-          description: modal.querySelector('#modal-description-input').value.trim(),
-          additional_info: modal.querySelector('#modal-additional-info-input').value.trim(),
-          cores: coresData,
-          slot: finalSlot,
-          category: modal.querySelector('#modal-category-input').value,
-          gender: modal.querySelector('#modal-gender-input').value
-        };
-
-        try {
-          const supabase = await window.initSupabaseClient();
-          const { error } = await supabase.from('products').insert([newProduct]);
-
-          if (error) throw error;
-
-          showToast('Produto criado com sucesso!');
-          modal.style.display = 'none';
-          document.body.style.overflow = '';
-
-          // Atualiza a tela correta dependendo de onde estamos
-          if (typeof loadProducts === 'function') loadProducts(); // Dashboard
-          if (typeof applyProductsFromDBToDOM === 'function') applyProductsFromDBToDOM(); // Loja
-
-        } catch (err) {
-          console.error(err);
-          showToast('Erro: ' + err.message);
-        }
-      };
+      } catch (err) {
+        console.error(err);
+        showToast('Erro: ' + err.message);
+      }
+    };
 
   } catch (err) {
-      console.error("Erro Crítico no Modal:", err);
-      alert("Ocorreu um erro ao inicializar o formulário: " + err.message);
+    console.error("Erro Crítico no Modal:", err);
+    alert("Ocorreu um erro ao inicializar o formulário: " + err.message);
   }
 };
 
@@ -1186,6 +1227,9 @@ function openEditModalForProduct(productNode) {
             <i class="ri-settings-3-line"></i> 
           </button>
       </div>
+
+      <label>Drop (Coleção):</label>
+      <select id="modal-drop-input" style="width: 100%;"></select>
 
       <label for="modal-gender-input">Gênero:</label>
       <select id="modal-gender-input">
@@ -1250,6 +1294,9 @@ function openEditModalForProduct(productNode) {
   });
 
   showAdminModal(modal);
+
+  const dropSelect = qs('#modal-drop-input');
+  populateDropSelect(dropSelect, meta.dropName);
 
   const colorsContainer = modal.querySelector('#modal-colors-container');
   if (meta.cores && meta.cores.length > 0) {
@@ -1322,6 +1369,7 @@ function openEditModalForProduct(productNode) {
       cores: qsa('.color-row').map(row => row.getColorObject()).filter(c => c.nome && c.img1),
       category: qs('#modal-category-input').value,
       gender: qs('#modal-gender-input').value,
+      dropName: qs('#modal-drop-input').value,
       updated_at: new Date()
     };
 
@@ -1603,6 +1651,171 @@ let g_activeFilters = {
 // Função principal que carrega tudo
 // Dentro de main.js
 
+/* =========================================================
+   LÓGICA HÍBRIDA MAIS VENDIDOS (CORRIGIDA)
+   1. Busca Ranking de Vendas
+   2. Hidrata com dados reais da tabela Products (Corrige preço R$ 0,00 e img)
+   3. Completa com Aleatórios se faltar
+   ========================================================= */
+async function loadHomepageBestSellers() {
+  const container = document.querySelector('.products-inicio .product-row');
+  if (!container) return; // Não estamos na home
+
+  container.innerHTML = '<div style="width:100%; text-align:center; padding:20px;">Carregando destaques...</div>';
+
+  try {
+    const supabase = await initSupabaseClient();
+    const TOTAL_SLOTS = 4;
+    let finalDisplayList = [];
+    let excludedIds = new Set(); // Para não repetir produtos
+
+    // --- PASSO 1: BUSCAR O RANKING DE VENDAS (IDs e Quantidades) ---
+    // Usamos a RPC apenas para saber QUEM vendeu mais, não para pegar os dados de exibição
+    const { data: salesReport, error: salesError } = await supabase.rpc('get_best_sellers_report', {
+      period_start: '1970-01-01T00:00:00.000Z', // Desde sempre
+      sort_asc: false,
+      page_limit: 4,
+      page_offset: 0
+    });
+
+    // Se a RPC funcionou e trouxe vendas
+    if (!salesError && salesReport && salesReport.length > 0) {
+      // Extrai apenas os IDs dos produtos vendidos
+      const soldProductIds = salesReport.map(item => item.product_id);
+
+      // --- PASSO 2: BUSCAR DADOS REAIS DESSES PRODUTOS NA TABELA 'PRODUCTS' ---
+      // Isso garante que o Preço e a Imagem sejam os atuais do cadastro, não do histórico de pedido
+      const { data: realProducts, error: prodError } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', soldProductIds);
+
+      if (!prodError && realProducts) {
+        // O banco não retorna na ordem dos IDs passados, então precisamos reordenar
+        // baseando-se na ordem do salesReport (que é o ranking)
+        const productMap = {};
+        realProducts.forEach(p => productMap[p.id] = p);
+
+        // Reconstrói a lista na ordem de vendas
+        soldProductIds.forEach(id => {
+          if (productMap[id]) {
+            finalDisplayList.push(productMap[id]);
+            excludedIds.add(id);
+          }
+        });
+      }
+    }
+
+    // --- PASSO 3: PREENCHER SLOTS VAZIOS (LÓGICA ALEATÓRIA) ---
+    // Se temos menos que 4 produtos vindos das vendas
+    if (finalDisplayList.length < TOTAL_SLOTS) {
+      const slotsNeeded = TOTAL_SLOTS - finalDisplayList.length;
+
+      // Busca produtos para completar (traz um pouco a mais para garantir aleatoriedade)
+      const { data: randomPool, error: randomError } = await supabase
+        .from('products')
+        .select('*')
+        .limit(20); // Traz um lote para sortear
+
+      if (!randomError && randomPool) {
+        // Filtra os que já estão na lista de mais vendidos
+        const available = randomPool.filter(p => !excludedIds.has(p.id));
+
+        // Embaralha (Fisher-Yates)
+        for (let i = available.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [available[i], available[j]] = [available[j], available[i]];
+        }
+
+        // Pega os necessários
+        const fillers = available.slice(0, slotsNeeded);
+        finalDisplayList = [...finalDisplayList, ...fillers];
+      }
+    }
+
+    // --- PASSO 4: RENDERIZAR ---
+    container.innerHTML = ''; // Limpa loader
+
+    if (finalDisplayList.length === 0) {
+      container.innerHTML = '<p>Nenhum produto disponível.</p>';
+      return;
+    }
+
+    finalDisplayList.forEach((productData, index) => {
+      const slotDiv = document.createElement('div');
+      slotDiv.className = 'product-slot';
+      slotDiv.dataset.slot = index + 1; // 1, 2, 3, 4...
+
+      // Renderiza o card (função auxiliar já existente no seu código)
+      renderProductInSlot(slotDiv, productData);
+      container.appendChild(slotDiv);
+    });
+
+    // Reativa os efeitos de hover (tamanhos, cores)
+    prepareProductHoverAndOptions();
+
+  } catch (err) {
+    console.error("Erro Crítico Best Sellers:", err);
+    container.innerHTML = '<p>Erro ao carregar vitrine.</p>';
+  }
+}
+
+/* =========================================================
+   LÓGICA SWIPER (DROPS / PROMOÇÕES)
+   ========================================================= */
+async function loadPromotionsSwiper() {
+  // Procura o wrapper do Swiper
+  const swiperWrapper = document.querySelector('.promotions-day .swiper-wrapper');
+  if (!swiperWrapper) return;
+
+  swiperWrapper.innerHTML = ''; // Limpa slots vazios do HTML
+
+  try {
+    const supabase = await initSupabaseClient();
+
+    // Busca produtos para o carrossel (Ex: últimos 6 adicionados ou de uma categoria específica)
+    // Aqui estou pegando os 8 mais recentes para preencher o carrossel
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(8);
+
+    if (error) throw error;
+
+    if (products && products.length > 0) {
+      products.forEach(productData => {
+        // Estrutura necessária para o Swiper funcionar
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'swiper-slide';
+
+        const slotDiv = document.createElement('div');
+        slotDiv.className = 'product-slot';
+
+        renderProductInSlot(slotDiv, productData);
+        slideDiv.appendChild(slotDiv);
+
+        swiperWrapper.appendChild(slideDiv);
+      });
+
+      prepareProductHoverAndOptions();
+
+      // Importante: Atualizar o Swiper se ele já foi inicializado
+      if (document.querySelector('.mySwiper') && document.querySelector('.mySwiper').swiper) {
+        document.querySelector('.mySwiper').swiper.update();
+      }
+    } else {
+      swiperWrapper.innerHTML = '<div class="swiper-slide"><p>Novidades em breve.</p></div>';
+    }
+
+  } catch (err) {
+    console.error("Erro Swiper:", err);
+  }
+}
+
+/* =========================================================
+   FUNÇÃO PRINCIPAL (ORQUESTRADOR)
+   ========================================================= */
 async function applyProductsFromDBToDOM() {
   // Prepara o evento de finalização
   const dispatchProductEvent = () => {
@@ -1616,65 +1829,49 @@ async function applyProductsFromDBToDOM() {
     const pageSpecificType = urlParams.get('tipo');
     const pageGender = urlParams.get('genero');
 
-    // Atualiza título da página
-    const displayTitle = pageSpecificType || pageGroup;
-    if (displayTitle) {
-      updateCategoryPageTitle(displayTitle);
-    }
-
-    const filters = {};
-
-    if (pageSpecificType) {
-      filters.category = pageSpecificType;
-    } else if (pageGroup && CATEGORY_GROUPS[pageGroup]) {
-      filters.categoryList = CATEGORY_GROUPS[pageGroup];
-    }
-
-    if (pageGender) filters.gender = pageGender;
-
-    // Busca no banco
-    const products = await fetchProductsFromDB(filters);
-    g_allCategoryProducts = products;
-
     const isCategoryPage = pageGroup || pageSpecificType || pageGender;
 
-    if (isCategoryPage && qs('.filtros')) {
-      populateFiltersUI(products);
-      renderProductGrid(products);
-      attachFilterListeners();
-
-      if (products.length === 0) {
-        const container = qs('.product-content-selecao');
-        if (container) container.innerHTML = '<p style="text-align:center; width:100%; padding:20px;">Nenhum produto encontrado nesta categoria.</p>';
+    // --- CENÁRIO 1: PÁGINA DE CATEGORIA ---
+    if (isCategoryPage) {
+      // Atualiza título da página
+      const displayTitle = pageSpecificType || pageGroup;
+      if (displayTitle) {
+        updateCategoryPageTitle(displayTitle);
       }
-    } else {
-      // Lógica da Home Page (Slots)
-      ensureSlotIds();
 
-      // Cria mapa de produtos
-      const productMap = products.reduce((map, p) => {
-        if (p.slot) map[p.slot] = p;
-        return map;
-      }, {});
+      const filters = {};
+      if (pageSpecificType) {
+        filters.category = pageSpecificType;
+      } else if (pageGroup && CATEGORY_GROUPS[pageGroup]) {
+        filters.categoryList = CATEGORY_GROUPS[pageGroup];
+      }
+      if (pageGender) filters.gender = pageGender;
 
-      const slots = qsa('.product-slot');
-      const isAdmin = (localStorage.getItem('userRole') || 'cliente') === 'admin';
+      // Busca no banco
+      const products = await fetchProductsFromDB(filters);
+      g_allCategoryProducts = products;
 
-      slots.forEach(slotEl => {
-        const slotId = slotEl.dataset.slot;
-        const productData = productMap[slotId];
-        if (productData) {
-          renderProductInSlot(slotEl, productData);
-        } else if (isAdmin) {
-          renderAddButtonInSlot(slotEl, slotId);
-        } else {
-          slotEl.innerHTML = '';
-          slotEl.style.visibility = 'hidden';
+      if (qs('.filtros')) {
+        populateFiltersUI(products);
+        renderProductGrid(products);
+        attachFilterListeners();
+
+        if (products.length === 0) {
+          const container = qs('.product-content-selecao');
+          if (container) container.innerHTML = '<p style="text-align:center; width:100%; padding:20px;">Nenhum produto encontrado nesta categoria.</p>';
         }
-      });
+      }
+      prepareProductHoverAndOptions();
     }
 
-    prepareProductHoverAndOptions();
+    // --- CENÁRIO 2: HOME PAGE (Lógica Nova) ---
+    else {
+      // 1. Carrega o Swiper (Promoções/Drops)
+      await loadPromotionsSwiper();
+
+      // 2. Carrega os Mais Vendidos (Top 4 + Aleatórios)
+      await loadHomepageBestSellers();
+    }
 
   } catch (err) {
     console.error('Erro ao aplicar produtos:', err);

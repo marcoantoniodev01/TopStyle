@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,10 @@
     <link rel="stylesheet" href="assets/css/support-chat.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
 </head>
+
 <body>
     <div id="client-chat-container" class="client-chat-container">
-        
+
         <header class="chat-header">
             <div class="chat-avatar-support">
                 <img src="https://i.ibb.co/jPt43z3L/logo-background.png" alt="Suporte">
@@ -19,11 +21,13 @@
                 <h3>Suporte TopStyle</h3>
                 <p>Online agora</p>
             </div>
-            <a href="index.html" class="btn-close-chat"><i class="ri-close-line"></i></a>
+            <a href="#" onclick="goBackOrHome(event)" class="btn-close-chat" title="Voltar">
+                <i class="ri-close-line"></i>
+            </a>
         </header>
 
         <main class="chat-messages-area" id="messages-area">
-            </main>
+        </main>
 
         <div class="chat-suggestions" id="chat-suggestions" style="display:none;">
             <button class="chip" onclick="sendSuggestion('📦 Onde está meu pedido?')">📦 Onde está meu pedido?</button>
@@ -44,6 +48,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script type="module" src="assets/js/supabase-client.js"></script>
     <script src="assets/js/support-chat.js"></script>
-    <script src="assets/js/search-modal.js" type="module"></script>
+    <script>
+        function goBackOrHome(e) {
+            e.preventDefault();
+            // Verifica se há histórico para voltar dentro do mesmo domínio
+            if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+                history.back();
+            } else {
+                // Se não houver histórico seguro, vai para a home
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
 </body>
+
 </html>

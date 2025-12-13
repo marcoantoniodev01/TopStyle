@@ -1,19 +1,19 @@
 // assets/js/colecao-slots.js
-// carregar como módulo: <script type="module" src="assets/js/colecao-slots.js"></script>
-import { supabase as importedSupabase } from './supabaseClient.js';
-
+// versão atualizada: adiciona overlay de loading que cobre .selecao-products
 (() => {
   'use strict';
 
   const SUPABASE_URL = window.SUPABASE_URL || 'https://xhzdyatnfaxnvvrllhvs.supabase.co';
   const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo';
+
   const PRODUCT_BUCKET = 'product-images';
-  const FALLBACK_BUCKET = 'drop-imgs'; // agora usado como fallback
+  const FALLBACK_BUCKET = 'drop-imgs';
 
   const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><rect width="100%" height="100%" fill="#f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#aaa" font-size="18">Sem imagem</text></svg>`
   );
 
+  /* ----------------- small helpers ----------------- */
   function qs(sel, root = document) { return root.querySelector(sel); }
   function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
 
@@ -26,199 +26,209 @@ import { supabase as importedSupabase } from './supabaseClient.js';
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n));
   }
 
-  async function getClient() {
-    if (importedSupabase) return importedSupabase;
-    if (window.supabase && typeof window.supabase.from === 'function') return window.supabase;
+  // ---------- CORREÇÃO: initSupabaseClient robusta ----------
+  async function initSupabaseClient() {
+    // 1) se já criamos um client antes, reutiliza
     if (window.supabaseClient) return window.supabaseClient;
-    try {
-      const mod = await import('https://esm.sh/@supabase/supabase-js@2.39.7');
-      if (mod && typeof mod.createClient === 'function') {
-        const c = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 2) se a lib oficial foi carregada via <script> (window.supabase existe e tem createClient), crie um client a partir dela
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        const c = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         window.supabaseClient = c;
         return c;
-      }
-    } catch (e) {
-      console.warn('getClient dynamic import falhou', e);
-    }
-    return null;
-  }
-
-  // tenta extrair uma string de URL / caminho a partir de vários formatos possíveis
-  function extractImageCandidate(row) {
-    if (!row) return null;
-
-    // possíveis nomes de campo que já vi por aí
-    const directCandidates = [
-      'image', 'img', 'imagem', 'photo', 'foto', 'cover', 'thumbnail'
-    ];
-    for (const k of directCandidates) {
-      if (row[k]) {
-        const v = row[k];
-        if (typeof v === 'string' && v.trim()) return v.trim();
-        if (typeof v === 'object' && v !== null) {
-          // se for objeto com campos comuns
-          const candidate = (v.img1 || v.image || v.url || v.src || null);
-          if (candidate && typeof candidate === 'string') return candidate;
-        }
-      }
-    }
-
-    // coluna 'images' possivelmente array
-    if (Array.isArray(row.images) && row.images.length) {
-      const first = row.images[0];
-      if (typeof first === 'string') return first;
-      if (typeof first === 'object' && first !== null) {
-        return first.img1 || first.image || first.url || first.src || null;
-      }
-    }
-
-    // coluna 'cores' (pode ser string JSON, array ou objeto)
-    const coresFields = [row.cores, row.cores_json, row.coresData, row.colours];
-    for (const cf of coresFields) {
-      if (!cf) continue;
-      try {
-        let candidate = cf;
-        if (typeof cf === 'string') {
-          // se for JSON string tente parse
-          const str = cf.trim();
-          if ((str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))) {
-            try { candidate = JSON.parse(str); } catch (e) { candidate = str; }
-          } else {
-            // se for string simples provavelmente é caminho
-            if (str) return str;
-          }
-        }
-        if (Array.isArray(candidate) && candidate.length) {
-          const f = candidate[0];
-          if (typeof f === 'string') return f;
-          if (typeof f === 'object' && f !== null) {
-            return f.img1 || f.image || f.url || f.src || null;
-          }
-        }
-        if (typeof candidate === 'object' && candidate !== null) {
-          return candidate.img1 || candidate.image || candidate.url || candidate.src || null;
-        }
       } catch (e) {
-        // ignore parse errors
+        console.warn('initSupabaseClient: erro criando client a partir de window.supabase', e);
       }
     }
 
-    // por fim, se existe campo 'images' como string (csv) tente separar
-    if (typeof row.images === 'string') {
-      const s = row.images.split(',').map(x => x.trim()).find(Boolean);
-      if (s) return s;
+    // 3) fallback: importar versão estável via esm.sh (mais confiável que +esm do jsdelivr)
+    try {
+      const mod = await import('https://esm.sh/@supabase/supabase-js@2.39.7');
+      if (!mod || typeof mod.createClient !== 'function') {
+        console.error('initSupabaseClient: módulo importado não possui createClient', mod);
+        return null;
+      }
+      const c = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.supabaseClient = c;
+      return c;
+    } catch (e) {
+      console.error('initSupabaseClient: erro ao importar/createClient', e);
+      return null;
     }
-
-    return null;
   }
+  // ---------------------------------------------------------
 
-  // tenta obter URL pública usando storage do client; tenta ambos os buckets
   async function resolveImageUrl(supabase, imageFieldValue) {
     if (!imageFieldValue) return null;
     const s = String(imageFieldValue).trim();
     if (/^https?:\/\//i.test(s)) return s;
     const path = s.replace(/^\/+/, '');
-
-    async function tryBucket(bucketName) {
-      try {
-        if (!supabase || !supabase.storage || typeof supabase.storage.from !== 'function') return null;
+    try {
+      const tryBucket = async (bucketName) => {
         const bucket = supabase.storage.from(bucketName);
         if (typeof bucket.getPublicUrl === 'function') {
           const res = bucket.getPublicUrl(path);
-          if (res) {
-            if (res.data && (res.data.publicUrl || res.data.publicURL)) return res.data.publicUrl || res.data.publicURL;
-            if (res.publicUrl) return res.publicUrl;
-            if (res.publicURL) return res.publicURL;
-          }
+          if (res && res.data && (res.data.publicUrl || res.data.publicURL)) return res.data.publicUrl || res.data.publicURL;
+          if (res && (res.publicUrl || res.publicURL)) return res.publicUrl || res.publicURL;
         }
         if (typeof bucket.createSignedUrl === 'function') {
           const signed = await bucket.createSignedUrl(path, 60);
           if (signed && (signed.signedURL || (signed.data && signed.data.signedURL))) return signed.signedURL || signed.data.signedURL;
         }
-      } catch (e) {
-        // não fatal
-      }
-      return null;
+        return null;
+      };
+
+      let url = null;
+      try { url = await tryBucket(PRODUCT_BUCKET); } catch (e) { /* noop */ }
+      if (url) return url;
+      try { url = await tryBucket(FALLBACK_BUCKET); } catch (e) { /* noop */ }
+      if (url) return url;
+    } catch (e) {
+      console.warn('resolveImageUrl erro', e);
     }
-
-    // tenta product bucket primeiro, depois fallback bucket
-    let url = null;
-    url = await tryBucket(PRODUCT_BUCKET);
-    if (url) return url;
-    url = await tryBucket(FALLBACK_BUCKET);
-    if (url) return url;
-
-    // fallback público construído (product bucket)
+    // fallback public path
     const prefix = SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/public/' + encodeURIComponent(PRODUCT_BUCKET) + '/';
     return prefix + encodeURIComponent(path).replace(/%2F/g, '/');
   }
 
+  /* ----------------- original helpers you provided (hardened) ----------------- */
+
+  // 1. Função helper para pegar o parametro da URL
+  function getDropFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    // Pega o parametro '?drop='
+    const drop = params.get('drop') || '';
+    return decodeURIComponent(drop);
+  }
+
+  // 2. Função de busca atualizada
   async function fetchProductsFromDB(filters = {}) {
-    const client = await getClient();
-    if (!client) throw new Error('Supabase não disponível');
-    let q = client.from('products').select('*');
-    if (filters.dropName) q = q.ilike('dropName', `%${filters.dropName}%`);
-    if (filters.category) q = q.ilike('category', `%${filters.category}%`);
-    if (filters.limit) q = q.limit(filters.limit);
-    const { data, error } = await q.order('created_at', { ascending: true });
-    if (error) throw error;
-    return data || [];
+    try {
+      const supabase = await initSupabaseClient();
+      if (!supabase) throw new Error('Supabase não disponível');
+
+      let query = supabase.from('products').select('*');
+
+      // Filtro por Drop (IMPORTANTE: use aspas se a coluna no banco for "dropName")
+      // No Supabase JS, geralmente passamos a string exata da coluna.
+      if (filters.dropName) {
+        // Opção A: Se a coluna for case-sensitive ou exata
+        query = query.eq('dropName', filters.dropName);
+
+        // Opção B: Se quiser ser mais flexível (case insensitive) use ilike
+        // query = query.ilike('dropName', filters.dropName); 
+      }
+
+      // Filtros de Preço e Cor são aplicados no front (no seu código original),
+      // mas se quiser filtrar no banco, adicione aqui.
+
+      const { data, error } = await query.order('created_at', { ascending: true });
+
+      if (error) {
+        console.warn('Erro ao buscar produtos do drop:', error);
+        return [];
+      }
+      return data || [];
+    } catch (err) {
+      console.error('fetchProductsFromDB error', err);
+      return [];
+    }
   }
 
-  // monta node .product no exato markup que você pediu
-  function makeProductNode(prod) {
-    const imgSrc = prod._resolvedImage || prod.image || PLACEHOLDER;
-    const name = prod.name || prod.nome || prod.title || 'Produto';
-    const price = prod.price ?? prod.preco ?? prod['preço'] ?? null;
-    const href = `Blusa-modelo02.html?id=${encodeURIComponent(prod.id)}`;
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'product';
-
-    const a = document.createElement('a');
-    a.className = 'product-link-selecao';
-    a.href = href;
-
-    const imgEl = document.createElement('img');
-    imgEl.src = imgSrc;
-    imgEl.alt = name;
-    imgEl.loading = 'lazy';
-
-    const txt = document.createElement('div');
-    txt.className = 'product-text';
-
-    const title = document.createElement('span');
-    title.className = 'product-title';
-    title.textContent = String(name).toUpperCase();
-
-    const priceEl = document.createElement('span');
-    priceEl.className = 'product-price';
-    priceEl.textContent = price != null ? formatPriceBR(price) : '';
-
-    txt.appendChild(title);
-    txt.appendChild(priceEl);
-
-    a.appendChild(imgEl);
-    a.appendChild(txt);
-    wrapper.appendChild(a);
-    return wrapper;
+  function ensureSlotIds() {
+    const slots = qsa('.product-slot');
+    let next = 1;
+    slots.forEach(s => {
+      if (!s.dataset.slot) s.dataset.slot = String(next++);
+    });
   }
 
-  // overlay simples (mantive a implementação)
+  function renderProductInSlot(slotEl, productData) {
+    slotEl.innerHTML = '';
+    const product = document.createElement('div');
+    product.className = 'product';
+    product.dataset.id = productData.id;
+    product.dataset.tamanhos = productData.tamanhos || '';
+
+    const mainImage = productData._resolvedImage || productData.image || 'https://placehold.co/400x600/eee/ccc?text=Produto';
+
+    product.innerHTML = `
+      <a class="product-link" href="Blusa-modelo02.html?id=${encodeURIComponent(productData.id)}">
+        <img src="${escapeHtml(mainImage)}" alt="${escapeHtml((productData.name || productData.nome) || 'Produto')}">
+      </a>
+      <div class="product-text">
+        <p class="product-title">${escapeHtml((productData.name || productData.nome || '').toString().toUpperCase())}</p>
+        <p class="product-price">${formatPriceBR(productData.price ?? productData.preco ?? productData['preço'])}</p>
+        <div class="product-options" style="display:none;">
+          <div class="colors"></div>
+          <div class="sizes"></div>
+        </div>
+      </div>`;
+
+    product.__productMeta = productData;
+    slotEl.appendChild(product);
+  }
+
+  function renderAddButtonInSlot(slotEl, slotId) {
+    slotEl.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = 'add-product-btn';
+    btn.textContent = '+ Adicionar Produto';
+    btn.onclick = () => {
+      if (typeof window.openAddProductModal === 'function') {
+        window.openAddProductModal(slotId);
+      } else {
+        alert('Abrir modal de adicionar produto (implemente openAddProductModal). Slot: ' + slotId);
+      }
+    };
+    slotEl.appendChild(btn);
+  }
+
+  /* ----------------- LOADING OVERLAY UTIL ----------------- */
+
+  // Inject minimal CSS for overlay once
   function injectLoadingStyles() {
     if (document.getElementById('colecao-loading-styles')) return;
     const css = `
-      .colecao-loading-overlay { position:absolute;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:16px;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:99999;color:#222;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
-      .colecao-loading-overlay .colecao-loader { width:48px;height:48px;border-radius:50%;border:5px solid rgba(0,0,0,0.08);border-top-color:#222;animation:colecao-spin 1s linear infinite; }
-      @keyframes colecao-spin { to{ transform:rotate(360deg); } }
-      .colecao-loading-overlay .colecao-msg { font-size:14px;color:#222; }
+      .colecao-loading-overlay {
+        position: absolute;
+        background: rgba(255,255,255,0.92);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px;
+        border-radius: 6px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        z-index: 99999;
+        color: #222;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      }
+      .colecao-loading-overlay .colecao-loader {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 5px solid rgba(0,0,0,0.08);
+        border-top-color: #222;
+        animation: colecao-spin 1s linear infinite;
+      }
+      @keyframes colecao-spin { to { transform: rotate(360deg); } }
+      .colecao-loading-overlay .colecao-msg {
+        font-size: 14px;
+        color: #222;
+      }
     `;
     const st = document.createElement('style');
     st.id = 'colecao-loading-styles';
     st.appendChild(document.createTextNode(css));
     document.head.appendChild(st);
   }
-  let _colecaoOverlay = null, _colecaoOverlayHandlers = null;
+
+  let _colecaoOverlay = null;
+  let _colecaoOverlayHandlers = null;
+
   function createLoadingOverlay() {
     if (_colecaoOverlay) return _colecaoOverlay;
     injectLoadingStyles();
@@ -230,9 +240,11 @@ import { supabase as importedSupabase } from './supabaseClient.js';
     _colecaoOverlay = el;
     return el;
   }
+
   function positionOverlayOverSection(overlay, sectionEl) {
     if (!overlay || !sectionEl) return;
     const rect = sectionEl.getBoundingClientRect();
+    // position absolute relative to document (so it scrolls with page)
     const top = rect.top + window.scrollY;
     const left = rect.left + window.scrollX;
     overlay.style.position = 'absolute';
@@ -241,24 +253,33 @@ import { supabase as importedSupabase } from './supabaseClient.js';
     overlay.style.width = `${Math.max(0, rect.width)}px`;
     overlay.style.height = `${Math.max(0, rect.height)}px`;
   }
+
   function showLoadingOverSelection(message = 'Carregando...') {
     const section = document.querySelector('.selecao-products');
     if (!section) {
+      // fallback: show centered full-page overlay
       let full = createLoadingOverlay();
-      full.style.position = 'fixed'; full.style.top = '0'; full.style.left = '0';
-      full.style.width = '100vw'; full.style.height = '100vh';
-      full.querySelector('.colecao-msg').textContent = message; full.style.display = 'flex';
+      full.style.position = 'fixed';
+      full.style.top = '0';
+      full.style.left = '0';
+      full.style.width = '100vw';
+      full.style.height = '100vh';
+      full.querySelector('.colecao-msg').textContent = message;
+      full.style.display = 'flex';
       return;
     }
     const overlay = createLoadingOverlay();
     overlay.querySelector('.colecao-msg').textContent = message;
     positionOverlayOverSection(overlay, section);
     overlay.style.display = 'flex';
+
+    // add handlers to update position on scroll/resize
     const handler = () => positionOverlayOverSection(overlay, section);
     _colecaoOverlayHandlers = handler;
     window.addEventListener('scroll', handler, { passive: true });
     window.addEventListener('resize', handler);
   }
+
   function hideLoadingOverlay() {
     if (!_colecaoOverlay) return;
     _colecaoOverlay.style.display = 'none';
@@ -269,94 +290,351 @@ import { supabase as importedSupabase } from './supabaseClient.js';
     }
   }
 
-  async function main() {
-    const dropName = (new URLSearchParams(window.location.search)).get('drop') || '';
-    const container = qs('.product-content-selecao') || qs('.product-content');
-    if (!container) { console.warn('container .product-content-selecao não encontrado'); return; }
+  /* ----------------- main flow (com overlay calls integradas) ----------------- */
 
+  function getDropFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    const drop = params.get('drop') || '';
+    return decodeURIComponent(drop);
+  }
+
+  // helper para extrair imagem da coluna cores (tenta vários formatos)
+  function extractImageFromCores(coresField) {
+    if (!coresField) return null;
+    try {
+      let cores = coresField;
+      // se for string que parece JSON, tente parse
+      if (typeof coresField === 'string') {
+        const str = coresField.trim();
+        if ((str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))) {
+          try { cores = JSON.parse(str); } catch (e) { cores = coresField; }
+        }
+      }
+      // se for array válido, pega o primeiro objeto
+      if (Array.isArray(cores) && cores.length > 0) {
+        const first = cores[0];
+        if (!first) return null;
+        // procura campos comuns: img1, image, url, src
+        return first.img1 || first.image || first.url || first.src || null;
+      }
+      // se for objeto, tenta pegar campos
+      if (typeof cores === 'object') {
+        return cores.img1 || cores.image || cores.url || cores.src || null;
+      }
+      // se for string simples e parecer caminho/URL, retorna
+      if (typeof cores === 'string') {
+        const maybe = cores.trim();
+        if (maybe) return maybe;
+      }
+    } catch (e) {
+      console.warn('extractImageFromCores erro', e);
+    }
+    return null;
+  }
+
+  async function main() {
+    const supabase = await initSupabaseClient();
+    const dropName = getDropFromQuery();
+
+    try {
+      document.title = dropName ? `TopStyle — ${dropName}` : 'TopStyle — Coleção';
+      const collEl = qs('#collection-name');
+      if (collEl) collEl.textContent = dropName ? dropName : 'Coleção';
+    } catch (e) {
+      // noop
+    }
+
+    const container = qs('.product-content-selecao');
+    if (!container) {
+      console.warn('colecao-slots: container .product-content-selecao não encontrado');
+      return;
+    }
+
+    // refs UI
+    const filtroMinInput = qs('#filtro-preco-min');
+    const filtroMaxInput = qs('#filtro-preco-max');
+    const btnAplicar = qs('#btn-aplicar-preco');
+    const btnLimpar = qs('#btn-limpar-filtros');
+    const coresContainer = qs('#filtro-cores-container');
+
+    // show overlay above selecao-products
     showLoadingOverSelection(`Carregando produtos da coleção ${dropName ? `"${dropName}"` : ''}`);
 
+    // busca produtos
     let rows = [];
     try {
-      rows = await fetchProductsFromDB({ dropName, limit: 48 });
+      rows = await fetchProductsFromDB({ dropName: dropName });
     } catch (e) {
-      console.error('Erro ao buscar products:', e);
+      console.error('Erro ao buscar products (principal):', e);
       hideLoadingOverlay();
-      container.innerHTML = `<div class="error">Erro ao buscar produtos. Veja console.</div>`;
+      container.innerHTML = `<div class="error">Erro ao buscar produtos. Veja o console.</div>`;
       return;
     }
 
     if (!Array.isArray(rows) || rows.length === 0) {
-      hideLoadingOverlay();
-      container.innerHTML = `<div class="empty">Nenhum produto encontrado para a coleção <strong>${escapeHtml(dropName)}</strong>.</div>`;
-      return;
-    }
-
-    const client = await getClient();
-
-    // resolve imagens para cada produto (usa extractImageCandidate)
-    await Promise.all(rows.map(async r => {
+      // fallback defensivo
       try {
-        const candidate = extractImageCandidate(r) || r.image || r.img || (Array.isArray(r.images) && r.images[0]) || null;
-        r._resolvedImage = await resolveImageUrl(client, candidate) || PLACEHOLDER;
+        const fallback = await fetchProductsFromDB({ dropName });
+        rows = fallback || [];
       } catch (e) {
-        r._resolvedImage = PLACEHOLDER;
+        console.error('Erro fallback fetchProducts:', e);
+        rows = [];
       }
-    }));
-
-    // renderiza mantendo o markup que você pediu
-    container.innerHTML = '';
-    for (const p of rows) {
-      container.appendChild(makeProductNode(p));
+      if (!Array.isArray(rows) || rows.length === 0) {
+        hideLoadingOverlay();
+        container.innerHTML = `<div class="empty">Nenhum produto encontrado para a coleção <strong>${escapeHtml(dropName)}</strong>.</div>`;
+        return;
+      }
     }
 
+    // normaliza e resolve imagens, desta vez priorizando cores[]
+    const data = rows.map(r => {
+      const name = r.name || r.nome || r.title || '';
+      const price = (r.price !== undefined && r.price !== null) ? r.price : (r.preco !== undefined ? r.preco : (r['preço'] !== undefined ? r['preço'] : null));
+      // tenta extrair da coluna 'cores' primeiro
+      const coresField = r.cores ?? r.cores_json ?? r.coresData ?? null;
+      const coresImageCandidate = extractImageFromCores(coresField);
+      const image = coresImageCandidate || r.image || (Array.isArray(r.images) && r.images[0]) || r.images || null;
+      const color = r.color || r.cor || '';
+      const slug = r.slug || r.url_slug || '';
+      return Object.assign({}, r, { name, price, image, color, slug, dropName: r.dropName || r.drop || '' });
+    });
+
+    // resolve images in parallel (resolveImageUrl aceita urls ou paths)
+    try {
+      await Promise.all(data.map(async (p) => {
+        const imgField = p.image || (Array.isArray(p.images) && p.images[0]) || null;
+        try {
+          p._resolvedImage = await resolveImageUrl(supabase, imgField) || PLACEHOLDER;
+        } catch (e) {
+          p._resolvedImage = PLACEHOLDER;
+        }
+      }));
+    } catch (e) {
+      console.warn('Erro ao resolver imagens:', e);
+    }
+
+    // ensure at least one slot exists in DOM; keep container element .product-content-selecao as parent
+    let slots = qsa('.product-slot', container);
+    if (!slots || slots.length === 0) {
+      const s = document.createElement('div');
+      s.className = 'product-slot';
+      container.appendChild(s);
+      slots = [s];
+    }
+    // ensure ids
+    ensureSlotIds();
+    slots = qsa('.product-slot', container);
+
+    // create more slots if needed
+    if (data.length > slots.length) {
+      const toCreate = data.length - slots.length;
+      const last = slots[slots.length - 1];
+      for (let i = 0; i < toCreate; i++) {
+        const clone = last.cloneNode(false);
+        clone.innerHTML = '';
+        clone.className = 'product-slot';
+        container.appendChild(clone);
+      }
+      ensureSlotIds();
+      slots = qsa('.product-slot', container);
+    }
+
+    // render products into slots 1:1
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const prod = data[i];
+      if (prod) {
+        renderProductInSlot(slot, prod);
+      } else {
+        renderAddButtonInSlot(slot, slot.dataset.slot || (i + 1));
+      }
+    }
+
+    // populate color filters
+    const colors = Array.from(new Set(data.map(d => (d.color || '').trim()).filter(Boolean)));
+    if (colors.length > 0 && coresContainer) {
+      coresContainer.innerHTML = '';
+      colors.forEach(col => {
+        const id = 'cor-' + col.replace(/\s+/g, '-').toLowerCase();
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${escapeHtml(col)}" id="${id}"> <span>${escapeHtml(col)}</span>`;
+        coresContainer.appendChild(label);
+      });
+    }
+
+    // cleanup/finish: hide overlay
     hideLoadingOverlay();
+
+    // ADICIONE ESTA LINHA:
+    if (typeof window.prepareProductHoverAndOptions === 'function') {
+        window.prepareProductHoverAndOptions();
+    }
+
+    // filtering: re-use data array as source
+    let currentList = data.slice();
+
+    function applyFilters() {
+      const min = parseFloat(filtroMinInput?.value || '');
+      const max = parseFloat(filtroMaxInput?.value || '');
+      const checkedColors = Array.from(document.querySelectorAll('#filtro-cores-container input[type="checkbox"]:checked')).map(i => i.value);
+
+      let filtered = data.slice();
+      if (!isNaN(min)) filtered = filtered.filter(p => Number(p.price) >= min);
+      if (!isNaN(max)) filtered = filtered.filter(p => Number(p.price) <= max);
+      if (checkedColors.length > 0) filtered = filtered.filter(p => checkedColors.includes((p.color || '').trim()));
+
+      // re-render into slots, creating more if necessary
+      const containerSlots = qsa('.product-slot', container);
+      if (filtered.length > containerSlots.length) {
+        for (let i = containerSlots.length; i < filtered.length; i++) {
+          const newSlot = document.createElement('div');
+          newSlot.className = 'product-slot';
+          container.appendChild(newSlot);
+        }
+      }
+      ensureSlotIds();
+      const slotsNow = qsa('.product-slot', container);
+
+      for (let i = 0; i < slotsNow.length; i++) {
+        const slot = slotsNow[i];
+        const prod = filtered[i];
+        if (prod) renderProductInSlot(slot, prod);
+        else renderAddButtonInSlot(slot, slot.dataset.slot || (i + 1));
+      }
+
+      currentList = filtered;
+      if (currentList.length === 0) {
+        container.innerHTML = `<div class="empty">Nenhum produto corresponde aos filtros.</div>`;
+      }
+    }
+
+    btnAplicar?.addEventListener('click', (ev) => {
+      ev?.preventDefault();
+      applyFilters();
+      container.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    btnLimpar?.addEventListener('click', (ev) => {
+      ev?.preventDefault();
+      if (filtroMinInput) filtroMinInput.value = '';
+      if (filtroMaxInput) filtroMaxInput.value = '';
+      const checks = document.querySelectorAll('#filtro-cores-container input[type="checkbox"]');
+      checks.forEach(c => c.checked = false);
+      // reset original rendering
+      const containerSlots = qsa('.product-slot', container);
+      for (let i = 0; i < containerSlots.length; i++) {
+        const slot = containerSlots[i];
+        const prod = data[i];
+        if (prod) renderProductInSlot(slot, prod);
+        else renderAddButtonInSlot(slot, slot.dataset.slot || (i + 1));
+      }
+      currentList = data.slice();
+    });
+
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', main); else main();
+  // run on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', main);
+  } else {
+    main();
+  }
 
-  // ===== mobile filter modal (mantive lógica anterior, sem alterações importantes) =====
-  (function () {
-    const ICON_ID = 'filter-icon';
-    const FILTER_ID = 'filter';
-    const CONTENT_SELECTOR = '.filtros-content';
-    const MOBILE_MAX = 600;
-    const filter = document.getElementById(FILTER_ID);
+})();
 
-    function ensureCloseButton() {
-      if (!filter) return null;
-      const content = filter.querySelector(CONTENT_SELECTOR);
-      if (!content) return null;
-      let btn = content.querySelector('.filter-close-btn');
-      if (!btn) {
-        btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'filter-close-btn';
-        btn.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
-        content.appendChild(btn);
-        btn.addEventListener('click', closeMobileFilter);
-      }
-      return btn;
+/*=============== SERVICES MODAL ===============*/
+
+(function () {
+  const ICON_ID = 'filter-icon';
+  const FILTER_ID = 'filter';
+  const CONTENT_SELECTOR = '.filtros-content';
+  const MOBILE_MAX = 600;
+
+  const icon = document.getElementById(ICON_ID);
+  const filter = document.getElementById(FILTER_ID);
+
+  // cria o botão fechar dentro do .filtros-content caso não exista
+  function ensureCloseButton() {
+    if (!filter) return null;
+    const content = filter.querySelector(CONTENT_SELECTOR);
+    if (!content) return null;
+    let btn = content.querySelector('.filter-close-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'filter-close-btn';
+      btn.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
+      content.appendChild(btn);
+      btn.addEventListener('click', closeMobileFilter);
     }
+    return btn;
+  }
 
-    function isMobileWidth() { return window.innerWidth <= MOBILE_MAX; }
-    function openMobileFilter() { if (!filter) return; filter.classList.add('mobile-open'); ensureCloseButton(); document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; document.addEventListener('keydown', onKeyDown); filter.addEventListener('click', onBackdropClick); }
-    function closeMobileFilter() { if (!filter) return; filter.classList.remove('mobile-open'); document.documentElement.style.overflow = ''; document.body.style.overflow = ''; document.removeEventListener('keydown', onKeyDown); filter.removeEventListener('click', onBackdropClick); }
-    function onBackdropClick(ev) { if (ev.target === filter) closeMobileFilter(); }
-    function onKeyDown(ev) { if (ev.key === 'Escape' || ev.key === 'Esc') closeMobileFilter(); }
+  function isMobileWidth() {
+    return window.innerWidth <= MOBILE_MAX;
+  }
 
-    window.clickFilter = function clickFilter() {
-      if (!filter) return;
-      if (isMobileWidth()) {
-        if (filter.classList.contains('mobile-open')) closeMobileFilter(); else openMobileFilter();
-      } else {
-        filter.classList.toggle('active');
-      }
-    };
+  function openMobileFilter() {
+    if (!filter) return;
+    // add class
+    filter.classList.add('mobile-open');
+    // ensure close btn exists
+    ensureCloseButton();
+    // lock scroll
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    // add listeners
+    document.addEventListener('keydown', onKeyDown);
+    // close when clicking backdrop (filter container but outside content)
+    filter.addEventListener('click', onBackdropClick);
+  }
 
-    window.addEventListener('resize', () => { if (!filter) return; if (!isMobileWidth() && filter.classList.contains('mobile-open')) closeMobileFilter(); });
-    window.addEventListener('pagehide', () => { if (filter && filter.classList.contains('mobile-open')) closeMobileFilter(); });
-    document.addEventListener('DOMContentLoaded', () => { if (isMobileWidth()) ensureCloseButton(); });
-  })();
+  function closeMobileFilter() {
+    if (!filter) return;
+    filter.classList.remove('mobile-open');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onKeyDown);
+    filter.removeEventListener('click', onBackdropClick);
+  }
 
+  function onBackdropClick(ev) {
+    // se o clique foi diretamente no backdrop (ou seja no #filter), fecha
+    if (ev.target === filter) closeMobileFilter();
+  }
+
+  function onKeyDown(ev) {
+    if (ev.key === 'Escape' || ev.key === 'Esc') closeMobileFilter();
+  }
+
+  // função pública chamada pelo onclick inline
+  window.clickFilter = function clickFilter() {
+    if (!filter) return;
+    if (isMobileWidth()) {
+      if (filter.classList.contains('mobile-open')) closeMobileFilter();
+      else openMobileFilter();
+    } else {
+      // desktop: comportamento antigo de toggle (se quiser manter)
+      filter.classList.toggle('active');
+    }
+  };
+
+  // quando a janela for redimensionada para desktop, garante que o modal feche
+  window.addEventListener('resize', () => {
+    if (!filter) return;
+    if (!isMobileWidth() && filter.classList.contains('mobile-open')) {
+      closeMobileFilter();
+    }
+  });
+
+  // decentemente, fecha o modal se a página navegar
+  window.addEventListener('pagehide', () => {
+    if (filter && filter.classList.contains('mobile-open')) closeMobileFilter();
+  });
+
+  // opcional: se o DOM já carregou e estivermos em mobile, garantir que botão fechar exista
+  document.addEventListener('DOMContentLoaded', () => {
+    if (isMobileWidth()) ensureCloseButton();
+  });
 })();

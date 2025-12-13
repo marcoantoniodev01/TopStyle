@@ -13,6 +13,7 @@
     <!-- NOVO CSS DOS MODAIS -->
     <link rel="stylesheet" href="assets/css/profile-modals.css">
 
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -171,9 +172,9 @@
                     <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
                 </div>
                 <div class="nav__search">
-                        <a href="javascript:void(0)" id="open-search-btn-mobile">
-                            <i class="ri-search-line"></i>
-                        </a>
+                    <a href="javascript:void(0)" id="open-search-btn-mobile">
+                        <i class="ri-search-line"></i>
+                    </a>
                 </div>
             </div>
 
@@ -246,6 +247,10 @@
                         <li class="words">Cartões</li>
                         <li class="responsive"><i class="bi bi-credit-card"></i></li>
                     </a>
+                    <a class="link-page-perfil" href="#telefones">
+                        <li class="words">Telefones</li>
+                        <li class="responsive"><i class="bi bi-phone"></i></li>
+                    </a>
                     <a class="link-page-perfil" href="#enderecos">
                         <li class="words">Endereços</li>
                         <li class="responsive"><i class="bi bi-house-fill"></i></li>
@@ -254,7 +259,7 @@
                         <li class="words">Pedidos</li>
                         <li class="responsive"><i class="bi bi-receipt"></i></li>
                     </a>
-                    <a class="link-page-perfil" href="index.html" id="logout">
+                    <a class="link-page-logout" href="index.html" id="logout">
                         <li class="words">Sair</li>
                         <li class="responsive"><i class="bi bi-box-arrow-right"></i></li>
                     </a>
@@ -410,11 +415,11 @@
             <h2 id="modal-cartao-titulo">Adicionar Novo Cartão</h2>
             <form id="form-cartao">
                 <div class="form-grid">
-                    <div class="form-group">
+                    <div class="form-group-car">
                         <label for="cartao-nickname">Nome do Cartão (Opcional)</label>
                         <input type="text" id="cartao-nickname" placeholder="Ex: Meu Nubank, Cartão Inter">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-car">
                         <label for="cartao-brand-select">Marca do Cartão</label>
                         <div class="custom-select-wrapper" id="cartao-brand-select">
                             <div class="custom-select-trigger" tabindex="0">
@@ -435,20 +440,20 @@
                         </div>
                         <input type="hidden" id="cartao-brand-value">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-car">
                         <label for="cartao-numero">Número do Cartão</label>
                         <input type="text" id="cartao-numero" placeholder="0000 0000 0000 0000" maxlength="19" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-car">
                         <label for="cartao-nome-titular">Nome no Cartão</label>
                         <input type="text" id="cartao-nome-titular" placeholder="COMO ESTÁ NO CARTÃO" required>
                     </div>
                     <div class="form-grid" style="gap: 1rem;">
-                        <div class="form-group">
+                        <div class="form-group-car">
                             <label for="cartao-validade">Validade (MM/AA)</label>
                             <input type="text" id="cartao-validade" placeholder="MM/AA" maxlength="5" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group-car">
                             <label for="cartao-cvv">CVV</label>
                             <input type="text" id="cartao-cvv" placeholder="123" maxlength="4" required>
                         </div>

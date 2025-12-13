@@ -26,73 +26,28 @@
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n));
     }
 
-    /* ----------------- INIT SUPABASE CLIENT (IMPORT LOCAL) ----------------- */
+    // Substitua a função initSupabaseClient antiga por esta:
     async function initSupabaseClient() {
-        // 1) reuse cached
+        // 1. Se já criamos o cliente antes, retorna ele
         if (window.supabaseClient) return window.supabaseClient;
 
-        // 2) try local module './supabaseClient.js' (preferido)
-        try {
-            // caminho relativo: adapta caso seu bundler ou pasta seja diferente
-            const mod = await import('./supabaseClient.js');
-            // common case: export const supabase = ...
-            if (mod && mod.supabase) {
-                window.supabaseClient = mod.supabase;
-                return mod.supabase;
-            }
-            // maybe default export is client or module exports createClient
-            if (mod && (mod.default && (typeof mod.default.from === 'function' || typeof mod.default.createClient === 'function'))) {
-                window.supabaseClient = mod.default;
-                return mod.default;
-            }
-            // if module exports createClient function
-            if (mod && typeof mod.createClient === 'function') {
-                const c = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 2. Verifica se a biblioteca foi carregada pelo HTML (Passo 1)
+        if (typeof supabase !== 'undefined' && supabase.createClient) {
+            try {
+                const c = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 window.supabaseClient = c;
                 return c;
-            }
-        } catch (err) {
-            // falha silenciosa: pode não existir localmente — continuar para fallbacks
-            // console.debug('initSupabaseClient: import local falhou', err);
-        }
-
-        // 3) if window.supabase already exists as SDK or client
-        if (typeof window.supabase !== 'undefined') {
-            // if window.supabase is already a client (has .from)
-            if (typeof window.supabase.from === 'function') {
-                window.supabaseClient = window.supabase;
-                return window.supabase;
-            }
-            // if window.supabase is the library object with createClient
-            if (typeof window.supabase.createClient === 'function') {
-                try {
-                    const c = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    window.supabaseClient = c;
-                    return c;
-                } catch (e) {
-                    // continue to next fallback
-                    console.warn('initSupabaseClient: erro criando client a partir de window.supabase', e);
-                }
+            } catch (err) {
+                console.error('Erro ao criar cliente Supabase:', err);
+                return null;
             }
         }
 
-        // 4) try remote esm (fallback last-resort)
-        try {
-            const mod = await import('https://esm.sh/@supabase/supabase-js@2.39.7');
-            if (mod && typeof mod.createClient === 'function') {
-                const c = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                window.supabaseClient = c;
-                return c;
-            }
-        } catch (e) {
-            console.error('initSupabaseClient: falha ao importar SDK remoto', e);
-        }
-
-        // 5) give up
-        console.error('initSupabaseClient: Supabase client não disponível. Verifique ./supabaseClient.js ou carregue o SDK via CDN.');
+        // 3. Se chegou aqui, é porque esqueceu de colocar o script no HTML
+        console.error('ERRO CRÍTICO: A biblioteca do Supabase não foi encontrada.');
+        console.error('Adicione <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> no seu HTML antes deste script.');
         return null;
     }
-    // ---------------------------------------------------------
 
     async function resolveImageUrl(supabase, imageFieldValue) {
         if (!imageFieldValue) return null;
@@ -122,6 +77,7 @@
         } catch (e) {
             console.warn('resolveImageUrl erro', e);
         }
+        // fallback public path
         const prefix = SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/public/' + encodeURIComponent(PRODUCT_BUCKET) + '/';
         return prefix + encodeURIComponent(path).replace(/%2F/g, '/');
     }
@@ -134,11 +90,16 @@
             if (!supabase) throw new Error('Supabase não disponível');
             let query = supabase.from('products').select('*');
 
+            // Lógica de Pesquisa (Search Term)
             if (filters.searchTerm) {
                 const term = filters.searchTerm;
+                // Procura no nome, categoria ou dropName (case insensitive com ilike)
+                // Sintaxe do Supabase: column.ilike.%term%
                 const orQuery = `nome.ilike.%${term}%,category.ilike.%${term}%,dropName.ilike.%${term}%`;
                 query = query.or(orQuery);
-            } else {
+            }
+            // Lógica Padrão (Filtros de Coleção/Categoria)
+            else {
                 if (filters.category) query = query.eq('category', filters.category);
                 if (filters.gender) query = query.eq('gender', filters.gender);
                 if (filters.dropName) query = query.eq('dropName', filters.dropName);
@@ -148,6 +109,8 @@
 
             if (error) {
                 console.warn('fetchProductsFromDB: erro query principal', error);
+
+                // Fallback apenas se NÃO for pesquisa e tiver dropName (tentativa fuzzy)
                 if (!filters.searchTerm && filters.dropName) {
                     const likeRes = await supabase.from('products').select('*').ilike('dropName', `%${filters.dropName}%`).order('created_at', { ascending: true });
                     if (likeRes.error) throw likeRes.error;
@@ -316,6 +279,7 @@
 
     /* ----------------- MAIN FLOW (Com Busca e Filtros) ----------------- */
 
+    // Helper para pegar tanto ?drop= quanto ?q= (pesquisa)
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);
         return {
@@ -355,8 +319,10 @@
     async function main() {
         const supabase = await initSupabaseClient();
 
+        // Pega parâmetros de coleção ou pesquisa
         const { dropName, searchTerm } = getQueryParams();
 
+        // Define Título da Página
         let displayTitle = 'Coleção';
         if (searchTerm) {
             displayTitle = `Resultados: "${searchTerm}"`;
@@ -370,20 +336,24 @@
             return;
         }
 
+        // refs UI
         const filtroMinInput = qs('#filtro-preco-min');
         const filtroMaxInput = qs('#filtro-preco-max');
         const btnAplicar = qs('#btn-aplicar-preco');
         const btnLimpar = qs('#btn-limpar-filtros');
         const coresContainer = qs('#filtro-cores-container');
 
+        // Mensagem de Loading apropriada
         const loadingMsg = searchTerm
             ? `Buscando por "${searchTerm}"...`
             : `Carregando coleção ${dropName ? `"${dropName}"` : ''}...`;
 
         showLoadingOverSelection(loadingMsg);
 
+        // BUSCA PRODUTOS
         let rows = [];
         try {
+            // Passa tanto dropName quanto searchTerm para a função de busca
             rows = await fetchProductsFromDB({ dropName: dropName, searchTerm: searchTerm });
         } catch (e) {
             console.error('Erro ao buscar products (principal):', e);
@@ -393,6 +363,7 @@
         }
 
         if (!Array.isArray(rows) || rows.length === 0) {
+            // Se a primeira busca falhar e não for pesquisa, tenta fallback (comportamento original)
             if (!searchTerm) {
                 try {
                     const fallback = await fetchProductsFromDB({ dropName });
@@ -413,6 +384,7 @@
             }
         }
 
+        // normaliza e resolve imagens
         const data = rows.map(r => {
             const name = r.name || r.nome || r.title || '';
             const price = (r.price !== undefined && r.price !== null) ? r.price : (r.preco !== undefined ? r.preco : (r['preço'] !== undefined ? r['preço'] : null));
@@ -437,6 +409,7 @@
             console.warn('Erro ao resolver imagens:', e);
         }
 
+        // Gerenciamento de Slots
         let slots = qsa('.product-slot', container);
         if (!slots || slots.length === 0) {
             const s = document.createElement('div');
@@ -470,6 +443,7 @@
             }
         }
 
+        // Filtros de cores na barra lateral
         const colors = Array.from(new Set(data.map(d => (d.color || '').trim()).filter(Boolean)));
         if (colors.length > 0 && coresContainer) {
             coresContainer.innerHTML = '';
@@ -551,4 +525,88 @@
         main();
     }
 
+})();
+
+/*=============== SERVICES MODAL (Sidebar de Filtros Mobile) ===============*/
+
+(function () {
+    const ICON_ID = 'filter-icon';
+    const FILTER_ID = 'filter';
+    const CONTENT_SELECTOR = '.filtros-content';
+    const MOBILE_MAX = 600;
+
+    const icon = document.getElementById(ICON_ID);
+    const filter = document.getElementById(FILTER_ID);
+
+    function ensureCloseButton() {
+        if (!filter) return null;
+        const content = filter.querySelector(CONTENT_SELECTOR);
+        if (!content) return null;
+        let btn = content.querySelector('.filter-close-btn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'filter-close-btn';
+            btn.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
+            content.appendChild(btn);
+            btn.addEventListener('click', closeMobileFilter);
+        }
+        return btn;
+    }
+
+    function isMobileWidth() {
+        return window.innerWidth <= MOBILE_MAX;
+    }
+
+    function openMobileFilter() {
+        if (!filter) return;
+        filter.classList.add('mobile-open');
+        ensureCloseButton();
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', onKeyDown);
+        filter.addEventListener('click', onBackdropClick);
+    }
+
+    function closeMobileFilter() {
+        if (!filter) return;
+        filter.classList.remove('mobile-open');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', onKeyDown);
+        filter.removeEventListener('click', onBackdropClick);
+    }
+
+    function onBackdropClick(ev) {
+        if (ev.target === filter) closeMobileFilter();
+    }
+
+    function onKeyDown(ev) {
+        if (ev.key === 'Escape' || ev.key === 'Esc') closeMobileFilter();
+    }
+
+    window.clickFilter = function clickFilter() {
+        if (!filter) return;
+        if (isMobileWidth()) {
+            if (filter.classList.contains('mobile-open')) closeMobileFilter();
+            else openMobileFilter();
+        } else {
+            filter.classList.toggle('active');
+        }
+    };
+
+    window.addEventListener('resize', () => {
+        if (!filter) return;
+        if (!isMobileWidth() && filter.classList.contains('mobile-open')) {
+            closeMobileFilter();
+        }
+    });
+
+    window.addEventListener('pagehide', () => {
+        if (filter && filter.classList.contains('mobile-open')) closeMobileFilter();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (isMobileWidth()) ensureCloseButton();
+    });
 })();

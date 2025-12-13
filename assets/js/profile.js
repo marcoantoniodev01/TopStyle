@@ -582,3 +582,34 @@ async function initOrdersLogic() {
 
     loadOrders();
 }
+
+/* ==========================================================
+   6. LOGOUT (ADICIONAR NO FINAL DO init OU DO ARQUIVO)
+   ========================================================== */
+const btnLogout = document.getElementById('logout');
+
+if(btnLogout) {
+    btnLogout.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const confirmar = await showConfirmationModal(
+            "Tem certeza que deseja sair da sua conta?",
+            { okText: "Sair", cancelText: "Ficar" }
+        );
+
+        if (confirmar) {
+            try {
+                // Tenta fazer logout no Supabase
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                // Limpa dados locais se necessário e redireciona
+                window.location.href = "index.html"; 
+            } catch (err) {
+                console.error("Erro ao sair:", err);
+                // Força o redirecionamento mesmo com erro
+                window.location.href = "index.html";
+            }
+        }
+    });
+}

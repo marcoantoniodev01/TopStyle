@@ -3026,6 +3026,9 @@ async function dashEditProduct(id) {
                 <select id="modal-category-input" style="flex: 1;"></select>
             </div>
 
+            <label>Drop (Coleção):</label>
+            <select id="modal-drop-input" style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 2px solid transparent; background-color: #eee;"></select>
+
             <label>Gênero:</label>
             <select id="modal-gender-input">
                 <option value="F">Feminino</option>
@@ -3052,6 +3055,9 @@ async function dashEditProduct(id) {
                 <button id="modal-save">Salvar</button>
             </div>
         </div>`;
+
+        const dropSelect = document.getElementById('modal-drop-input');
+        await dashPopulateDrops(dropSelect, product.dropName);
 
         // Preencher Inputs Básicos
         document.getElementById('modal-gender-input').value = product.gender || 'U';
@@ -3130,6 +3136,23 @@ function dashCreateColorRow(color = {}) {
     return row;
 }
 
+// --- Helper: Popular Drops modal ---
+async function dashPopulateDrops(selectElement, selectedValue) {
+    selectElement.innerHTML = '<option value="">Carregando...</option>';
+    const { data } = await client.from('drops').select('name_drop').order('name_drop');
+    
+    selectElement.innerHTML = '<option value="">Nenhum Drop</option>';
+    if (data) {
+        data.forEach(d => {
+            const option = document.createElement('option');
+            option.value = d.name_drop;
+            option.textContent = d.name_drop;
+            if (selectedValue && d.name_drop === selectedValue) option.selected = true;
+            selectElement.appendChild(option);
+        });
+    }
+}
+
 // --- Helper: Popular Categorias ---
 async function dashPopulateCategories(selectElement, selectedValue) {
     selectElement.innerHTML = '<option value="">Carregando...</option>';
@@ -3156,6 +3179,7 @@ async function dashPopulateCategories(selectElement, selectedValue) {
 async function dashSaveProduct(id) {
     // 1. Coleta dados dos inputs
     const nome = document.getElementById('modal-title-input').value.trim();
+    const dropName = document.getElementById('modal-drop-input').value;
     const preco = parseFloat(document.getElementById('modal-price-input').value.replace(',', '.')) || 0;
     
     // CAPTURA O ESTOQUE
@@ -3200,6 +3224,7 @@ async function dashSaveProduct(id) {
         stock, // Usa o valor corrigido (>= 0)
         category, 
         gender, 
+        dropName,
         img, 
         tamanhos, 
         description, 

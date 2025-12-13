@@ -71,7 +71,8 @@
     /* --- Bloco de Endereço --- */
     .pagamento-endereco-bottom {
         flex-direction: column;
-        align-items: center; /* Centraliza tudo */
+        align-items: center;
+        /* Centraliza tudo */
         gap: 0.5rem;
         text-align: center;
     }
@@ -85,7 +86,7 @@
     }
 
     .pagamento-endereco-bottom .text-endereco-pagamanto {
-        display: none; 
+        display: none;
     }
 
     .pagamento-endereco-bottom .text-endereco-pagamanto,
@@ -160,17 +161,19 @@
     /* --- 2. AJUSTE DE PRODUTOS (Detalhes organizados) --- */
     .checkout-product-details {
         display: flex;
-        flex-direction: column; /* Empilha as informações */
+        flex-direction: column;
+        /* Empilha as informações */
         align-items: flex-start;
-        gap: 4px; /* Espaço entre as linhas */
+        gap: 4px;
+        /* Espaço entre as linhas */
         margin-top: 5px;
         font-size: 0.85rem;
         color: #555;
     }
 
     /* Remove o separador "|" que era feito via CSS */
-    .checkout-product-details span + span::before {
-        content: none; 
+    .checkout-product-details span+span::before {
+        content: none;
         display: none;
     }
 
@@ -233,7 +236,8 @@
 
     /* Grid do formulário do modal (Endereço, Cartão) */
     .form-grid {
-        grid-template-columns: 1fr; /* Força 1 coluna em tablets/celulares */
+        grid-template-columns: 1fr;
+        /* Força 1 coluna em tablets/celulares */
     }
 
     .phone-input-group {
@@ -251,7 +255,8 @@
 
     .pagamento-cupom {
         flex-direction: column;
-        align-items: center; /* Centraliza Título e Inputs */
+        align-items: center;
+        /* Centraliza Título e Inputs */
         justify-content: center;
         gap: 1.5rem;
         text-align: center;
@@ -266,7 +271,8 @@
 
     .cupom-container {
         width: 100%;
-        max-width: 400px; /* Evita que estique demais */
+        max-width: 400px;
+        /* Evita que estique demais */
     }
 
     /* Estilização do Input (Arredondado igual carrinho) */
@@ -277,7 +283,8 @@
     }
 
     .cupom input {
-        border-radius: 50px; /* Borda redonda total */
+        border-radius: 50px;
+        /* Borda redonda total */
         border: 1px solid #ddd;
         padding-left: 20px;
         background-color: #f9f9f9;
@@ -285,7 +292,8 @@
     }
 
     .cupom button {
-        border-radius: 50px; /* Botão redondo */
+        border-radius: 50px;
+        /* Botão redondo */
         padding: 0 25px;
         text-transform: uppercase;
         font-size: 0.85rem;
@@ -296,7 +304,8 @@
     .cupom-aplicado-car {
         width: 100%;
         display: flex;
-        flex-direction: column; /* Empilha: Badge em cima, Link embaixo */
+        flex-direction: column;
+        /* Empilha: Badge em cima, Link embaixo */
         align-items: center;
         justify-content: center;
         gap: 10px;
@@ -306,31 +315,34 @@
     /* O Link "Remover cupom" */
     #trocar-cupom {
         font-size: 0.85rem;
-        color: #e74c3c; /* Vermelho para indicar remoção */
+        color: #e74c3c;
+        /* Vermelho para indicar remoção */
         text-decoration: underline;
         cursor: pointer;
     }
 
     /* --- 4. AJUSTE RESUMO (Texto longo de cupom) --- */
-    
+
     .resumo-linha {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start; /* Alinha no topo caso o texto quebre */
+        align-items: flex-start;
+        /* Alinha no topo caso o texto quebre */
         width: 100%;
         margin-bottom: 10px;
     }
 
     /* Texto da esquerda (Ex: Economia no frete...) */
     .resumo-linha span:first-child {
-        max-width: 65%; /* Limita a largura para sobrar espaço pro preço */
+        max-width: 65%;
+        /* Limita a largura para sobrar espaço pro preço */
         text-align: left;
-        
+
         /* Opcional: Se quiser reticências (...) use isso: */
         /* white-space: nowrap; 
            overflow: hidden; 
            text-overflow: ellipsis; */
-           
+
         /* Se preferir que quebre linha (melhor para leitura): */
         word-wrap: break-word;
         line-height: 1.3;
@@ -340,14 +352,20 @@
     .resumo-linha span:last-child {
         flex: 1;
         text-align: right;
-        white-space: nowrap; /* Preço nunca deve quebrar linha */
+        white-space: nowrap;
+        /* Preço nunca deve quebrar linha */
         font-weight: 600;
     }
-    
+
     /* Cor específica para desconto */
     .resumo-linha.desconto span:first-child {
         color: #00bfa5;
         font-size: 0.9rem;
+    }
+
+    #endereco-container {
+        width: 95%;
+        text-align: center;
     }
 }
 
@@ -401,7 +419,7 @@
     /* ************************************************************
        AQUI ESTÁ A CORREÇÃO DA "DIV PAYMENT" E BOTÕES DE CARTÃO 
        ************************************************************ */
-    
+
     /* 1. Garante que a div container não quebre */
     #pagamento-opcoes-container {
         width: 100%;
@@ -412,47 +430,57 @@
     /* 2. Arruma o layout interno dos botões (Label) */
     .pagamento-opcao label {
         display: flex;
-        align-items: center; /* Centraliza verticalmente */
-        justify-content: space-between; /* Mantém ícone na esq e seta/texto na dir */
+        align-items: center;
+        /* Centraliza verticalmente */
+        justify-content: space-between;
+        /* Mantém ícone na esq e seta/texto na dir */
         width: 100%;
-        gap: 10px; /* Espaço mínimo entre os elementos */
+        gap: 10px;
+        /* Espaço mínimo entre os elementos */
     }
-    
+
     /* 3. Ajusta o tamanho do texto "Pix" e "Cartão" */
     .pagamento-opcao-info b {
-        font-size: 0.95rem; /* Texto um pouco menor para caber */
+        font-size: 0.95rem;
+        /* Texto um pouco menor para caber */
     }
 
     /* 4. Ajusta o ícone do Pix/Cartão */
     .pagamento-icone {
-        width: 24px; /* Ícone menor */
+        width: 24px;
+        /* Ícone menor */
         height: 24px;
     }
 
     /* 5. Ajusta o texto verde "Aprovação imediata" do PIX */
     .pagamento-detalhe {
-        font-size: 0.75rem; /* Fonte menor */
+        font-size: 0.75rem;
+        /* Fonte menor */
         text-align: right;
-        white-space: normal; /* Permite quebrar linha se precisar */
+        white-space: normal;
+        /* Permite quebrar linha se precisar */
         line-height: 1.2;
-        max-width: 40%; /* Limita a largura para não esmagar o título */
+        max-width: 40%;
+        /* Limita a largura para não esmagar o título */
     }
-    
+
     /* 6. Corrige os Inputs do Cartão (Modal) para não ficarem espremidos */
     .form-grid {
         display: flex;
-        flex-direction: column; /* Empilha tudo */
+        flex-direction: column;
+        /* Empilha tudo */
         gap: 1rem;
     }
-    
+
     /* Garante que CVV e Validade fiquem lado a lado corretamente se estiverem num sub-grid */
     /* Se você tiver uma div agrupando Validade e CVV, force ela a manter linha ou coluna */
-    .form-grid > div[style*="gap: 1rem"] { 
+    .form-grid>div[style*="gap: 1rem"] {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* Mantém validade e CVV lado a lado */
+        grid-template-columns: 1fr 1fr;
+        /* Mantém validade e CVV lado a lado */
         gap: 10px !important;
     }
-    
+
     /* ************************************************************
        FIM DA CORREÇÃO PAGAMENTO
        ************************************************************ */
