@@ -495,6 +495,7 @@ main {
     font-size: 9rem;
     width: 100%;
     text-transform: uppercase;
+    cursor: default;
 }
 
 .creat__cloth span {
@@ -505,6 +506,7 @@ main {
     width: 70%;
     padding: 0px 10px;
     margin-left: 150px;
+    cursor: default;
 }
 
 .buttons__inicio {
@@ -4503,6 +4505,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
