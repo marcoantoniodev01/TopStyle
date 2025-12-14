@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopStyle | The Timeline</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================
+           CSS - DARK MODE / NEON / INTERACTIVE
+           ========================================= */
+
+        :root {
+            --bg-color: #050505;
+            --text-color: #f0f0f0;
+            --line-off: #1a1a1a;
+            --line-on: #ffffff;
+            --font-display: 'Oswald', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-bottom: 100px;
+            /* Espaço para o botão final */
+        }
+
+        /* LOGO HEADER */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-wrap {
+            width: 300px;
+            height: 300px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .ts-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Filtro para inverter a imagem e deixa-la branca brilhante */
+            filter: invert(1) brightness(1.5);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 50px;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            animation: blink 2s infinite;
+        }
+
+        /* --- TIMELINE CONTAINER --- */
+        .timeline-container {
+            position: relative;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-bottom: 200px;
+            height: 140vh;
+            /* Espaço extra no final */
+        }
+
+        /* LINHA VERTICAL CENTRAL */
+        .line-track {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background: var(--line-off);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .line-progress {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 0%;
+            /* JS Controla isso */
+            background: var(--line-on);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            transform: translateX(-50%);
+            z-index: 2;
+            transition: height 0.1s linear;
+            /* Movimento fluido */
+        }
+
+        /* ITEM INDIVIDUAL */
+        .timeline-item {
+            position: relative;
+            min-height: 250px;
+            /* Altura entre itens */
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Alinhamento Esquerda/Direita */
+        .timeline-item:nth-child(odd) {
+            justify-content: flex-start;
+        }
+
+        .timeline-item:nth-child(even) {
+            justify-content: flex-end;
+        }
+
+        /* A BOLA (DOT) */
+        .dot {
+            position: absolute;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: var(--bg-color);
+            border: 2px solid var(--line-off);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+
+        /* Estado Ativo da Bola */
+        .timeline-item.active .dot {
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 20px #fff;
+            transform: translateX(-50%) scale(1.3);
+        }
+
+        /* LINHA CONECTORA HORIZONTAL (CABO) */
+        .connector {
+            position: absolute;
+            top: 50%;
+            height: 1px;
+            background: var(--line-on);
+            width: 0px;
+            /* Começa com 0 largura */
+            transition: width 0.6s ease 0.2s;
+            /* Delay para esperar a bola acender */
+        }
+
+        /* Direção do conector */
+        .timeline-item:nth-child(odd) .connector {
+            right: 50%;
+            transform-origin: right;
+        }
+
+        .timeline-item:nth-child(even) .connector {
+            left: 50%;
+            transform-origin: left;
+        }
+
+        /* Estado Ativo do Conector */
+        .timeline-item.active .connector {
+            width: 100px;
+            /* Tamanho do fio */
+        }
+
+        /* CONTEÚDO DE TEXTO */
+        .content {
+            width: 40%;
+            opacity: 0;
+            /* INVISÍVEL INICIALMENTE */
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.6s;
+            /* Delay maior para esperar o fio esticar */
+            padding: 20px;
+        }
+
+        .timeline-item:nth-child(odd) .content {
+            text-align: right;
+            margin-right: 100px;
+        }
+
+        .timeline-item:nth-child(even) .content {
+            text-align: left;
+            margin-left: 100px;
+        }
+
+        /* Estado Ativo do Texto */
+        .timeline-item.active .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            line-height: 0.9;
+        }
+
+        p {
+            color: #888;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .index {
+            font-family: monospace;
+            color: #333;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* --- BOTÃO FINAL (CTA) --- */
+        .final-cta {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150px);
+            /* Escondido pra baixo */
+            background: #fff;
+            color: #000;
+            padding: 20px 60px;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.6s cubic-bezier(0.17, 0.67, 0.38, 1.4);
+            /* Efeito de pulo */
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            
+        }
+
+        .final-cta.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .final-cta:hover {
+            background: #000;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+
+            .line-track,
+            .line-progress {
+                left: 20px;
+            }
+
+            .dot {
+                left: 20px;
+            }
+
+            .timeline-item {
+                justify-content: flex-start !important;
+            }
+
+            .timeline-item:nth-child(odd) .content,
+            .timeline-item:nth-child(even) .content {
+                width: 100%;
+                text-align: left;
+                margin: 0;
+                padding-left: 60px;
+                /* Espaço para não bater na linha */
+            }
+
+            .connector {
+                display: none;
+            }
+
+            /* Remove cabo horizontal no mobile para limpar */
+            .logo-wrap {
+                width: 200px;
+                height: 200px;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animações utilitárias */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-15px)
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 0.3
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-wrap">
+            <img src="https://i.ibb.co/jPt43z3L/logo-background.png" alt="TopStyle" class="ts-logo">
+        </div>
+        <div class="scroll-hint">/// SCROLL PARA INICIAR ///</div>
+    </header>
+
+    <div class="timeline-container">
+        <div class="line-track"></div>
+        <div class="line-progress" id="progress-bar"></div>
+
+        <div class="timeline-item">
+            <div class="dot"></div>
+            <div class="connector"></div>
+            <div class="content">
+                <span class="index">01 /// ORIGEM</span>
+                <h2>Visão<br>Urbana</h2>
+                <p>Nascemos do caos organizado da cidade. Onde outros viam apenas concreto, nós vimos uma tela em branco
+                    pronta para ser reescrita.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="dot"></div>
+            <div class="connector"></div>
+            <div class="content">
+                <span class="index">02 /// CONCEITO</span>
+                <h2>Design<br>Sem Filtro</h2>
+                <p>Nossa estética rejeita o excesso. Focamos no corte, na textura e na mensagem. Preto, branco e a
+                    verdade nua e crua.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="dot"></div>
+            <div class="connector"></div>
+            <div class="content">
+                <span class="index">03 /// MOVIMENTO</span>
+                <h2>Cultura<br>Viva</h2>
+                <p>TopStyle não é sobre roupa. É sobre quem veste. Criamos para os que se movimentam, criam e
+                    transformam o ambiente ao redor.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="dot"></div>
+            <div class="connector"></div>
+            <div class="content">
+                <span class="index">04 /// FUTURO</span>
+                <h2>Legado<br>Em Curso</h2>
+                <p>Este é apenas o começo da descida. O futuro é ousado, global e pertence a quem tem coragem de definir
+                    o próprio estilo.</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="final-cta" id="cta-btn" onclick="window.location.href='inicial.html'">
+        Acessar Loja
+        </button>
+
+    <script>
+        /* =========================================
+           LÓGICA DE REVELAÇÃO EXATA
+           ========================================= */
+
+        const progressBar = document.getElementById('progress-bar');
+        const timelineContainer = document.querySelector('.timeline-container');
+        const items = document.querySelectorAll('.timeline-item');
+        const ctaBtn = document.getElementById('cta-btn');
+
+        window.addEventListener('scroll', () => {
+            const containerTop = timelineContainer.offsetTop;
+            const containerHeight = timelineContainer.offsetHeight;
+            const windowHeight = window.innerHeight;
+            const scrollY = window.scrollY;
+            
+            // O ponto de ativação é o centro da tela
+            const triggerPoint = scrollY + (windowHeight / 2);
+            
+            // Ajuste para garantir que a linha vá até o final do container
+            let relativeScroll = triggerPoint - containerTop;
+            
+            // Calculo da porcentagem
+            let percentage = (relativeScroll / containerHeight) * 100;
+
+            // Travar porcentagem entre 0 e 100
+            if (percentage < 0) percentage = 0;
+            if (percentage > 100) percentage = 100; // Aqui garante que ele vai até o final
+
+            progressBar.style.height = `${percentage}%`;
+
+            // 1. Verificar cada ponto (Bolinha)
+            items.forEach(item => {
+                const dot = item.querySelector('.dot');
+                const dotPosition = item.offsetTop + containerTop + (item.offsetHeight / 2);
+
+                if (triggerPoint > dotPosition) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            // 2. Botão Final (CTA) - Aparece quando 98% da linha está preenchida
+            if (percentage > 70) {
+                ctaBtn.classList.add('show');
+            } else {
+                ctaBtn.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+
+</html>
