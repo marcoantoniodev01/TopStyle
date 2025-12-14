@@ -602,7 +602,6 @@ a.profile-link.admin-mode:hover i {
     transition: background 0.2s !important;
     text-decoration: none !important; /* Caso seja um link 'a' */
     color: inherit !important;
-    max-width: 800px !important;
 }
 
 .search-item:hover {
@@ -654,4 +653,5 @@ a.profile-link.admin-mode:hover i {
     transition: color .4s !important;
     cursor: pointer !important;
 }
+
 
