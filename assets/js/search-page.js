@@ -1,86 +1,163 @@
-// assets/js/colecao-slots.js
-// Versão Limpa: Apenas Pesquisa e Renderização de Produtos (cada .product fica dentro de .product-slot)
-import { supabase } from './supabaseClient.js';
+// Importe seu cliente Supabase
+import { supabase } from './supabaseClient.js'
 
-// Constantes
-const PRODUCT_BUCKET = 'product-images';
-const FALLBACK_BUCKET = 'drop-imgs';
+/* ========================================================================== 
+   1. ESTADO GLOBAL (DADOS E FILTROS)
+   ========================================================================== */
+let g_allProducts = []; // Guarda todos os produtos carregados
+let g_activeFilters = {
+    colors: [],
+    minPrice: null,
+    maxPrice: null
+};
 
-const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><rect width="100%" height="100%" fill="#f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#aaa" font-size="18">Sem imagem</text></svg>`
-);
+/* ========================================================================== 
+   2. CONSTANTES E HELPERS
+   ========================================================================== */
+const PLACEHOLDER = 'https://placehold.co/400x600/eee/ccc?text=Sem+Imagem';
 
-/* ----------------- HELPERS BÁSICOS ----------------- */
 function qs(sel, root = document) { return root.querySelector(sel); }
 function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
-
-function escapeHtml(s) {
-    if (s === undefined || s === null) return '';
-    return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-}
-
 function formatPriceBR(n) {
-    if (n == null || n === '' || isNaN(Number(n))) return '';
+    if (n == null || isNaN(Number(n))) return '';
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n));
 }
 
-/* ----------------- Helper resolver imagem ----------------- */
-async function resolveImageUrl(imageFieldValue) {
-    if (!imageFieldValue) return null;
-    const s = String(imageFieldValue).trim();
-    if (/^https?:\/\//i.test(s)) return s;
-    const path = s.replace(/^\/+/, '');
+// Resolve URL da Imagem (Supabase Storage). getPublicUrl é síncrono e retorna { data: { publicUrl } }
+async function resolveImageUrl(imagePath) {
+    if (!imagePath) return PLACEHOLDER;
+    if (typeof imagePath === 'string' && imagePath.startsWith('http')) return imagePath;
 
+    const path = String(imagePath).replace(/^\/+/, '');
+    const buckets = ['product-images', 'drop-imgs'];
     try {
-        const tryBucket = async (bucketName) => {
-            const bucket = supabase.storage.from(bucketName);
-            // getPublicUrl pode retornar { data: { publicUrl } }
-            const res = bucket.getPublicUrl(path);
-            if (res && res.data && (res.data.publicUrl || res.data.publicURL)) return res.data.publicUrl || res.data.publicURL;
+        for (const b of buckets) {
+            const res = supabase.storage.from(b).getPublicUrl(path);
+            if (res && res.data && (res.data.publicUrl || res.data.publicURL)) {
+                return res.data.publicUrl || res.data.publicURL;
+            }
+            // alguns SDKs retornam { publicUrl } direto
             if (res && (res.publicUrl || res.publicURL)) return res.publicUrl || res.publicURL;
-            return null;
-        };
-
-        let url = null;
-        try { url = await tryBucket(PRODUCT_BUCKET); } catch (e) { /* noop */ }
-        if (url) return url;
-        try { url = await tryBucket(FALLBACK_BUCKET); } catch (e) { /* noop */ }
-        if (url) return url;
+        }
     } catch (e) {
-        console.warn('Erro ao resolver imagem:', e);
+        console.warn('resolveImageUrl erro:', e);
     }
-    return null;
+    return PLACEHOLDER;
 }
 
-/* ----------------- BUSCA ----------------- */
-async function fetchSearchResults(searchTerm) {
-    try {
-        if (!supabase) throw new Error('Supabase client não importado corretamente');
-        let query = supabase.from('products').select('*');
+/* ========================================================================== 
+   3. SISTEMA DE FILTROS (SUA LÓGICA INTEGRADA)
+   ========================================================================== */
 
-        if (searchTerm) {
-            const orQuery = `nome.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,dropName.ilike.%${searchTerm}%`;
-            query = query.or(orQuery);
-        } else {
-            return [];
+function populateFiltersUI(products) {
+    const colorsContainer = qs('#filtro-cores-container');
+    const minPriceInput = qs('#filtro-preco-min');
+    const maxPriceInput = qs('#filtro-preco-max');
+
+    if (!colorsContainer) return; // Se não tiver filtro na página, sai.
+
+    // Extrai cores únicas
+    const allColors = products.flatMap(p => {
+        let cores = p.cores;
+        if (typeof cores === 'string') {
+            try { cores = JSON.parse(cores); } catch (e) { cores = []; }
+        }
+        if (!Array.isArray(cores)) cores = [];
+        return cores.map(c => (typeof c === 'object' ? (c.nome || '') : c));
+    });
+
+    const uniqueColors = [...new Set(allColors)].filter(Boolean).sort();
+
+    // Renderiza Checkboxes de Cor (substitui conteúdo do container)
+    colorsContainer.innerHTML = uniqueColors.map(color => `
+        <label>
+            <input type="checkbox" class="filtro-cor-check" value="${escapeHtml(color)}">
+            ${escapeHtml(color)}
+        </label>
+    `).join('');
+
+    // Define Placeholders de Preço
+    const prices = products.map(p => p.price || p.preco || p['preço']).filter(n => Number(n) > 0);
+    if (prices.length > 0) {
+        const min = Math.floor(Math.min(...prices));
+        const max = Math.ceil(Math.max(...prices));
+        if (minPriceInput) minPriceInput.placeholder = `Min: ${min}`;
+        if (maxPriceInput) maxPriceInput.placeholder = `Max: ${max}`;
+    }
+}
+
+function attachFilterListeners() {
+    // re-seleciona checkboxes (podem ter sido recriados)
+    const colorCheckboxes = qsa('.filtro-cor-check');
+    const applyPriceButton = qs('#btn-aplicar-preco');
+    const clearButton = qs('#btn-limpar-filtros');
+    const minInput = qs('#filtro-preco-min');
+    const maxInput = qs('#filtro-preco-max');
+
+    colorCheckboxes.forEach(check => {
+        check.addEventListener('change', () => {
+            g_activeFilters.colors = qsa('.filtro-cor-check:checked').map(c => c.value);
+            applyFilters();
+        });
+    });
+
+    if (applyPriceButton) {
+        applyPriceButton.addEventListener('click', () => {
+            const min = minInput && minInput.value ? parseFloat(minInput.value) : null;
+            const max = maxInput && maxInput.value ? parseFloat(maxInput.value) : null;
+            g_activeFilters.minPrice = min;
+            g_activeFilters.maxPrice = max;
+            applyFilters();
+        });
+    }
+
+    if (clearButton) {
+        clearButton.addEventListener('click', () => {
+            g_activeFilters = { colors: [], minPrice: null, maxPrice: null };
+            if (minInput) minInput.value = '';
+            if (maxInput) maxInput.value = '';
+            qsa('.filtro-cor-check').forEach(c => c.checked = false);
+            renderProductGrid(g_allProducts);
+        });
+    }
+}
+
+function applyFilters() {
+    const { colors, minPrice, maxPrice } = g_activeFilters;
+
+    const filtered = g_allProducts.filter(p => {
+        const price = p.price || p.preco || p['preço'] || 0;
+
+        if (minPrice != null && price < minPrice) return false;
+        if (maxPrice != null && price > maxPrice) return false;
+
+        if (colors.length > 0) {
+            let pColors = p.cores;
+            if (typeof pColors === 'string') {
+                try { pColors = JSON.parse(pColors); } catch (e) { pColors = []; }
+            }
+            if (!Array.isArray(pColors)) return false;
+            const colorNames = pColors.map(c => (typeof c === 'object' ? (c.nome || '') : c).toLowerCase());
+            const hasColor = colors.some(selColor => colorNames.includes(selColor.toLowerCase()));
+            if (!hasColor) return false;
         }
 
-        const { data, error } = await query.order('created_at', { ascending: true });
-        if (error) throw error;
-        return data || [];
-    } catch (err) {
-        console.error('Erro na busca:', err);
-        return [];
-    }
+        return true;
+    });
+
+    renderProductGrid(filtered);
 }
 
-/* ----------------- SLOTS (cada .product dentro de .product-slot) ----------------- */
+/* ========================================================================== 
+   4. RENDERIZAÇÃO (AGORA COM .product-slot)
+   ========================================================================== */
+
+// Cria ou ajusta slots: cada slot é <div.product-slot><div.product>...</div></div>
 function ensureProductSlots(container, count) {
-    // retorna lista de elementos .product-slot (cada um deve conter um .product)
     let slots = qsa('.product-slot', container);
 
-    // se não existir nenhum slot, cria um com .product dentro
     if (!slots || slots.length === 0) {
+        // se não houver slots pre-existentes, cria um slot + product
         const s = document.createElement('div');
         s.className = 'product-slot';
         const p = document.createElement('div');
@@ -90,12 +167,11 @@ function ensureProductSlots(container, count) {
         slots = [s];
     }
 
-    // se precisar de mais slots, clona o último slot (sem conteúdo interno) e coloca um .product filho
     if (count > slots.length) {
         const toCreate = count - slots.length;
         const last = slots[slots.length - 1];
         for (let i = 0; i < toCreate; i++) {
-            const clone = last.cloneNode(false); // não clona filhos
+            const clone = last.cloneNode(false); // sem filhos
             clone.innerHTML = '';
             clone.className = 'product-slot';
             const p = document.createElement('div');
@@ -105,197 +181,148 @@ function ensureProductSlots(container, count) {
         }
     }
 
-    // atualizar lista
+    // garante que cada slot tem um filho .product
     slots = qsa('.product-slot', container);
-
-    // garantir que cada slot tenha exatamente um elemento .product como filho direto
     slots.forEach(slot => {
-        let prod = slot.querySelector(':scope > .product');
-        if (!prod) {
-            prod = document.createElement('div');
-            prod.className = 'product';
-            slot.appendChild(prod);
+        if (!slot.querySelector(':scope > .product')) {
+            const p = document.createElement('div');
+            p.className = 'product';
+            slot.appendChild(p);
         }
     });
 
     return qsa('.product-slot', container);
 }
 
-/* ----------------- RENDER de produto dentro do slot ----------------- */
-function renderProductInSlot(slotEl, productData) {
+function renderSingleProductIntoSlot(slotEl, p) {
     // slotEl é .product-slot
-    let prod = slotEl.querySelector(':scope > .product');
-    if (!prod) {
-        prod = document.createElement('div');
-        prod.className = 'product';
-        slotEl.appendChild(prod);
-    }
-    // garantir visibilidade do slot e produto
-    slotEl.style.display = '';
-    prod.style.display = '';
+    const prodDiv = slotEl.querySelector(':scope > .product');
+    if (!prodDiv) return;
+    const name = (p.name || p.nome || 'Produto sem nome').toString().toUpperCase();
+    const price = formatPriceBR(p.price || p.preco || p['preço']);
+    const img = p._resolvedImage || PLACEHOLDER;
 
-    prod.dataset.id = productData.id ?? '';
-    prod.innerHTML = ''; // limpa
-
-    const mainImage = productData._resolvedImage || productData.image || 'https://placehold.co/300x400/eee/999?text=Produto';
-    const prodName = (productData.name || productData.nome || '').toString().toUpperCase();
-    const prodPrice = formatPriceBR(productData.price ?? productData.preco ?? productData['preço']);
-
-    // construímos a estrutura pedida: <a class="product-link-selecao"> ... </a>
-    const link = document.createElement('a');
-    link.href = `produto.html?id=${encodeURIComponent(productData.id)}`;
-    link.className = 'product-link-selecao';
-
-    link.innerHTML = `
-        <img src="${escapeHtml(mainImage)}" alt="${escapeHtml(prodName)}">
-        <div class="product-text">
-            <span class="product-title">${escapeHtml(prodName)}</span>
-            <span class="product-price">${prodPrice}</span>
-        </div>
+    prodDiv.innerHTML = `
+        <a href="produto.html?id=${encodeURIComponent(p.id)}" class="product-link-selecao">
+            <img src="${escapeHtml(img)}" alt="${escapeHtml(name)}" loading="lazy">
+            <div class="product-text">
+                <span class="product-title">${escapeHtml(name)}</span>
+                <span class="product-price">${price}</span>
+            </div>
+        </a>
     `;
-
-    prod.appendChild(link);
+    prodDiv.style.display = ''; // garante visível
+    slotEl.style.display = '';
 }
 
-/* ----------------- Render fallback slot (botão) ----------------- */
-function renderAddButtonInSlot(slotEl, slotId) {
-    let prod = slotEl.querySelector(':scope > .product');
-    if (!prod) {
-        prod = document.createElement('div');
-        prod.className = 'product';
-        slotEl.appendChild(prod);
-    }
-    prod.innerHTML = '';
-    const btn = document.createElement('button');
-    btn.className = 'add-product-btn';
-    btn.type = 'button';
-    btn.textContent = '+ Adicionar Produto';
-    btn.addEventListener('click', () => {
-        if (typeof window.openAddProductModal === 'function') window.openAddProductModal(slotId);
-        else alert('Abrir modal de adicionar produto (implemente openAddProductModal). Slot: ' + slotId);
-    });
-    prod.appendChild(btn);
-}
-
-/* ----------------- Loading overlay (apenas nó, sem CSS injetado) ----------------- */
-function createLoadingOverlay() {
-    let existing = document.getElementById('colecao-loading-overlay');
-    if (existing) return existing;
-    const el = document.createElement('div');
-    el.id = 'colecao-loading-overlay';
-    el.className = 'colecao-loading-overlay';
-    const loader = document.createElement('div');
-    loader.className = 'colecao-loader';
-    const msg = document.createElement('div');
-    msg.id = 'loading-msg';
-    msg.textContent = 'Buscando...';
-    el.appendChild(loader);
-    el.appendChild(msg);
-    return el;
-}
-
-function showLoading(container, msg) {
-    const overlay = createLoadingOverlay();
-    const msgEl = overlay.querySelector('#loading-msg');
-    if (msgEl) msgEl.textContent = msg || 'Carregando...';
-    if (!container.contains(overlay)) container.appendChild(overlay);
-    overlay.classList.add('visible');
-}
-
-function hideLoading() {
-    const overlay = document.getElementById('colecao-loading-overlay');
-    if (!overlay) return;
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-}
-
-/* ----------------- FLUXO PRINCIPAL ----------------- */
-async function main() {
-    const params = new URLSearchParams(window.location.search);
-    const searchTerm = decodeURIComponent(params.get('q') || '').trim();
-
-    if (searchTerm) {
-        document.title = `Pesquisa: "${searchTerm}"`;
-        const collEl = qs('#collection-name');
-        if (collEl) collEl.textContent = `Resultados para: "${searchTerm}"`;
-    }
-
+// Função que renderiza a grade inteira, garantindo o wrapper .product-slot
+function renderProductGrid(products) {
     const container = qs('.product-content-selecao');
-    if (!container) {
-        console.warn('Container .product-content-selecao não encontrado.');
+    if (!container) return;
+
+    container.innerHTML = ''; // Limpa grid atual
+
+    if (products.length === 0) {
+        container.innerHTML = '<div class="empty-msg" style="width:100%; text-align:center; padding:40px;">Nenhum produto encontrado.</div>';
         return;
     }
 
-    showLoading(container, searchTerm ? `Procurando por "${searchTerm}"...` : 'Aguardando pesquisa...');
+    // Cria os slots
+    products.forEach(product => {
+        // 1. Cria o wrapper .product-slot
+        const slotWrapper = document.createElement('div');
+        slotWrapper.className = 'product-slot';
 
-    let rows = [];
-    if (searchTerm) rows = await fetchSearchResults(searchTerm);
+        // 2. Cria o elemento .product que vai DENTRO do wrapper
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product';
 
-    if (!rows || rows.length === 0) {
-        hideLoading();
-        // esconde produtos existentes
-        qsa('.product-slot', container).forEach(slot => slot.style.display = 'none');
+        // 3. Renderiza o conteúdo do produto dentro da div .product
+        renderSingleProduct(productDiv, product);
 
-        const msg = searchTerm
-            ? `Nenhum produto encontrado para "<strong>${escapeHtml(searchTerm)}</strong>".`
-            : `Digite algo para pesquisar.`;
-
-        let emptyDiv = qs('.empty-msg', container);
-        if (!emptyDiv) {
-            emptyDiv = document.createElement('div');
-            emptyDiv.className = 'empty-msg';
-            emptyDiv.style.gridColumn = '1/-1';
-            emptyDiv.style.textAlign = 'center';
-            emptyDiv.style.padding = '40px';
-            container.appendChild(emptyDiv);
-        }
-        emptyDiv.innerHTML = msg;
-        emptyDiv.style.display = 'block';
-        return;
-    }
-
-    const emptyDiv = qs('.empty-msg', container);
-    if (emptyDiv) emptyDiv.style.display = 'none';
-
-    // prepara dados com imagens
-    const data = rows.map(r => {
-        let imgSrc = r.image;
-        if (!imgSrc && r.cores) {
-            try {
-                const c = typeof r.cores === 'string' ? JSON.parse(r.cores) : r.cores;
-                if (Array.isArray(c) && c[0]) imgSrc = c[0].img1 || c[0].image;
-                else if (typeof c === 'object') imgSrc = c.img1 || c.image;
-            } catch (e) {}
-        }
-        return { ...r, _rawImage: imgSrc };
+        // 4. Junta as partes
+        slotWrapper.appendChild(productDiv);
+        container.appendChild(slotWrapper);
     });
+}
+
+// A função renderSingleProduct (que monta o conteúdo do card) permanece a mesma
+function renderSingleProduct(slotEl, p) {
+    const name = (p.name || p.nome || 'Produto sem nome').toUpperCase();
+    const price = formatPriceBR(p.price || p.preco || p['preço']);
+    const img = p._resolvedImage || PLACEHOLDER;
+
+    slotEl.innerHTML = `
+        <a href="produto.html?id=${p.id}" class="product-link-selecao">
+            <img src="${img}" alt="${name}" loading="lazy">
+            <div class="product-text">
+                <span class="product-title">${name}</span>
+                <span class="product-price">${price}</span>
+            </div>
+        </a>
+    `;
+}
+
+/* ========================================================================== 
+   5. LÓGICA PRINCIPAL (FETCH + INICIALIZAÇÃO)
+   ========================================================================== */
+
+async function main() {
+    const container = qs('.product-content-selecao');
+    if (container) container.innerHTML = '<div style="padding:20px; text-align:center;">Carregando produtos...</div>';
+
+    const params = new URLSearchParams(window.location.search);
+    const searchTerm = params.get('q');
+    const collectionId = params.get('collection');
 
     try {
-        await Promise.all(data.map(async p => {
-            p._resolvedImage = await resolveImageUrl(p._rawImage) || PLACEHOLDER;
-        }));
-    } catch (e) {
-        console.warn('Erro resolvendo imagens', e);
-    }
+        let query = supabase.from('products').select('*');
 
-    // garante slots
-    const slots = ensureProductSlots(container, data.length);
-
-    // renderiza
-    for (let i = 0; i < slots.length; i++) {
-        const slot = slots[i];
-        if (i < data.length) {
-            renderProductInSlot(slot, data[i]);
-        } else {
-            // esconde slot extra
-            slot.style.display = 'none';
+        if (searchTerm) {
+            const term = decodeURIComponent(searchTerm).trim();
+            document.title = `Busca: ${term}`;
+            const orQuery = `nome.ilike.%${term}%,category.ilike.%${term}%`;
+            query = query.or(orQuery);
+        } else if (collectionId) {
+            query = query.eq('collection_id', collectionId);
         }
-    }
 
-    hideLoading();
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) throw error;
+
+        g_allProducts = data || [];
+
+        // Resolve imagens em paralelo
+        await Promise.all(g_allProducts.map(async (p) => {
+            let rawImg = p.image;
+            if (!rawImg && p.cores) {
+                try {
+                    const c = typeof p.cores === 'string' ? JSON.parse(p.cores) : p.cores;
+                    if (Array.isArray(c) && c[0]) rawImg = c[0].img1 || c[0].image;
+                    else if (typeof c === 'object') rawImg = c.img1 || c.image;
+                } catch (e) { /* noop */ }
+            }
+            p._resolvedImage = await resolveImageUrl(rawImg);
+        }));
+
+        // Inicializa filtros e UI
+        populateFiltersUI(g_allProducts);
+        attachFilterListeners();
+        renderProductGrid(g_allProducts);
+
+        const titleEl = qs('#collection-name');
+        if (titleEl && searchTerm) titleEl.textContent = `Resultados para "${searchTerm}"`;
+
+    } catch (err) {
+        console.error('Erro fatal:', err);
+        if (container) container.innerHTML = '<div style="padding:20px; text-align:center;">Erro ao carregar produtos.</div>';
+    }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', main);
-} else {
-    main();
+document.addEventListener('DOMContentLoaded', main);
+
+/* small helper to escape HTML for inserted strings */
+function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 }
