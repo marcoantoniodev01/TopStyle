@@ -150,7 +150,7 @@ function renderSingleProductHTML(slotEl, p) {
     const img = p._resolvedImage || PLACEHOLDER;
 
     slotEl.innerHTML = `
-        <a href="produto.html?id=${p.id}" class="product-link-selecao">
+        <a href="Blusa-modelo02.html?id=${p.id}" class="product-link-selecao">
             <img src="${img}" alt="${escapeHtml(name)}" loading="lazy">
             <div class="product-text">
                 <span class="product-title">${escapeHtml(name)}</span>
@@ -392,3 +392,4 @@ if (document.readyState === 'loading') {
         if (!isMobileWidth() && filter.classList.contains('mobile-open')) closeMobileFilter();
     });
 })();
+
