@@ -281,7 +281,7 @@ async function main() {
         if (searchTerm) {
             const term = decodeURIComponent(searchTerm).trim();
             document.title = `Busca: ${term}`;
-            const orQuery = `nome.ilike.%${term}%,category.ilike.%${term}%`;
+            const orQuery = `nome.ilike.%${term}%,category.ilike.%${term}%,dropName.ilike.%${term}%`;
             query = query.or(orQuery);
         } else if (collectionId) {
             query = query.eq('collection_id', collectionId);
@@ -326,3 +326,4 @@ function escapeHtml(str) {
     if (str === undefined || str === null) return '';
     return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 }
+
