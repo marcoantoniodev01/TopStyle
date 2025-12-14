@@ -203,7 +203,7 @@ function renderSingleProductIntoSlot(slotEl, p) {
     const img = p._resolvedImage || PLACEHOLDER;
 
     prodDiv.innerHTML = `
-        <a href="produto.html?id=${encodeURIComponent(p.id)}" class="product-link-selecao">
+        <a href="Blusa-modelo02.html?id=${encodeURIComponent(p.id)}" class="product-link-selecao">
             <img src="${escapeHtml(img)}" alt="${escapeHtml(name)}" loading="lazy">
             <div class="product-text">
                 <span class="product-title">${escapeHtml(name)}</span>
@@ -253,7 +253,7 @@ function renderSingleProduct(slotEl, p) {
     const img = p._resolvedImage || PLACEHOLDER;
 
     slotEl.innerHTML = `
-        <a href="produto.html?id=${p.id}" class="product-link-selecao">
+        <a href="Blusa-modelo02.html?id=${p.id}" class="product-link-selecao">
             <img src="${img}" alt="${name}" loading="lazy">
             <div class="product-text">
                 <span class="product-title">${name}</span>
@@ -326,4 +326,5 @@ function escapeHtml(str) {
     if (str === undefined || str === null) return '';
     return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 }
+
 
