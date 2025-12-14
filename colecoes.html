@@ -2,47 +2,32 @@
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- CSS: caminhos relativos garantidos; use servidor (Live Server / http) -->
-  <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/mediaquery.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/mediaquery-colecoes.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/mediaquery-header.css" />
-  <link rel="stylesheet" type="text/css" href="./assets/css/style-header.css" />
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png" />
-  <title>TopStyle - Coleção</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/mediaquery-header.css">
+    <link rel="stylesheet" href="assets/css/style-header.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/mediaquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jPt43z3L/logo-background.png">
+    <title>TopStyle | Coleções</title>
 </head>
-<style>
-  .selecao-products {
-    top: 12vh;
-    padding: 0;
-  }
-</style>
-<body>
-  <!-- (mantive exatamente seu header e restante do HTML) -->
-  <!-- Carrossel de desconto -->
-  <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
-    <div class="carrossel-wrapper">
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
-    </div>
-    <div class="carrossel-wrapper">
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 COM O CUPOM 'TOPSTYLE'</span>
-      <span>FRETE GRÁTIS ACIMA DE R$100</span>
-      <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
-    </div>
-  </div>
 
-  <header class="header " id="header">
+<body>
+
+    <div title="Pegue seu desconto agora!! 😊" class="carrossel-desconto hidden fade-left">
+        <div class="carrossel-wrapper">
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+            <span>FRETE GRÁTIS ACIMA DE R$100</span>
+            <span>COMPRE COM R$10 OFF COM O CUPOM 'TOPSTYLE'</span>
+        </div>
+    </div>
+
+
+    <header class="header " id="header">
         <nav class="nav__container">
 
             <div class="nav__menu" id="nav-menu">
@@ -180,9 +165,9 @@
                     <i id="burger" class="material-icons nav__toggle" onclick="clickMenu()">menu</i>
                 </div>
                 <div class="nav__search">
-                        <a href="javascript:void(0)" id="open-search-btn-mobile">
-                            <i class="ri-search-line"></i>
-                        </a>
+                    <a href="javascript:void(0)" id="open-search-btn-mobile">
+                        <i class="ri-search-line"></i>
+                    </a>
                 </div>
             </div>
 
@@ -229,107 +214,126 @@
     </header>
     <div class="progress-bar"></div>
 
-  <main>
-    <section class="selecao-products">
-      <div class="selecao-content">
-        <i class="bi bi-filter" id="filter-icon" onclick="clickFilter()"></i>
-        <div class="filtros" id="filter">
-          <div class="filtros-content">
-            <h3 class="filtro-titulo">Filtros</h3>
-            <div class="filtro-grupo" id="grupo-preco">
-              <h4>Faixa de Preço</h4>
-              <div class="filtro-preco-inputs">
-                <input type="number" id="filtro-preco-min" placeholder="R$ Min">
-                <input type="number" id="filtro-preco-max" placeholder="R$ Max">
-              </div>
-              <button type="button" id="btn-aplicar-preco">Aplicar Preço</button>
+    <main>
+        <div class="filter-trigger-wrapper">
+            <button id="toggle-filtros-btn" class="filter-trigger-btn">
+                <i class="bi bi-filter"></i> Mostrar Filtros
+            </button>
+        </div>
+
+        <section class="selecao-products" id="main-product-container">
+
+            <div class="filtros">
+                <div class="filtros-content">
+
+                    <div class="filter-header-mobile">
+                        <h3 class="filtro-titulo">Filtros</h3>
+                        <button id="close-filtros-btn" class="close-filter-btn">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+
+                    <div class="filtro-grupo" id="grupo-preco">
+                        <h4>Faixa de Preço</h4>
+                        <div class="filtro-preco-inputs">
+                            <input type="number" id="filtro-preco-min" placeholder="Min">
+                            <input type="number" id="filtro-preco-max" placeholder="R$ Max">
+                        </div>
+                        <button type="button" id="btn-aplicar-preco">Aplicar Preço</button>
+                    </div>
+
+                    <div class="filtro-grupo" id="grupo-cores">
+                        <h4>Cor</h4>
+                        <div class="filtro-opcoes" id="filtro-cores-container">
+                            <label><input type="checkbox"> Preto</label>
+                            <label><input type="checkbox"> Branco</label>
+                            <label><input type="checkbox"> Cinza</label>
+                        </div>
+                    </div>
+
+                    <button id="btn-limpar-filtros">Limpar Filtros</button>
+                </div>
             </div>
-            <div class="filtro-grupo" id="grupo-cores">
-              <h4>Cor</h4>
-              <div class="filtro-opcoes" id="filtro-cores-container"></div>
+
+            <div class="product-content product-content-selecao">
+                <div class="product-slot">
+                    <div class="product">
+                        <a href="#" class="product-link-selecao">
+                            <img src="https://via.placeholder.com/300x400" alt="Produto">
+                            <div class="product-text">
+                                <span class="product-title">CAMISA WONDERLAND</span>
+                                <span class="product-price">R$ 139,90</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <button id="btn-limpar-filtros">Limpar Filtros</button>
-          </div>
+
+        </section>
+
+        <a href="#" class="scrollup" id="scroll-up">
+            <i class="ri-arrow-up-line"></i>
+        </a>
+    </main>
+
+    <footer class="footer">
+
+        <div class="footer-main">
+            <div class="footer-brand">
+                <h2>TopStyle</h2>
+                <p>Mais que moda, é movimento.
+                    Drops exclusivos, feitos para quem cria tendência.</p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>Coleções</h4>
+                    <ul>
+                        <li><a href="#promotions-day">Novidades</a></li>
+                        <li><a href="#">Drops</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Marca</h4>
+                    <ul>
+                        <li><a href="#">Sobre nós</a></li>
+                        <li><a href="#">Na mídia</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Ajuda</h4>
+                    <ul>
+                        <li><a href="medidas.html">Guia de tamanhos</a></li>
+                        <li><a href="#">Suporte</a></li>
+                        <li><a href="devolucao.html">Política de devolução</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div class="product-content product-content-selecao">
-          <!-- produtos serão renderizados aqui pelo JS -->
-          <div class="product-slot"></div>
+
+        <div class="footer-bottom">
+            <p>© 2025 TopStyle. Todos os direitos reservados.</p>
+            <div class="footer-legal">
+                <a href="termos.html">Termos / Privacidade / Cookies</a>
+            </div>
         </div>
-      </div>
+    </footer>
 
-    </section>
+    <script src="assets/js/admiconedash.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="assets/js/parallax.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/menu-hamburger.js"></script>
+    <script src="assets/js/header-cell.js"></script>
+    <script src="assets/js/header-control.js"></script>
+    <script src="assets/js/drops.js"></script>
+    <script src="assets/js/collection-linker.js"></script>
+    <script src="assets/js/search-modal.js" type="module"></script>
+    <script type="module" src="assets/js/colecao.js"></script>
 
-    <a href="#" class="scrollup" id="scroll-up">
-      <i class="ri-arrow-up-line"></i>
-    </a>
-  </main>
-
-  <footer class="footer">
-
-    <div class="footer-main hidden zoom-in">
-      <div class="footer-brand">
-        <h2>TopStyle</h2>
-        <p>Mais que moda, é movimento.
-          Drops exclusivos, feitos para quem cria tendência.</p>
-      </div>
-
-      <div class="footer-links">
-        <div>
-          <h4>Coleções</h4>
-          <ul>
-            <li><a href="#">Novidades</a></li>
-            <li><a href="#">Drops</a></li>
-            <li><a href="#">Collabs</a></li>
-            <li><a href="#">Lookbook</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Marca</h4>
-          <ul>
-            <li><a href="#">Sobre nós</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Carreiras</a></li>
-            <li><a href="#">Na mídia</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Ajuda</h4>
-          <ul>
-            <li><a href="guia-tamanho.html">Guia de tamanhos</a></li>
-            <li><a href="#">Suporte</a></li>
-            <li><a href="#">Política de devolução</a></li>
-            <li><a href="faq.html">FAQ</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>© 2025 TopStyle. Todos os direitos reservados.</p>
-      <div class="footer-legal">
-        <a href="#">Termos</a>
-        <a href="#">Privacidade</a>
-        <a href="#">Cookies</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- suas libs (mantive a ordem que você usa) -->
-  <script src="assets/js/admiconedash.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/drops.js"></script>
-  <script src="assets/js/auth.js"></script>
-  <script type="module" src="assets/js/collection-linker.js"></script>
-  <script src="assets/js/header-cell.js"></script>
-  <script src="assets/js/menu-hamburger.js"></script>
-  <script src="assets/js/header-control.js"></script>
-
-  <!-- script da página de coleção -->
-  <script type="module" src="assets/js/colecao.js"></script>
-  <script src="assets/js/search-modal.js" type="module"></script>
-  <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const filterBtn = document.getElementById('toggle-filtros-btn');
             const closeFilterBtn = document.getElementById('close-filtros-btn');
