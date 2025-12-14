@@ -12,7 +12,7 @@ Grandes telas - acim 1200px
 :root {
   --first-color: #010326;
   --fifth-color: #0D0D0D;
-  --icon-size-perfil: 1.35rem;
+  --icon-size-perfil: 1.45rem;
   --regular-font: 16px;
   --big-font: 23px;
 }
@@ -53,12 +53,10 @@ Grandes telas - acim 1200px
   }
 
   .list-page-perfil a {
-    width: 40px;
-    font-size: var(--icon-size-perfil);
+    height: auto;
+    font-size: var(--icon-size);
     border-left: none;
     border-bottom: 4px solid transparent;
-    display: flex;
-    justify-content: center;
   }
 
   .list-page-perfil a.active {
@@ -137,4 +135,14 @@ Grandes telas - acim 1200px
         gap: 10px !important;
     }
 
+    .list-page-perfil a {
+        width: 40px;
+        font-size: var(--icon-size-perfil);
+        border-left: none;
+        border-bottom: 4px solid transparent;
+        display: flex;
+        justify-content: center;
+    }
+
 }
+
