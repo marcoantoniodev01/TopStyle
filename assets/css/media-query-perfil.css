@@ -12,7 +12,7 @@ Grandes telas - acim 1200px
 :root {
   --first-color: #010326;
   --fifth-color: #0D0D0D;
-  --icon-size-perfil: 1.45rem;
+  --icon-size: 1.55rem;
   --regular-font: 16px;
   --big-font: 23px;
 }
@@ -134,15 +134,4 @@ Grandes telas - acim 1200px
         grid-template-columns: 1fr 1fr;
         gap: 10px !important;
     }
-
-    .list-page-perfil a {
-        width: 40px;
-        font-size: var(--icon-size-perfil);
-        border-left: none;
-        border-bottom: 4px solid transparent;
-        display: flex;
-        justify-content: center;
-    }
-
 }
-
