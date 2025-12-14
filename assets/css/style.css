@@ -2899,6 +2899,8 @@ hr {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-direction: column;
+    gap: 10px;
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -4515,6 +4517,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
