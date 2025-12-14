@@ -2058,7 +2058,7 @@ hr {
 }
 
 .product-link-selecao {
-    background-color: #4e5a7e;
+    background-color: #ffffff;
     width: 100%;
     color: white;
     text-decoration: none;
@@ -4515,6 +4515,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
