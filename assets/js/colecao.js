@@ -1,640 +1,394 @@
-// assets/js/colecao-slots.js
-// versão atualizada: adiciona overlay de loading que cobre .selecao-products
-(() => {
-  'use strict';
+/* assets/js/colecao-slots.js */
+import { supabase } from './supabaseClient.js';
 
-  const SUPABASE_URL = window.SUPABASE_URL || 'https://xhzdyatnfaxnvvrllhvs.supabase.co';
-  const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo';
+/* ==========================================================================
+   1. ESTADO GLOBAL E CONSTANTES
+   ========================================================================== */
+let g_allProducts = []; // Todos os produtos carregados do banco
+let g_activeFilters = {
+    colors: [],
+    minPrice: null,
+    maxPrice: null
+};
 
-  const PRODUCT_BUCKET = 'product-images';
-  const FALLBACK_BUCKET = 'drop-imgs';
+const PRODUCT_BUCKET = 'product-images';
+const FALLBACK_BUCKET = 'drop-imgs';
+const PLACEHOLDER = 'https://placehold.co/400x600/eee/ccc?text=Sem+Imagem';
 
-  const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><rect width="100%" height="100%" fill="#f3f3f3"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#aaa" font-size="18">Sem imagem</text></svg>`
-  );
+/* ==========================================================================
+   2. HELPERS
+   ========================================================================== */
+function qs(sel, root = document) { return root.querySelector(sel); }
+function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
 
-  /* ----------------- small helpers ----------------- */
-  function qs(sel, root = document) { return root.querySelector(sel); }
-  function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
-
-  function escapeHtml(s) {
-    if (s === undefined || s === null) return '';
-    return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-  }
-  function formatPriceBR(n) {
-    if (n == null || n === '' || isNaN(Number(n))) return '';
+function formatPriceBR(n) {
+    if (n == null || isNaN(Number(n))) return 'R$ 0,00';
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n));
-  }
+}
 
-  // ---------- CORREÇÃO: initSupabaseClient robusta ----------
-  async function initSupabaseClient() {
-    // 1) se já criamos um client antes, reutiliza
-    if (window.supabaseClient) return window.supabaseClient;
+function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
 
-    // 2) se a lib oficial foi carregada via <script> (window.supabase existe e tem createClient), crie um client a partir dela
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      try {
-        const c = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        window.supabaseClient = c;
-        return c;
-      } catch (e) {
-        console.warn('initSupabaseClient: erro criando client a partir de window.supabase', e);
-      }
-    }
+// Resolve URL da Imagem (tenta buckets do Supabase)
+async function resolveImageUrl(imagePath) {
+    if (!imagePath) return PLACEHOLDER;
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    const path = imagePath.replace(/^\/+/, '');
+    
+    // Tenta bucket principal
+    let { data } = supabase.storage.from(PRODUCT_BUCKET).getPublicUrl(path);
+    if (data && data.publicUrl && !data.publicUrl.endsWith('/null')) return data.publicUrl;
 
-    // 3) fallback: importar versão estável via esm.sh (mais confiável que +esm do jsdelivr)
-    try {
-      const mod = await import('https://esm.sh/@supabase/supabase-js@2.39.7');
-      if (!mod || typeof mod.createClient !== 'function') {
-        console.error('initSupabaseClient: módulo importado não possui createClient', mod);
-        return null;
-      }
-      const c = mod.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      window.supabaseClient = c;
-      return c;
-    } catch (e) {
-      console.error('initSupabaseClient: erro ao importar/createClient', e);
-      return null;
-    }
-  }
-  // ---------------------------------------------------------
+    // Tenta bucket fallback
+    ({ data } = supabase.storage.from(FALLBACK_BUCKET).getPublicUrl(path));
+    if (data && data.publicUrl) return data.publicUrl;
 
-  async function resolveImageUrl(supabase, imageFieldValue) {
-    if (!imageFieldValue) return null;
-    const s = String(imageFieldValue).trim();
-    if (/^https?:\/\//i.test(s)) return s;
-    const path = s.replace(/^\/+/, '');
-    try {
-      const tryBucket = async (bucketName) => {
-        const bucket = supabase.storage.from(bucketName);
-        if (typeof bucket.getPublicUrl === 'function') {
-          const res = bucket.getPublicUrl(path);
-          if (res && res.data && (res.data.publicUrl || res.data.publicURL)) return res.data.publicUrl || res.data.publicURL;
-          if (res && (res.publicUrl || res.publicURL)) return res.publicUrl || res.publicURL;
-        }
-        if (typeof bucket.createSignedUrl === 'function') {
-          const signed = await bucket.createSignedUrl(path, 60);
-          if (signed && (signed.signedURL || (signed.data && signed.data.signedURL))) return signed.signedURL || signed.data.signedURL;
-        }
-        return null;
-      };
+    return PLACEHOLDER;
+}
 
-      let url = null;
-      try { url = await tryBucket(PRODUCT_BUCKET); } catch (e) { /* noop */ }
-      if (url) return url;
-      try { url = await tryBucket(FALLBACK_BUCKET); } catch (e) { /* noop */ }
-      if (url) return url;
-    } catch (e) {
-      console.warn('resolveImageUrl erro', e);
-    }
-    // fallback public path
-    const prefix = SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/public/' + encodeURIComponent(PRODUCT_BUCKET) + '/';
-    return prefix + encodeURIComponent(path).replace(/%2F/g, '/');
-  }
-
-  /* ----------------- original helpers you provided (hardened) ----------------- */
-
-  // 1. Função helper para pegar o parametro da URL
-  function getDropFromQuery() {
-    const params = new URLSearchParams(window.location.search);
-    // Pega o parametro '?drop='
-    const drop = params.get('drop') || '';
-    return decodeURIComponent(drop);
-  }
-
-  // 2. Função de busca atualizada
-  async function fetchProductsFromDB(filters = {}) {
-    try {
-      const supabase = await initSupabaseClient();
-      if (!supabase) throw new Error('Supabase não disponível');
-
-      let query = supabase.from('products').select('*');
-
-      // Filtro por Drop (IMPORTANTE: use aspas se a coluna no banco for "dropName")
-      // No Supabase JS, geralmente passamos a string exata da coluna.
-      if (filters.dropName) {
-        // Opção A: Se a coluna for case-sensitive ou exata
-        query = query.eq('dropName', filters.dropName);
-
-        // Opção B: Se quiser ser mais flexível (case insensitive) use ilike
-        // query = query.ilike('dropName', filters.dropName); 
-      }
-
-      // Filtros de Preço e Cor são aplicados no front (no seu código original),
-      // mas se quiser filtrar no banco, adicione aqui.
-
-      const { data, error } = await query.order('created_at', { ascending: true });
-
-      if (error) {
-        console.warn('Erro ao buscar produtos do drop:', error);
-        return [];
-      }
-      return data || [];
-    } catch (err) {
-      console.error('fetchProductsFromDB error', err);
-      return [];
-    }
-  }
-
-  function ensureSlotIds() {
-    const slots = qsa('.product-slot');
-    let next = 1;
-    slots.forEach(s => {
-      if (!s.dataset.slot) s.dataset.slot = String(next++);
-    });
-  }
-
-  function renderProductInSlot(slotEl, productData) {
-    slotEl.innerHTML = '';
-    const product = document.createElement('div');
-    product.className = 'product';
-    product.dataset.id = productData.id;
-    product.dataset.tamanhos = productData.tamanhos || '';
-
-    const mainImage = productData._resolvedImage || productData.image || 'https://placehold.co/400x600/eee/ccc?text=Produto';
-
-    product.innerHTML = `
-      <a class="product-link" href="Blusa-modelo02.html?id=${encodeURIComponent(productData.id)}">
-        <img src="${escapeHtml(mainImage)}" alt="${escapeHtml((productData.name || productData.nome) || 'Produto')}">
-      </a>
-      <div class="product-text">
-        <p class="product-title">${escapeHtml((productData.name || productData.nome || '').toString().toUpperCase())}</p>
-        <p class="product-price">${formatPriceBR(productData.price ?? productData.preco ?? productData['preço'])}</p>
-        <div class="product-options" style="display:none;">
-          <div class="colors"></div>
-          <div class="sizes"></div>
-        </div>
-      </div>`;
-
-    product.__productMeta = productData;
-    slotEl.appendChild(product);
-  }
-
-  function renderAddButtonInSlot(slotEl, slotId) {
-    slotEl.innerHTML = '';
-    const btn = document.createElement('button');
-    btn.className = 'add-product-btn';
-    btn.textContent = '+ Adicionar Produto';
-    btn.onclick = () => {
-      if (typeof window.openAddProductModal === 'function') {
-        window.openAddProductModal(slotId);
-      } else {
-        alert('Abrir modal de adicionar produto (implemente openAddProductModal). Slot: ' + slotId);
-      }
-    };
-    slotEl.appendChild(btn);
-  }
-
-  /* ----------------- LOADING OVERLAY UTIL ----------------- */
-
-  // Inject minimal CSS for overlay once
-  function injectLoadingStyles() {
+/* ==========================================================================
+   3. LOADING OVERLAY
+   ========================================================================== */
+function injectLoadingStyles() {
     if (document.getElementById('colecao-loading-styles')) return;
     const css = `
-      .colecao-loading-overlay {
-        position: absolute;
-        background: rgba(255,255,255,0.92);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 10px;
-        padding: 16px;
-        border-radius: 6px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-        z-index: 99999;
-        color: #222;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      }
-      .colecao-loading-overlay .colecao-loader {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 5px solid rgba(0,0,0,0.08);
-        border-top-color: #222;
-        animation: colecao-spin 1s linear infinite;
-      }
-      @keyframes colecao-spin { to { transform: rotate(360deg); } }
-      .colecao-loading-overlay .colecao-msg {
-        font-size: 14px;
-        color: #222;
-      }
-    `;
-    const st = document.createElement('style');
-    st.id = 'colecao-loading-styles';
-    st.appendChild(document.createTextNode(css));
-    document.head.appendChild(st);
-  }
-
-  let _colecaoOverlay = null;
-  let _colecaoOverlayHandlers = null;
-
-  function createLoadingOverlay() {
-    if (_colecaoOverlay) return _colecaoOverlay;
-    injectLoadingStyles();
-    const el = document.createElement('div');
-    el.className = 'colecao-loading-overlay';
-    el.style.display = 'none';
-    el.innerHTML = `<div class="colecao-loader" aria-hidden="true"></div><div class="colecao-msg">Carregando...</div>`;
-    document.body.appendChild(el);
-    _colecaoOverlay = el;
-    return el;
-  }
-
-  function positionOverlayOverSection(overlay, sectionEl) {
-    if (!overlay || !sectionEl) return;
-    const rect = sectionEl.getBoundingClientRect();
-    // position absolute relative to document (so it scrolls with page)
-    const top = rect.top + window.scrollY;
-    const left = rect.left + window.scrollX;
-    overlay.style.position = 'absolute';
-    overlay.style.top = `${top}px`;
-    overlay.style.left = `${left}px`;
-    overlay.style.width = `${Math.max(0, rect.width)}px`;
-    overlay.style.height = `${Math.max(0, rect.height)}px`;
-  }
-
-  function showLoadingOverSelection(message = 'Carregando...') {
-    const section = document.querySelector('.selecao-products');
-    if (!section) {
-      // fallback: show centered full-page overlay
-      let full = createLoadingOverlay();
-      full.style.position = 'fixed';
-      full.style.top = '0';
-      full.style.left = '0';
-      full.style.width = '100vw';
-      full.style.height = '100vh';
-      full.querySelector('.colecao-msg').textContent = message;
-      full.style.display = 'flex';
-      return;
-    }
-    const overlay = createLoadingOverlay();
-    overlay.querySelector('.colecao-msg').textContent = message;
-    positionOverlayOverSection(overlay, section);
-    overlay.style.display = 'flex';
-
-    // add handlers to update position on scroll/resize
-    const handler = () => positionOverlayOverSection(overlay, section);
-    _colecaoOverlayHandlers = handler;
-    window.addEventListener('scroll', handler, { passive: true });
-    window.addEventListener('resize', handler);
-  }
-
-  function hideLoadingOverlay() {
-    if (!_colecaoOverlay) return;
-    _colecaoOverlay.style.display = 'none';
-    if (_colecaoOverlayHandlers) {
-      window.removeEventListener('scroll', _colecaoOverlayHandlers);
-      window.removeEventListener('resize', _colecaoOverlayHandlers);
-      _colecaoOverlayHandlers = null;
-    }
-  }
-
-  /* ----------------- main flow (com overlay calls integradas) ----------------- */
-
-  function getDropFromQuery() {
-    const params = new URLSearchParams(window.location.search);
-    const drop = params.get('drop') || '';
-    return decodeURIComponent(drop);
-  }
-
-  // helper para extrair imagem da coluna cores (tenta vários formatos)
-  function extractImageFromCores(coresField) {
-    if (!coresField) return null;
-    try {
-      let cores = coresField;
-      // se for string que parece JSON, tente parse
-      if (typeof coresField === 'string') {
-        const str = coresField.trim();
-        if ((str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))) {
-          try { cores = JSON.parse(str); } catch (e) { cores = coresField; }
+        .colecao-loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.92); z-index: 999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 6px;
         }
-      }
-      // se for array válido, pega o primeiro objeto
-      if (Array.isArray(cores) && cores.length > 0) {
-        const first = cores[0];
-        if (!first) return null;
-        // procura campos comuns: img1, image, url, src
-        return first.img1 || first.image || first.url || first.src || null;
-      }
-      // se for objeto, tenta pegar campos
-      if (typeof cores === 'object') {
-        return cores.img1 || cores.image || cores.url || cores.src || null;
-      }
-      // se for string simples e parecer caminho/URL, retorna
-      if (typeof cores === 'string') {
-        const maybe = cores.trim();
-        if (maybe) return maybe;
-      }
-    } catch (e) {
-      console.warn('extractImageFromCores erro', e);
+        .colecao-loader {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 4px solid #eee; border-top-color: #333;
+            animation: spin 1s linear infinite; margin-bottom: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    `;
+    const style = document.createElement('style');
+    style.id = 'colecao-loading-styles';
+    style.appendChild(document.createTextNode(css));
+    document.head.appendChild(style);
+}
+
+function showLoading(container, msg = 'Carregando...') {
+    injectLoadingStyles();
+    if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+    
+    let overlay = container.querySelector('.colecao-loading-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'colecao-loading-overlay';
+        overlay.innerHTML = `<div class="colecao-loader"></div><div class="loading-msg">${msg}</div>`;
+        container.appendChild(overlay);
     }
-    return null;
-  }
+    overlay.style.display = 'flex';
+}
 
-  async function main() {
-    const supabase = await initSupabaseClient();
-    const dropName = getDropFromQuery();
+function hideLoading(container) {
+    const overlay = container?.querySelector('.colecao-loading-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
 
-    try {
-      document.title = dropName ? `TopStyle — ${dropName}` : 'TopStyle — Coleção';
-      const collEl = qs('#collection-name');
-      if (collEl) collEl.textContent = dropName ? dropName : 'Coleção';
-    } catch (e) {
-      // noop
-    }
+/* ==========================================================================
+   4. RENDERIZAÇÃO DE PRODUTOS
+   ========================================================================== */
 
+function renderProductGrid(products) {
     const container = qs('.product-content-selecao');
-    if (!container) {
-      console.warn('colecao-slots: container .product-content-selecao não encontrado');
-      return;
-    }
+    if (!container) return;
 
-    // refs UI
-    const filtroMinInput = qs('#filtro-preco-min');
-    const filtroMaxInput = qs('#filtro-preco-max');
-    const btnAplicar = qs('#btn-aplicar-preco');
-    const btnLimpar = qs('#btn-limpar-filtros');
-    const coresContainer = qs('#filtro-cores-container');
+    container.innerHTML = ''; // Limpa grid
 
-    // show overlay above selecao-products
-    showLoadingOverSelection(`Carregando produtos da coleção ${dropName ? `"${dropName}"` : ''}`);
-
-    // busca produtos
-    let rows = [];
-    try {
-      rows = await fetchProductsFromDB({ dropName: dropName });
-    } catch (e) {
-      console.error('Erro ao buscar products (principal):', e);
-      hideLoadingOverlay();
-      container.innerHTML = `<div class="error">Erro ao buscar produtos. Veja o console.</div>`;
-      return;
-    }
-
-    if (!Array.isArray(rows) || rows.length === 0) {
-      // fallback defensivo
-      try {
-        const fallback = await fetchProductsFromDB({ dropName });
-        rows = fallback || [];
-      } catch (e) {
-        console.error('Erro fallback fetchProducts:', e);
-        rows = [];
-      }
-      if (!Array.isArray(rows) || rows.length === 0) {
-        hideLoadingOverlay();
-        container.innerHTML = `<div class="empty">Nenhum produto encontrado para a coleção <strong>${escapeHtml(dropName)}</strong>.</div>`;
+    if (products.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style.gridColumn = '1/-1';
+        emptyMsg.style.textAlign = 'center';
+        emptyMsg.style.padding = '40px';
+        emptyMsg.textContent = 'Nenhum produto encontrado com os filtros selecionados.';
+        container.appendChild(emptyMsg);
         return;
-      }
     }
 
-    // normaliza e resolve imagens, desta vez priorizando cores[]
-    const data = rows.map(r => {
-      const name = r.name || r.nome || r.title || '';
-      const price = (r.price !== undefined && r.price !== null) ? r.price : (r.preco !== undefined ? r.preco : (r['preço'] !== undefined ? r['preço'] : null));
-      // tenta extrair da coluna 'cores' primeiro
-      const coresField = r.cores ?? r.cores_json ?? r.coresData ?? null;
-      const coresImageCandidate = extractImageFromCores(coresField);
-      const image = coresImageCandidate || r.image || (Array.isArray(r.images) && r.images[0]) || r.images || null;
-      const color = r.color || r.cor || '';
-      const slug = r.slug || r.url_slug || '';
-      return Object.assign({}, r, { name, price, image, color, slug, dropName: r.dropName || r.drop || '' });
+    // Renderiza Produtos (AGORA DENTRO DE .product-slot)
+    products.forEach(product => {
+        // 1. Cria o slot wrapper (.product-slot)
+        const slotWrapper = document.createElement('div');
+        slotWrapper.className = 'product-slot'; 
+        
+        // 2. Cria o elemento do produto (.product)
+        const productEl = document.createElement('div');
+        productEl.className = 'product';
+        productEl.dataset.id = product.id; 
+
+        // 3. Renderiza o conteúdo (<a>...</a>) dentro de .product
+        renderSingleProductHTML(productEl, product); 
+        
+        // 4. Anexa .product dentro de .product-slot
+        slotWrapper.appendChild(productEl);
+
+        // 5. Metadados para Hover
+        productEl.__productMeta = product;
+        
+        // 6. Anexa .product-slot ao container principal
+        container.appendChild(slotWrapper);
     });
 
-    // resolve images in parallel (resolveImageUrl aceita urls ou paths)
-    try {
-      await Promise.all(data.map(async (p) => {
-        const imgField = p.image || (Array.isArray(p.images) && p.images[0]) || null;
-        try {
-          p._resolvedImage = await resolveImageUrl(supabase, imgField) || PLACEHOLDER;
-        } catch (e) {
-          p._resolvedImage = PLACEHOLDER;
-        }
-      }));
-    } catch (e) {
-      console.warn('Erro ao resolver imagens:', e);
-    }
-
-    // ensure at least one slot exists in DOM; keep container element .product-content-selecao as parent
-    let slots = qsa('.product-slot', container);
-    if (!slots || slots.length === 0) {
-      const s = document.createElement('div');
-      s.className = 'product-slot';
-      container.appendChild(s);
-      slots = [s];
-    }
-    // ensure ids
-    ensureSlotIds();
-    slots = qsa('.product-slot', container);
-
-    // create more slots if needed
-    if (data.length > slots.length) {
-      const toCreate = data.length - slots.length;
-      const last = slots[slots.length - 1];
-      for (let i = 0; i < toCreate; i++) {
-        const clone = last.cloneNode(false);
-        clone.innerHTML = '';
-        clone.className = 'product-slot';
-        container.appendChild(clone);
-      }
-      ensureSlotIds();
-      slots = qsa('.product-slot', container);
-    }
-
-    // render products into slots 1:1
-    for (let i = 0; i < slots.length; i++) {
-      const slot = slots[i];
-      const prod = data[i];
-      if (prod) {
-        renderProductInSlot(slot, prod);
-      } else {
-        renderAddButtonInSlot(slot, slot.dataset.slot || (i + 1));
-      }
-    }
-
-    // populate color filters
-    const colors = Array.from(new Set(data.map(d => (d.color || '').trim()).filter(Boolean)));
-    if (colors.length > 0 && coresContainer) {
-      coresContainer.innerHTML = '';
-      colors.forEach(col => {
-        const id = 'cor-' + col.replace(/\s+/g, '-').toLowerCase();
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" value="${escapeHtml(col)}" id="${id}"> <span>${escapeHtml(col)}</span>`;
-        coresContainer.appendChild(label);
-      });
-    }
-
-    // cleanup/finish: hide overlay
-    hideLoadingOverlay();
-
-    // ADICIONE ESTA LINHA:
+    // Reativa os listeners de Hover (se definidos em outro script)
     if (typeof window.prepareProductHoverAndOptions === 'function') {
         window.prepareProductHoverAndOptions();
     }
+}
 
-    // filtering: re-use data array as source
-    let currentList = data.slice();
+function renderSingleProductHTML(slotEl, p) {
+    // slotEl é agora a div.product
+    const name = (p.name || p.nome || 'Produto').toUpperCase();
+    const price = formatPriceBR(p.price || p.preco || p['preço']);
+    const img = p._resolvedImage || PLACEHOLDER;
 
-    function applyFilters() {
-      const min = parseFloat(filtroMinInput?.value || '');
-      const max = parseFloat(filtroMaxInput?.value || '');
-      const checkedColors = Array.from(document.querySelectorAll('#filtro-cores-container input[type="checkbox"]:checked')).map(i => i.value);
+    slotEl.innerHTML = `
+        <a href="produto.html?id=${p.id}" class="product-link-selecao">
+            <img src="${img}" alt="${escapeHtml(name)}" loading="lazy">
+            <div class="product-text">
+                <span class="product-title">${escapeHtml(name)}</span>
+                <span class="product-price">${price}</span>
+                <div class="product-options" style="display:none;">
+                    <div class="colors"></div>
+                    <div class="sizes"></div>
+                </div>
+            </div>
+        </a>
+    `;
+}
 
-      let filtered = data.slice();
-      if (!isNaN(min)) filtered = filtered.filter(p => Number(p.price) >= min);
-      if (!isNaN(max)) filtered = filtered.filter(p => Number(p.price) <= max);
-      if (checkedColors.length > 0) filtered = filtered.filter(p => checkedColors.includes((p.color || '').trim()));
+/* ==========================================================================
+   5. LÓGICA DE FILTROS (UI & COMPORTAMENTO)
+   ========================================================================== */
 
-      // re-render into slots, creating more if necessary
-      const containerSlots = qsa('.product-slot', container);
-      if (filtered.length > containerSlots.length) {
-        for (let i = containerSlots.length; i < filtered.length; i++) {
-          const newSlot = document.createElement('div');
-          newSlot.className = 'product-slot';
-          container.appendChild(newSlot);
+function populateFiltersUI(products) {
+    const colorsContainer = qs('#filtro-cores-container');
+    const minPriceInput = qs('#filtro-preco-min');
+    const maxPriceInput = qs('#filtro-preco-max');
+
+    if (!colorsContainer) return;
+
+    // Extrai cores únicas
+    const allColors = products.flatMap(p => {
+        let cores = p.cores;
+        if (typeof cores === 'string') {
+            try { cores = JSON.parse(cores); } catch(e) { cores = []; }
         }
-      }
-      ensureSlotIds();
-      const slotsNow = qsa('.product-slot', container);
+        if (!Array.isArray(cores)) cores = [];
+        return cores.map(c => c.nome || c);
+    });
+    
+    const uniqueColors = [...new Set(allColors)].filter(Boolean).sort();
 
-      for (let i = 0; i < slotsNow.length; i++) {
-        const slot = slotsNow[i];
-        const prod = filtered[i];
-        if (prod) renderProductInSlot(slot, prod);
-        else renderAddButtonInSlot(slot, slot.dataset.slot || (i + 1));
-      }
+    colorsContainer.innerHTML = uniqueColors.map(color => `
+        <label>
+            <input type="checkbox" class="filtro-cor-check" value="${color}">
+            <span>${color}</span>
+        </label>
+    `).join('');
 
-      currentList = filtered;
-      if (currentList.length === 0) {
-        container.innerHTML = `<div class="empty">Nenhum produto corresponde aos filtros.</div>`;
-      }
+    // Define Placeholders de Preço
+    const prices = products.map(p => Number(p.price || p.preco)).filter(n => n > 0);
+    if (prices.length > 0) {
+        const min = Math.floor(Math.min(...prices));
+        const max = Math.ceil(Math.max(...prices));
+        if(minPriceInput) minPriceInput.placeholder = `Mín: ${min}`;
+        if(maxPriceInput) maxPriceInput.placeholder = `Máx: ${max}`;
+    }
+}
+
+function attachFilterListeners() {
+    const colorCheckboxes = qsa('.filtro-cor-check');
+    const applyPriceButton = qs('#btn-aplicar-preco');
+    const clearButton = qs('#btn-limpar-filtros');
+    const minInput = qs('#filtro-preco-min');
+    const maxInput = qs('#filtro-preco-max');
+
+    // Cores
+    qs('#filtro-cores-container')?.addEventListener('change', () => {
+        g_activeFilters.colors = qsa('.filtro-cor-check:checked').map(c => c.value);
+        applyFilters();
+    });
+
+    // Preço
+    applyPriceButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const min = minInput.value ? parseFloat(minInput.value) : null;
+        const max = maxInput.value ? parseFloat(maxInput.value) : null;
+        g_activeFilters.minPrice = min;
+        g_activeFilters.maxPrice = max;
+        applyFilters();
+    });
+
+    // Limpar
+    clearButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        g_activeFilters = { colors: [], minPrice: null, maxPrice: null };
+        if(minInput) minInput.value = '';
+        if(maxInput) maxInput.value = '';
+        qsa('.filtro-cor-check').forEach(c => c.checked = false);
+        renderProductGrid(g_allProducts);
+    });
+}
+
+function applyFilters() {
+    const { colors, minPrice, maxPrice } = g_activeFilters;
+
+    const filtered = g_allProducts.filter(p => {
+        const price = Number(p.price || p.preco || 0);
+        
+        // Filtro Preço
+        if (minPrice != null && price < minPrice) return false;
+        if (maxPrice != null && price > maxPrice) return false;
+
+        // Filtro Cor
+        if (colors.length > 0) {
+            let pColors = p.cores;
+            if (typeof pColors === 'string') try { pColors = JSON.parse(pColors); } catch { pColors = []; }
+            if (!Array.isArray(pColors)) return false;
+            
+            const colorNames = pColors.map(c => (c.nome || c).toString().toLowerCase());
+            const hasColor = colors.some(sel => colorNames.includes(sel.toLowerCase()));
+            if (!hasColor) return false;
+        }
+
+        return true;
+    });
+
+    renderProductGrid(filtered);
+}
+
+/* ==========================================================================
+   6. FUNÇÃO PRINCIPAL (INICIALIZAÇÃO)
+   ========================================================================== */
+
+async function main() {
+    const container = qs('.product-content-selecao');
+    if (!container) return; 
+
+    showLoading(container);
+
+    // A. Detectar Apenas o Drop da URL
+    const params = new URLSearchParams(window.location.search);
+    const qDrop = params.get('drop');
+
+    // Título da página
+    const titleEl = qs('#collection-name');
+    if (titleEl) {
+        if (qDrop) titleEl.textContent = decodeURIComponent(qDrop);
+        else titleEl.textContent = 'Coleção';
     }
 
-    btnAplicar?.addEventListener('click', (ev) => {
-      ev?.preventDefault();
-      applyFilters();
-      container.scrollIntoView({ behavior: 'smooth' });
-    });
+    try {
+        // B. Query ao Supabase
+        if (!supabase) throw new Error('Cliente Supabase não inicializado');
+        
+        let query = supabase.from('products').select('*');
 
-    btnLimpar?.addEventListener('click', (ev) => {
-      ev?.preventDefault();
-      if (filtroMinInput) filtroMinInput.value = '';
-      if (filtroMaxInput) filtroMaxInput.value = '';
-      const checks = document.querySelectorAll('#filtro-cores-container input[type="checkbox"]');
-      checks.forEach(c => c.checked = false);
-      // reset original rendering
-      const containerSlots = qsa('.product-slot', container);
-      for (let i = 0; i < containerSlots.length; i++) {
-        const slot = containerSlots[i];
-        const prod = data[i];
-        if (prod) renderProductInSlot(slot, prod);
-        else renderAddButtonInSlot(slot, slot.dataset.slot || (i + 1));
-      }
-      currentList = data.slice();
-    });
+        // Lógica de busca: Apenas pelo dropName se existir
+        if (qDrop) {
+            query = query.eq('dropName', decodeURIComponent(qDrop));
+        } else {
+            // Se não houver drop, pode retornar vazio ou uma lista padrão.
+            // Aqui, vamos apenas retornar a lista completa se não houver filtro, mas você pode ajustar.
+        }
+        
+        const { data, error } = await query.order('created_at', { ascending: true });
+        
+        if (error) throw error;
 
-  }
+        g_allProducts = data || [];
 
-  // run on DOMContentLoaded
-  if (document.readyState === 'loading') {
+        // C. Resolver Imagens em Paralelo
+        await Promise.all(g_allProducts.map(async (p) => {
+            // Tenta pegar imagem da coluna 'image' ou do primeiro item de 'cores'
+            let rawImg = p.image || p.img;
+            if (!rawImg && p.cores) {
+                try {
+                    const c = typeof p.cores === 'string' ? JSON.parse(c) : c;
+                    if (Array.isArray(c) && c.length > 0) rawImg = c[0].img1 || c[0].image;
+                } catch {}
+            }
+            p._resolvedImage = await resolveImageUrl(rawImg);
+        }));
+
+        // D. Inicializar Interface
+        hideLoading(container);
+        populateFiltersUI(g_allProducts);
+        attachFilterListeners();
+        renderProductGrid(g_allProducts);
+
+    } catch (err) {
+        console.error('Erro ao carregar coleção:', err);
+        hideLoading(container);
+        container.innerHTML = '<div style="padding:20px; text-align:center;">Erro ao carregar produtos. Verifique sua conexão.</div>';
+    }
+}
+
+// Inicializa quando o DOM estiver pronto
+if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', main);
-  } else {
+} else {
     main();
-  }
+}
 
-})();
-
-/*=============== SERVICES MODAL ===============*/
-
+/* ==========================================================================
+   7. MODAL MOBILE (SIDEBAR FILTROS)
+   ========================================================================== */
 (function () {
-  const ICON_ID = 'filter-icon';
-  const FILTER_ID = 'filter';
-  const CONTENT_SELECTOR = '.filtros-content';
-  const MOBILE_MAX = 600;
+    const FILTER_ID = 'filter';
+    const CONTENT_SELECTOR = '.filtros-content';
+    const MOBILE_MAX = 600;
+    const filter = document.getElementById(FILTER_ID);
 
-  const icon = document.getElementById(ICON_ID);
-  const filter = document.getElementById(FILTER_ID);
+    if (!filter) return;
 
-  // cria o botão fechar dentro do .filtros-content caso não exista
-  function ensureCloseButton() {
-    if (!filter) return null;
-    const content = filter.querySelector(CONTENT_SELECTOR);
-    if (!content) return null;
-    let btn = content.querySelector('.filter-close-btn');
-    if (!btn) {
-      btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'filter-close-btn';
-      btn.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
-      content.appendChild(btn);
-      btn.addEventListener('click', closeMobileFilter);
+    function ensureCloseButton() {
+        const content = filter.querySelector(CONTENT_SELECTOR);
+        if (!content) return;
+        if (!content.querySelector('.filter-close-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'filter-close-btn';
+            btn.innerHTML = '<i class="bi bi-x-lg"></i>';
+            content.appendChild(btn);
+            btn.onclick = closeMobileFilter;
+        }
     }
-    return btn;
-  }
 
-  function isMobileWidth() {
-    return window.innerWidth <= MOBILE_MAX;
-  }
+    function isMobileWidth() { return window.innerWidth <= MOBILE_MAX; }
 
-  function openMobileFilter() {
-    if (!filter) return;
-    // add class
-    filter.classList.add('mobile-open');
-    // ensure close btn exists
-    ensureCloseButton();
-    // lock scroll
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-    // add listeners
-    document.addEventListener('keydown', onKeyDown);
-    // close when clicking backdrop (filter container but outside content)
-    filter.addEventListener('click', onBackdropClick);
-  }
-
-  function closeMobileFilter() {
-    if (!filter) return;
-    filter.classList.remove('mobile-open');
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', onKeyDown);
-    filter.removeEventListener('click', onBackdropClick);
-  }
-
-  function onBackdropClick(ev) {
-    // se o clique foi diretamente no backdrop (ou seja no #filter), fecha
-    if (ev.target === filter) closeMobileFilter();
-  }
-
-  function onKeyDown(ev) {
-    if (ev.key === 'Escape' || ev.key === 'Esc') closeMobileFilter();
-  }
-
-  // função pública chamada pelo onclick inline
-  window.clickFilter = function clickFilter() {
-    if (!filter) return;
-    if (isMobileWidth()) {
-      if (filter.classList.contains('mobile-open')) closeMobileFilter();
-      else openMobileFilter();
-    } else {
-      // desktop: comportamento antigo de toggle (se quiser manter)
-      filter.classList.toggle('active');
+    function openMobileFilter() {
+        filter.classList.add('mobile-open');
+        ensureCloseButton();
+        document.body.style.overflow = 'hidden';
+        filter.addEventListener('click', onBackdropClick);
     }
-  };
 
-  // quando a janela for redimensionada para desktop, garante que o modal feche
-  window.addEventListener('resize', () => {
-    if (!filter) return;
-    if (!isMobileWidth() && filter.classList.contains('mobile-open')) {
-      closeMobileFilter();
+    function closeMobileFilter() {
+        filter.classList.remove('mobile-open');
+        document.body.style.overflow = '';
+        filter.removeEventListener('click', onBackdropClick);
     }
-  });
 
-  // decentemente, fecha o modal se a página navegar
-  window.addEventListener('pagehide', () => {
-    if (filter && filter.classList.contains('mobile-open')) closeMobileFilter();
-  });
+    function onBackdropClick(ev) { if (ev.target === filter) closeMobileFilter(); }
 
-  // opcional: se o DOM já carregou e estivermos em mobile, garantir que botão fechar exista
-  document.addEventListener('DOMContentLoaded', () => {
-    if (isMobileWidth()) ensureCloseButton();
-  });
+    // Expõe globalmente para o onclick no HTML
+    window.clickFilter = function clickFilter() {
+        if (isMobileWidth()) {
+            filter.classList.contains('mobile-open') ? closeMobileFilter() : openMobileFilter();
+        } else {
+            filter.classList.toggle('active');
+        }
+    };
+
+    window.addEventListener('resize', () => {
+        if (!isMobileWidth() && filter.classList.contains('mobile-open')) closeMobileFilter();
+    });
 })();
