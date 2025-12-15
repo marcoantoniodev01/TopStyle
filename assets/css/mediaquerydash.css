@@ -2177,3 +2177,109 @@
     }
 
 }
+
+/* =========================================================
+   4. RESPONSIVIDADE DO MODAL DE AVALIAÇÃO E TABELA
+   ========================================================= */
+
+@media (max-width: 992px) {
+    /* --- Ajuste da Tabela (Scroll Horizontal) --- */
+    /* Garante que a tabela não estoure a tela, criando barra de rolagem apenas nela */
+    .table-responsive, 
+    .dashboard-card-body {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #avaliacao-dash-tbody tr td {
+        white-space: nowrap; /* Impede que textos curtos quebrem linha estranhamente */
+    }
+    
+    /* Permite que o comentário quebre linha para não ficar uma tripa infinita */
+    .avaliacao-dash-comment p {
+        white-space: normal; 
+        min-width: 200px; /* Garante largura mínima para leitura */
+    }
+}
+
+@media (max-width: 768px) {
+    /* --- Modal de Avaliação: Layout Vertical --- */
+    
+    /* Transforma o flex container (que deixa lado a lado) em coluna */
+    #modal-review-details .review-modal-body {
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px;
+        max-height: 80vh; /* Limita altura para permitir scroll interno */
+        overflow-y: auto; /* Scroll se o conteúdo for grande */
+    }
+
+    /* Remove a borda lateral do card de usuário e adiciona borda embaixo */
+    #review-user-section {
+        border-right: none !important;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 20px;
+        margin-bottom: 10px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Deixa o avatar ao lado do nome no mobile */
+        text-align: left; /* Alinha texto à esquerda */
+    }
+
+    /* Ajuste do Avatar no Mobile (Menor) */
+    #review-modal-avatar, 
+    #review-modal-initials {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+        margin-bottom: 0; /* Remove margem inferior pois agora está em linha */
+    }
+
+    /* Seção de Detalhes (Lado direito vira parte de baixo) */
+    .review-details-section {
+        padding-left: 0 !important; /* Remove padding da esquerda */
+    }
+
+    /* --- Ajuste da Foto/Mídia --- */
+    .review-image-container {
+        height: 220px; /* Diminui a altura da foto para caber na tela */
+    }
+    
+    .review-text-box {
+        padding: 15px; /* Menos padding no texto */
+    }
+    
+    /* --- Modal Container Geral --- */
+    .modal-content {
+        width: 95% !important; /* Quase largura total */
+        margin: 10px auto;
+    }
+
+    /* Ajuste dos botões do rodapé do modal */
+    .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-footer button {
+        width: 100%; /* Botões ocupam largura total */
+    }
+}
+
+@media (max-width: 480px) {
+    /* --- Mobile Pequeno --- */
+    
+    /* Títulos menores */
+    #review-modal-product {
+        font-size: 1.1rem;
+    }
+    
+    /* Foto ainda menor */
+    .review-image-container {
+        height: 180px;
+    }
+    
+    /* Esconde elementos menos importantes da tabela se necessário */
+    /* .avaliacao-dash-date { display: none; } */
+}

@@ -5846,3 +5846,362 @@ a.profile-link.admin-mode:hover i {
     70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 123, 255, 0); }
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
 }
+
+/* ==========================================
+   ESTILOS DO MODAL DE AVALIAÇÃO
+   ========================================== */
+
+/* Card do Usuário dentro do Modal (Clicável) */
+.review-user-card-modal {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #f8fafc;
+    width: 100%;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.review-user-card-modal:hover {
+    background: #f1f5f9;
+}
+
+.review-avatar-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 1.2rem;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.review-avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.review-user-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.review-user-info span {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.review-user-arrow {
+    margin-left: auto;
+    color: #cbd5e1;
+    font-size: 1.2rem;
+}
+
+/* Conteúdo */
+.review-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.review-product-badge {
+    background: #eff6ff;
+    color: #1e40af;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.review-stars-display {
+    color: #f59e0b;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.review-text-box {
+    position: relative;
+    background: #fff;
+    padding: 0 0 15px 0;
+    font-size: 1rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.review-text-box .quote-icon {
+    color: #e2e8f0;
+    font-size: 2rem;
+    position: absolute;
+    top: -15px;
+    left: -10px;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.review-text-box p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+}
+
+/* Foto do Review */
+.review-photo-wrapper {
+    margin-top: 20px;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+}
+
+.photo-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+#review-modal-photo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: zoom-in;
+    transition: opacity 0.2s;
+}
+
+#review-modal-photo:hover {
+    opacity: 0.9;
+}
+
+.review-date-badge {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: right;
+    font-style: italic;
+}
+
+/* AJUSTE DE Z-INDEX PARA HIERARQUIA DE MODAIS */
+
+/* Modal de Avaliação: 10005 */
+#modal-review-details {
+    z-index: 10005 !important;
+}
+
+/* Modal de Usuário (Perfil): 10010 (Deve ficar por cima) */
+#modal-user-details {
+    z-index: 10010 !important;
+}
+
+/* Modal de Banimento: 10015 (Por cima do perfil) */
+#modal-ban-user {
+    z-index: 10015 !important;
+}
+
+/* =========================================================
+   Z-INDEX HIERARCHY (MODAL STACKING)
+   ========================================================= */
+
+/* 1. Modal de Avaliação (Fica acima do Dashboard) */
+#modal-review-details {
+    z-index: 10005 !important;
+}
+
+/* 2. Modal de Perfil do Usuário (Fica acima da Avaliação) */
+#modal-user-details {
+    z-index: 10010 !important;
+}
+
+/* 3. Modal de Banimento (Fica acima do Perfil) */
+#modal-ban-user {
+    z-index: 10015 !important;
+}
+
+/* 4. Modal de Confirmação Global (Alerta) */
+.confirm-overlay {
+    z-index: 200000 !important;
+}
+
+/* =========================================================
+   ESTILOS ESPECÍFICOS DA ABA AVALIAÇÃO
+   ========================================================= */
+
+/* Botão Ver Mais na Tabela */
+.btn-see-more-review {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-see-more-review:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    border-color: #94a3b8;
+}
+
+/* Card do Usuário dentro do Modal (Hover Effect) */
+.review-user-card-modal {
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: 1px solid transparent;
+}
+
+.review-user-card-modal:hover {
+    background-color: #f0f9ff; /* Azul bem claro */
+    border-color: #bae6fd;
+    transform: translateY(-1px);
+}
+
+.review-user-card-modal:hover .review-user-info h4 {
+    color: #0284c7; /* Azul destaque */
+}
+
+/* Tooltip visual para indicar clique */
+.review-user-card-modal::after {
+    content: 'Ver Perfil / Banir';
+    position: absolute;
+    right: 40px;
+    font-size: 0.75rem;
+    color: #0284c7;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.review-user-card-modal:hover::after {
+    opacity: 1;
+}
+
+/* =========================================================
+   ESTILO PROFISSIONAL DO MODAL DE AVALIAÇÃO
+   ========================================================= */
+
+/* Container da Foto (Área Clean) */
+.review-photo-wrapper {
+    margin-top: 25px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.photo-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.photo-label i {
+    font-size: 0.9rem;
+    color: #3b82f6;
+}
+
+/* Estilo da Imagem (Hero Image Style) */
+.review-image-container {
+    width: 100%;
+    height: 300px; /* Altura fixa para uniformidade */
+    background-color: #f8fafc;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    cursor: zoom-in;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#review-modal-photo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Garante que a foto inteira apareça sem cortes */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Efeito de Zoom Suave no Hover */
+.review-image-container:hover #review-modal-photo {
+    transform: scale(1.03);
+}
+
+/* Overlay com dica de clique */
+.review-image-container::after {
+    content: 'Abrir Original ↗';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.review-image-container:hover::after {
+    opacity: 1;
+}
+
+/* Melhoria no Texto do Comentário */
+.review-text-box {
+    background: #f8fafc; /* Fundo sutil para destacar do branco do modal */
+    padding: 20px 20px 20px 35px; /* Padding extra na esquerda para o ícone */
+    border-radius: 12px;
+    position: relative;
+    margin-top: 10px;
+    border-left: 4px solid #cbd5e1;
+}
+
+.review-text-box .quote-icon {
+    color: #94a3b8;
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.review-text-box p {
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+}
