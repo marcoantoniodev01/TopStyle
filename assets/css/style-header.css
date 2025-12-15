@@ -369,6 +369,7 @@ a.profile-link.admin-mode:hover i {
   padding: 5px;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .drop-column {
@@ -638,6 +639,7 @@ a.profile-link.admin-mode:hover i {
     transition: color .4s !important;
     cursor: pointer !important;
 }
+
 
 
 
