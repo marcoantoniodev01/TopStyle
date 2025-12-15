@@ -2158,9 +2158,9 @@ function atualizarImagem() {
   } else if (mediaQueries.mobilev3.matches) {
     banner.src = 'https://i.ibb.co/NgLPJN1F/png004.jpg';
   } else if (mediaQueries.tablet.matches) {
-    banner.src = 'https://i.ibb.co/RGz7VzgR/png005.webp';
+    banner.src = 'https://i.ibb.co/LdX51VF6/responsive-1000px.jpg';
   } else if (mediaQueries.desktopv1.matches) {
-    banner.src = 'https://i.ibb.co/tpRmMTsX/png006.jpg';
+    banner.src = 'https://i.ibb.co/DggpLyys/responsive-1400px.jpg';
   } else if (mediaQueries.desktopv2.matches) {
     banner.src = 'https://i.ibb.co/tPpG0vHV/principalimg.png';
   }
@@ -2418,4 +2418,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }, 1000);
 });
+
 
