@@ -1,6 +1,7 @@
 // assets/js/profile.js
 // VERSÃO ATUALIZADA: Pagamento via 'payment_info', Imagem no Modal com JOIN de 'products(img)' via 'product_id', e Fix de erros 404/400.
 
+// (O resto do arquivo até o início de DOMContentLoaded permanece igual — não modifiquei essa parte)
 let supabase;
 let currentUser = null;
 
@@ -65,7 +66,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ==========================================================
    1. DADOS PESSOAIS
+   (sem alterações)
    ========================================================== */
+// ... (o conteúdo das funções anteriores permanece igual; não repeti aqui por brevidade)
 async function initProfileData() {
     const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
     
@@ -144,7 +147,9 @@ function formatDate(dateStr) {
 
 /* ==========================================================
    2. ENDEREÇOS
+   (sem alterações)
    ========================================================== */
+// ... (mantive essas funções sem mudança)
 async function initAddressLogic() {
     const listContainer = document.getElementById('addresses-list');
     const btnAdd = document.getElementById('add-address-btn');
@@ -389,7 +394,9 @@ async function initCardLogic() {
 
 /* ==========================================================
    4. TELEFONES
+   (sem alterações)
    ========================================================== */
+// ... (mantive igual)
 async function initPhoneLogic() {
     const listContainer = document.getElementById('phones-list');
     const btnAdd = document.getElementById('add-phone-btn');
@@ -520,8 +527,47 @@ async function initPhoneLogic() {
 }
 
 /* ==========================================================
-   5. PEDIDOS (ATUALIZADO: Fix 404/400, Imagem no Modal com JOIN)
+   5. PEDIDOS (ATUALIZADO: Fix 404/400, Imagem no Modal com JOIN, e Nome do Cartão)
    ========================================================== */
+
+// --- NOVO ESTADO E HELPER PARA CARTÕES EM PEDIDOS ---
+const cardCache = new Map();
+
+/**
+ * Busca label e brand do cartão por ID, usando cache.
+ * Retorna objeto { label, brand } ou null.
+ * @param {string|number} cardId
+ */
+async function fetchCardDetails(cardId) {
+    if (!cardId) return null;
+    const key = String(cardId);
+    if (cardCache.has(key)) return cardCache.get(key);
+
+    try {
+        const { data, error } = await supabase
+            .from('cards')
+            .select('label, brand')
+            .eq('id', cardId)
+            .single();
+
+        if (error || !data) {
+            console.warn(`Card details not found for ID ${cardId}.`, error);
+            cardCache.set(key, null);
+            return null;
+        }
+
+        const result = { label: data.label || null, brand: data.brand || null };
+        cardCache.set(key, result);
+        return result;
+    } catch (e) {
+        console.warn('Erro fetchCardDetails', e);
+        cardCache.set(key, null);
+        return null;
+    }
+}
+
+// ----------------------------------------------------
+
 async function initOrdersLogic() {
     // ---------------- CONSTANTES ----------------
     const ORDER_TABLE_CANDIDATES = ['order', 'orders', 'user_orders', 'orders_table', 'purchases', 'customer_orders'];
@@ -543,30 +589,125 @@ async function initOrdersLogic() {
         catch (e) { return String(v); }
     }
 
+    // Normaliza / extrai payment_info mesmo se for string
+    function parsePaymentInfo(raw) {
+        if (!raw) return { method: null, card_id: null, raw: raw };
+
+        // Se já for objeto, tenta extrair diretamente
+        if (typeof raw === 'object') {
+            const method = (raw.method && String(raw.method).toLowerCase()) || null;
+            return { method, card_id: raw.card_id || raw.cardId || raw.card || null, raw };
+        }
+
+        // Se for string - tenta JSON.parse
+        if (typeof raw === 'string') {
+            const s = raw.trim();
+
+            // quick check for 'pix'
+            if (/pix/i.test(s)) return { method: 'pix', card_id: null, raw: s };
+
+            try {
+                const parsed = JSON.parse(s);
+                if (typeof parsed === 'object') {
+                    const method = (parsed.method && String(parsed.method).toLowerCase()) || null;
+                    return { method, card_id: parsed.card_id || parsed.cardId || parsed.card || null, raw: parsed };
+                }
+            } catch (e) {
+                // não JSON - tenta extrair card_id via regex (ex: "card_id:123" ou '"card_id": "123"')
+                const cardMatch = s.match(/card[_-]id\s*[:=]\s*["']?([a-zA-Z0-9-_]+)["']?/i)
+                    || s.match(/"card[_-]id"\s*:\s*["']?([a-zA-Z0-9-_]+)["']?/i)
+                    || s.match(/cardId\s*[:=]\s*["']?([a-zA-Z0-9-_]+)["']?/i);
+                const cardId = cardMatch ? cardMatch[1] : null;
+
+                // tenta detectar método/pix textual
+                const method = /pix/i.test(s) ? 'pix' : ( /card|credit|credito/i.test(s) ? 'card' : null );
+
+                return { method, card_id: cardId, raw: s };
+            }
+        }
+
+        // fallback
+        return { method: null, card_id: null, raw };
+    }
+
+    // Adaptado para usar o texto final de pagamento (payment_display_text) se existir.
     function formatPaymentInfo(info) {
         if (!info) return 'Não informado';
+        
+        // Se a lógica principal já calculou o texto final (e o armazenou), usa ele.
+        if (typeof info === 'object' && info.payment_display_text) {
+             return info.payment_display_text;
+        }
+
         if (typeof info === 'object') {
             return info.method || info.label || info.type || 'Detalhes (JSON)';
         }
         return String(info);
     }
 
-    // NOVO HELPER: Normaliza os itens após o JOIN para extrair a imagem
+    // NOVO makeOrderCard para aceitar o texto de pagamento já resolvido
+    function makeOrderCard(order, resolvedPaymentText) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'order-card';
+        wrapper.dataset.orderId = order.id;
+
+        const paymentText = resolvedPaymentText; // Usa o texto resolvido
+
+        const header = document.createElement('div');
+        header.className = 'order-card-header';
+        header.innerHTML = `
+            <div class="order-card-title"><strong>Pedido #${escapeHtml(order.id)}</strong></div>
+            <div class="order-card-meta">
+                <div class="meta-row">
+                    <span class="meta-date">${escapeHtml(formatDateTime(order.created_at))}</span> 
+                    <span class="meta-total">${escapeHtml(formatPriceBR(order.total))}</span>
+                </div>
+            </div>
+        `;
+
+        const infoList = document.createElement('div');
+        infoList.className = 'order-card-info';
+        const statusHTML = `<div class="order-card-info-row"><strong>Status:</strong> <span class="order-status-badge">${escapeHtml(order.status || '')}</span></div>`;
+        
+        // Usa o resolvedPaymentText no .order-payment
+        const payHTML = `<div class="order-card-info-row"><strong>Pagamento:</strong> <span class="order-payment">${escapeHtml(paymentText)}</span></div>`;
+        
+        infoList.innerHTML = statusHTML + payHTML;
+
+        const itemsContainer = document.createElement('div');
+        itemsContainer.className = 'order-card-items';
+        itemsContainer.innerHTML = `<div class="loading">Carregando itens...</div>`;
+
+        const footer = document.createElement('div');
+        footer.className = 'order-card-footer';
+        const btnView = document.createElement('button');
+        btnView.className = 'btn-view-items';
+        btnView.type = 'button';
+        btnView.textContent = 'Ver itens';
+        footer.appendChild(btnView);
+
+        wrapper.appendChild(header);
+        wrapper.appendChild(infoList);
+        wrapper.appendChild(itemsContainer);
+        wrapper.appendChild(footer);
+
+        return { wrapper, itemsContainer, btnView, infoList };
+    }
+
+    // NOVO normalizeItems (unchanged)
     function normalizeItems(items) {
         if (!Array.isArray(items)) return [];
         return items.map(item => {
             const normalized = { ...item };
-            // Verifica se o JOIN retornou o objeto aninhado 'product_id'
             if (typeof item.product_id === 'object' && item.product_id !== null) {
-                // A imagem está dentro de product_id.img
                 normalized.img = item.product_id.img; 
             }
-            delete normalized.product_id; // Remove o objeto aninhado para simplificar o uso
+            delete normalized.product_id; 
             return normalized;
         });
     }
 
-    // ---------------- BUSCAS ----------------
+    // ---------------- BUSCAS (unchanged) ----------------
     
     async function findOrdersForUser(userId, userEmail) {
         const selectCols = 'id, created_at, total, status, payment_info';
@@ -574,7 +715,6 @@ async function initOrdersLogic() {
         for (const tbl of ORDER_TABLE_CANDIDATES) {
             for (const col of USER_FK_COLS) {
                 try {
-                    // Usa email se a coluna for 'email' e ID para outras (Correção do 404)
                     const valueToUse = (col === 'email' && userEmail) ? userEmail : userId;
                     
                     if (!valueToUse) continue; 
@@ -605,22 +745,17 @@ async function initOrdersLogic() {
         return { data: null, table: null, usedCol: null };
     }
 
-    // Busca Itens (Agora com JOIN na tabela 'products' via 'product_id')
     async function fetchItemsForOrder(orderId) {
-        // Colunas completas, incluindo JOIN para a imagem: item_id, nome, preco, cor, tamanho, quantidade, produto(imagem)
         const fullSelectWithJoin = 'id, nome, price, color, size, quantity, product_id (img)';
-        // Colunas mínimas com JOIN (para contornar 400 Bad Request se as colunas 'color'/'size' não existirem)
         const minimalSelectWithJoin = 'id, nome, price, quantity, product_id (img)'; 
 
         for (const tbl of ORDER_ITEMS_CANDIDATES) {
-            // Tenta 1: Full select com JOIN
             try {
                 let res = await supabase.from(tbl).select(fullSelectWithJoin).eq('order_id', orderId).order('id', { ascending: true });
                 
                 if (!res.error) return normalizeItems(res.data);
 
                 if (res.error?.status === 400) {
-                    // Tenta 2: Minimal select com JOIN
                     console.warn(`orders logic: Tabela de itens "${tbl}" falhou com 400 (Colunas 'color' ou 'size' ausentes?). Tentando colunas mínimas com JOIN...`);
                     res = await supabase.from(tbl).select(minimalSelectWithJoin).eq('order_id', orderId).order('id', { ascending: true });
 
@@ -628,7 +763,7 @@ async function initOrdersLogic() {
                 } 
                 
                 if (res.error?.status === 404 || (res.error?.message && /not found|no relation/i.test(res.error.message))) {
-                    continue; // Tabela não existe/acessível, tenta a próxima
+                    continue; 
                 } else if (res.error) {
                     console.warn('orders logic: erro ao consultar itens em', tbl, res.error);
                 }
@@ -642,53 +777,7 @@ async function initOrdersLogic() {
 
     // ---------------- UI ----------------
 
-    function makeOrderCard(order) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'order-card';
-        wrapper.dataset.orderId = order.id;
-
-        const paymentText = formatPaymentInfo(order.payment_info);
-
-        const header = document.createElement('div');
-        header.className = 'order-card-header';
-        header.innerHTML = `
-            <div class="order-card-title"><strong>Pedido #${escapeHtml(order.id)}</strong></div>
-            <div class="order-card-meta">
-                <div class="meta-row">
-                    <span class="meta-date">${escapeHtml(formatDateTime(order.created_at))}</span> 
-                    <span class="meta-total">${escapeHtml(formatPriceBR(order.total))}</span>
-                </div>
-            </div>
-        `;
-
-        const infoList = document.createElement('div');
-        infoList.className = 'order-card-info';
-        const statusHTML = `<div class="order-card-info-row"><strong>Status:</strong> <span class="order-status-badge">${escapeHtml(order.status || '')}</span></div>`;
-        
-        const payHTML = `<div class="order-card-info-row"><strong>Pagamento:</strong> <span class="order-payment">${escapeHtml(paymentText)}</span></div>`;
-        
-        infoList.innerHTML = statusHTML + payHTML;
-
-        const itemsContainer = document.createElement('div');
-        itemsContainer.className = 'order-card-items';
-        itemsContainer.innerHTML = `<div class="loading">Carregando itens...</div>`;
-
-        const footer = document.createElement('div');
-        footer.className = 'order-card-footer';
-        const btnView = document.createElement('button');
-        btnView.className = 'btn-view-items';
-        btnView.type = 'button';
-        btnView.textContent = 'Ver itens';
-        footer.appendChild(btnView);
-
-        wrapper.appendChild(header);
-        wrapper.appendChild(infoList);
-        wrapper.appendChild(itemsContainer);
-        wrapper.appendChild(footer);
-
-        return { wrapper, itemsContainer, btnView, infoList };
-    }
-
+    // Função openOrderModalWithItems ajustada para usar order.payment_display_text
     function openOrderModalWithItems(order, items) {
         const modal = document.getElementById('order-modal');
         const backdrop = document.getElementById('order-modal-backdrop');
@@ -706,11 +795,14 @@ async function initOrdersLogic() {
         const statusEl = document.getElementById('order-summary-status');
         const paymentEl = document.getElementById('order-summary-payment');
 
+        // PEGA O TEXTO JÁ RESOLVIDO DURANTE A RENDERIZAÇÃO
+        const paymentText = order.payment_display_text || formatPaymentInfo(order.payment_info);
+
         if (idEl) idEl.textContent = order.id || '';
         if (dateEl) dateEl.textContent = formatDateTime(order.created_at);
         if (totalEl) totalEl.textContent = order.total !== undefined ? formatPriceBR(order.total) : '';
         if (statusEl) statusEl.textContent = order.status || '';
-        if (paymentEl) paymentEl.textContent = formatPaymentInfo(order.payment_info);
+        if (paymentEl) paymentEl.textContent = paymentText; // USANDO paymentText RESOLVIDO
 
         itemsList.innerHTML = '';
         if (!items || items.length === 0) {
@@ -720,7 +812,6 @@ async function initOrdersLogic() {
                 const itEl = document.createElement('div');
                 itEl.className = 'order-item';
                 
-                // Tenta pegar a imagem, priorizando o 'img' que veio do JOIN
                 const imgUrl = it.img || it.image || 'https://placehold.co/50x50?text=Sem+Foto';
                 
                 itEl.innerHTML = `
@@ -779,7 +870,39 @@ async function initOrdersLogic() {
 
         container.innerHTML = '';
         for (const ord of found.data) {
-            const { wrapper, itemsContainer, btnView } = makeOrderCard(ord);
+            let order = ord;
+            
+            // --- LÓGICA DE PAGAMENTO: Cartão vs. Outros ---
+            let paymentText = formatPaymentInfo(order.payment_info);
+            let cardId = null;
+
+            // Parse robusto do payment_info (objeto, JSON-string ou texto)
+            const parsed = parsePaymentInfo(order.payment_info);
+
+            // Se método for pix (detectado), mantemos 'PIX' e NÃO buscamos cartão
+            if (parsed.method && String(parsed.method).toLowerCase() === 'pix') {
+                paymentText = 'PIX';
+            } else if (parsed.card_id) {
+                cardId = parsed.card_id;
+            }
+
+            if (cardId) {
+                // Busca detalhes do cartão (label, brand)
+                const cardDetails = await fetchCardDetails(cardId);
+                if (cardDetails) {
+                    // Mostra label se existir, senão a brand
+                    paymentText = cardDetails.label || (cardDetails.brand ? String(cardDetails.brand).toUpperCase() : 'Cartão');
+                } else {
+                    // fallback textual
+                    paymentText = 'Cartão';
+                }
+            }
+
+            // Armazena o texto final no objeto order para uso no modal (openOrderModalWithItems)
+            order.payment_display_text = paymentText;
+            // ------------------------------------------------
+
+            const { wrapper, itemsContainer, btnView } = makeOrderCard(order, paymentText);
             container.appendChild(wrapper);
 
             // Busca Itens e preenche preview
