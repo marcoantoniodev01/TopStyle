@@ -352,19 +352,6 @@ a.profile-link.admin-mode:hover i {
   overflow-y: hidden;
 }
 
-.mega-imgs::-webkit-scrollbar {
-  height: 8px;
-  /* altura da barra de rolagem */
-  background-color: var(--first-color-opacity);
-  border-radius: 4px;
-  width: 50px;
-}
-
-.mega-imgs::-webkit-scrollbar-thumb {
-  background-color: var(--first-color);
-  border-radius: 4px;
-}
-
 .mega-drops {
   display: none;
 }
@@ -651,6 +638,7 @@ a.profile-link.admin-mode:hover i {
     transition: color .4s !important;
     cursor: pointer !important;
 }
+
 
 
 
