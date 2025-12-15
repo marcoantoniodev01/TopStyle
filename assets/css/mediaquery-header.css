@@ -315,6 +315,7 @@ Grandes telas - acim 1200px
     display: flex !important;
     flex-direction: column !important;
     align-items: start !important;
+    overflow: hidden !important;
   }
 
   .drop__img {
@@ -346,4 +347,5 @@ Grandes telas - acim 1200px
     display: none !important;
   }
 }
+
 
