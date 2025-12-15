@@ -71,18 +71,7 @@ Grandes telas - acim 1200px
     top: 0% !important;
     left: 0 !important;
   }
-
-  .nav__menu::-webkit-scrollbar {
-    width: 6px !important;
-    background-color: var(--first-color-opacity) !important;
-    border-radius: 4px !important;
-  }
-
-  .nav__menu::-webkit-scrollbar-thumb {
-    background-color: var(--first-color) !important;
-    border-radius: 4px !important;
-  }
-
+  
   .nav__close {
     font-size: var(--icon-size) !important;
     cursor: pointer !important;
@@ -357,3 +346,4 @@ Grandes telas - acim 1200px
     display: none !important;
   }
 }
+
