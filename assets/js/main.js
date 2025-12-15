@@ -2154,7 +2154,7 @@ function atualizarImagem() {
   if (mediaQueries.mobilev1.matches) {
     banner.src = 'https://i.ibb.co/tPpG0vHV/principalimg.png';
   } else if (mediaQueries.mobilev2.matches) {
-    banner.src = 'https://i.ibb.co/WNnXgnQp/png002.webp';
+    banner.src = 'https://i.ibb.co/fVVWFzqp/responsive-700px.jpg';
   } else if (mediaQueries.mobilev3.matches) {
     banner.src = 'https://i.ibb.co/NgLPJN1F/png004.jpg';
   } else if (mediaQueries.tablet.matches) {
@@ -2418,3 +2418,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }, 1000);
 });
+
