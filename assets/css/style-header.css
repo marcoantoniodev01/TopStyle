@@ -95,7 +95,6 @@ header {
   align-items: center;
   justify-content: center;
   height: 100%;
-  width: auto;
 }
 
 .nav__list {
@@ -120,8 +119,6 @@ header {
 .nav__link {
   transition: color .4s;
 }
-
-/* ADICIONEI */
 
 #search-input {
   border: none;
@@ -188,8 +185,6 @@ header {
   border: none;
 }
 
-/* ATÉ AQUI */
-
 header a,
 header>ul>li>a {
   text-decoration: none;
@@ -208,7 +203,10 @@ header>ul>li>a:hover {
   align-items: center;
   justify-content: right;
   height: 100%;
-  width: auto;
+}
+
+.header-divs {
+  width: 239px;
 }
 
 .social-header ul {
@@ -653,5 +651,6 @@ a.profile-link.admin-mode:hover i {
     transition: color .4s !important;
     cursor: pointer !important;
 }
+
 
 
