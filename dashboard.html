@@ -1556,6 +1556,71 @@
     </div>
   </div>
 
+  <div id="modal-review-details" class="custom-modal-overlay hidden" style="z-index: 10005;">
+    <div class="custom-modal-content details-modal-pro details-modal-pro-ava" style="max-width: 600px;">
+
+      <div class="details-header-pro">
+        <h3>Detalhes da Avaliação</h3>
+        <button class="close-modal-btn-pro" onclick="closeReviewDetailsModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="details-body-pro" style="padding: 0;">
+
+        <div id="review-user-section" class="review-user-card-modal" title="Ver Perfil do Cliente">
+          <div class="review-avatar-wrapper">
+            <img id="review-modal-avatar" src="" alt="Avatar" style="display:none;">
+            <span id="review-modal-initials">US</span>
+          </div>
+          <div class="review-user-info">
+            <h4 id="review-modal-name">Nome do Cliente</h4>
+            <span id="review-modal-username">@usuario</span>
+          </div>
+          <div class="review-user-arrow">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        </div>
+
+        <div style="padding: 25px; width: 100%;">
+
+          <div class="review-meta-row">
+            <div class="review-product-badge">
+              <i class="bi bi-bag-fill"></i> <span id="review-modal-product">Produto...</span>
+            </div>
+            <div class="review-stars-display" id="review-modal-stars">
+              ★★★★★
+            </div>
+          </div>
+
+          <div class="review-text-box">
+            <i class="bi bi-quote quote-icon"></i>
+            <p id="review-modal-comment">Comentário do usuário...</p>
+          </div>
+
+          <div id="review-photo-container" class="review-photo-wrapper hidden">
+            <p class="photo-label">Foto anexada:</p>
+            <img id="review-modal-photo" src="" alt="Foto da avaliação" onclick="window.open(this.src, '_blank')">
+          </div>
+
+          <div class="review-date-badge" id="review-modal-date">
+            Enviado em 00/00/0000
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="details-footer-pro">
+        <button class="btn-pro-secondary" onclick="closeReviewDetailsModal()">Fechar</button>
+        <button id="btn-delete-review-modal" class="btn-pro-danger">
+          <i class="bi bi-trash3-fill"></i> Excluir Avaliação
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="assets/js/menu-hamburger.js"></script>
   <script src="assets/js/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
