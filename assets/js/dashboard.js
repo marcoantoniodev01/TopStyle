@@ -8,6 +8,8 @@ const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTMzNzUyNCwiZXhwIjoyMDc0OTEzNTI0fQ.FaXzLoO9WX4Kr6W01dF8LrfSuw1SkGSdLnyXUXYwDa8'; // A que estava lá embaixo
 const supabaseAdmin = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
+
+
 // ===============================
 // 🔹 NOVAS KPI'S (USUÁRIOS E FORNECEDORES)
 // ===============================
@@ -3583,3 +3585,4 @@ window.colorDelete = async function (id, name) {
         if (window.showToast) window.showToast("Erro ao excluir: " + err.message, "error");
     }
 }
+
