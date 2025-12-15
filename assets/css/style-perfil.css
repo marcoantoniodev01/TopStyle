@@ -899,6 +899,8 @@ html {
   inset: 0;
   z-index: 9999;
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .order-modal-backdrop {
@@ -971,3 +973,4 @@ html {
   font-size: 0.95rem;
   color: #555;
 }
+
