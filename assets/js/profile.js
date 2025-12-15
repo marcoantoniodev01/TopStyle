@@ -1,10 +1,10 @@
 // assets/js/profile.js
-// VERSÃO CORRIGIDA: Usa a instância global do Supabase iniciada no main.js para evitar conflitos de sessão na Vercel/Netlify.
+// VERSÃO ATUALIZADA: Pagamento via 'payment_info', Imagem no Modal com JOIN de 'products(img)' via 'product_id', e Fix de erros 404/400.
 
 let supabase;
 let currentUser = null;
 
-// Helpers
+// Helpers Globais
 const showToast = window.showToast || alert;
 const showConfirmationModal = window.showConfirmationModal || confirm;
 const cardLogos = {
@@ -32,12 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session) {
-        // --- CORREÇÃO AQUI ---
-        // Oculta o conteúdo para não "piscar" dados (opcional, mas recomendado)
         const mainContent = document.querySelector('main');
         if(mainContent) mainContent.style.opacity = "0.1";
 
-        // Chama seu modal existente
         const irParaLogin = await window.showConfirmationModal(
             "Você precisa estar logado para visualizar seu perfil.", 
             { 
@@ -47,17 +44,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
 
         if (irParaLogin) {
-            window.location.href = 'index.html'; // Vai para Login
+            window.location.href = 'index.html'; 
         } else {
-            window.location.href = 'inicial.html'; // Vai para Home (não pode ficar no perfil)
+            window.location.href = 'inicial.html'; 
         }
-        
-        return; // Para a execução do script aqui
+        return; 
     }
     
     currentUser = session.user;
 
-    // Se passou, restaura opacidade e carrega as funções
     const mainContent = document.querySelector('main');
     if(mainContent) mainContent.style.opacity = "1";
 
@@ -65,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initAddressLogic();
     initCardLogic();
     initPhoneLogic();
-    initOrdersLogic();
+    initOrdersLogic(); 
 });
 
 /* ==========================================================
@@ -74,7 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function initProfileData() {
     const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
     
-    // Elementos de exibição
     const displayEls = {
         username: document.getElementById('username'),
         email: document.getElementById('email'),
@@ -82,7 +76,6 @@ async function initProfileData() {
         born: document.getElementById('born_Date')
     };
     
-    // Inputs de edição
     const inputEls = {
         username: document.getElementById('username-input'),
         email: document.getElementById('email-input'),
@@ -90,25 +83,21 @@ async function initProfileData() {
         born: document.getElementById('born_Date-input')
     };
 
-    // Preencher dados
     const email = currentUser.email;
     const username = profile?.username || currentUser.user_metadata?.full_name || '—';
     const cpf = profile?.cpf || '—';
     const born = profile?.born_date || '';
 
-    // Renderiza Texto
     if(displayEls.username) displayEls.username.textContent = username;
     if(displayEls.email) displayEls.email.textContent = email;
     if(displayEls.cpf) displayEls.cpf.textContent = cpf;
     if(displayEls.born) displayEls.born.textContent = born ? formatDate(born) : '—';
 
-    // Preenche Inputs
     if(inputEls.username) inputEls.username.value = username !== '—' ? username : '';
     if(inputEls.email) inputEls.email.value = email;
     if(inputEls.cpf) inputEls.cpf.value = cpf !== '—' ? cpf : '';
     if(inputEls.born) inputEls.born.value = born;
 
-    // Botão Editar
     const btnEdit = document.getElementById('edit-profile-btn');
     const form = document.getElementById('profile-form');
     let isEditing = false;
@@ -116,12 +105,10 @@ async function initProfileData() {
     if(btnEdit) {
         btnEdit.addEventListener('click', async () => {
             if(!isEditing) {
-                // Entrar modo edição
                 form.classList.add('editing');
                 btnEdit.textContent = 'Salvar';
                 isEditing = true;
             } else {
-                // Salvar
                 btnEdit.textContent = 'Salvando...';
                 const updates = {
                     username: inputEls.username.value,
@@ -140,7 +127,6 @@ async function initProfileData() {
                     form.classList.remove('editing');
                     btnEdit.textContent = 'Editar';
                     isEditing = false;
-                    // Atualiza textos
                     displayEls.username.textContent = updates.username;
                     displayEls.cpf.textContent = updates.cpf;
                     displayEls.born.textContent = updates.born_date ? formatDate(updates.born_date) : '—';
@@ -167,7 +153,6 @@ async function initAddressLogic() {
     const btnCancel = document.getElementById('btn-cancelar-adicao');
     const cepInput = document.getElementById('endereco-cep');
 
-    // Carregar Endereços
     async function loadAddresses() {
         const { data } = await supabase.from('addresses').select('*').eq('user_id', currentUser.id).order('is_default', { ascending: false });
         renderAddresses(data || []);
@@ -197,7 +182,6 @@ async function initAddressLogic() {
                 </div>
             `;
             
-            // Eventos do Card
             el.querySelector('.btn-delete-card').addEventListener('click', () => deleteAddress(addr.id));
             const btnDefault = el.querySelector('.btn-tornar-padrao');
             if(btnDefault) btnDefault.addEventListener('click', () => setDefaultAddress(addr.id));
@@ -206,7 +190,6 @@ async function initAddressLogic() {
         });
     }
 
-    // Ações
     async function deleteAddress(id) {
         if(await showConfirmationModal('Excluir este endereço?')) {
             await supabase.from('addresses').delete().eq('id', id);
@@ -222,7 +205,6 @@ async function initAddressLogic() {
         showToast('Endereço padrão atualizado.');
     }
 
-    // Modal Events
     if(btnAdd) btnAdd.addEventListener('click', () => {
         formAdd.reset();
         modalAdd.style.display = 'flex';
@@ -242,10 +224,9 @@ async function initAddressLogic() {
             city: document.getElementById('endereco-cidade').value,
             state: document.getElementById('endereco-estado').value,
             referencia: document.getElementById('endereco-referencia').value,
-            is_default: false // Lógica simples para novo endereço
+            is_default: false 
         };
 
-        // Se for o primeiro, vira padrão
         const { count } = await supabase.from('addresses').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id);
         if(count === 0) addressData.is_default = true;
 
@@ -259,7 +240,6 @@ async function initAddressLogic() {
         }
     });
 
-    // CEP Automático
     if(cepInput) {
         cepInput.addEventListener('input', async (e) => {
             let cep = e.target.value.replace(/\D/g, '');
@@ -291,7 +271,6 @@ async function initCardLogic() {
     const formAdd = document.getElementById('form-cartao');
     const btnCancel = document.getElementById('btn-cancelar-adicao-cartao');
     
-    // Select Customizado de Marca
     const brandSelect = document.getElementById('cartao-brand-select');
     const brandTrigger = document.querySelector('.custom-select-trigger');
     const brandOptions = document.querySelector('.custom-select-options');
@@ -352,7 +331,6 @@ async function initCardLogic() {
         showToast('Cartão padrão atualizado.');
     }
 
-    // Eventos Modal
     if(btnAdd) btnAdd.addEventListener('click', () => {
         formAdd.reset();
         brandInput.value = '';
@@ -362,7 +340,6 @@ async function initCardLogic() {
 
     if(btnCancel) btnCancel.addEventListener('click', () => modalAdd.style.display = 'none');
 
-    // Lógica do Select Customizado
     if(brandTrigger) brandTrigger.addEventListener('click', () => brandSelect.classList.toggle('open'));
     if(brandOptions) brandOptions.addEventListener('click', (e) => {
         const option = e.target.closest('.custom-option');
@@ -398,7 +375,6 @@ async function initCardLogic() {
         }
     });
 
-    // Formatação input cartão
     document.getElementById('cartao-numero')?.addEventListener('input', e => {
         e.target.value = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
     });
@@ -422,7 +398,6 @@ async function initPhoneLogic() {
     const btnCancel = document.getElementById('btn-cancelar-adicao-telefone');
     const phoneInput = document.getElementById('telefone-input');
 
-    // Variáveis de estado do input
     let currentDDI = '+55';
     let currentMask = '(00) 00000-0000';
 
@@ -441,7 +416,7 @@ async function initPhoneLogic() {
 
         phones.forEach(phone => {
             const el = document.createElement('div');
-            el.className = 'endereco-item'; // Reutilizando estilo de item
+            el.className = 'endereco-item'; 
             el.innerHTML = `
                 <div class="info">
                     <b>${phone.phone_number}</b>
@@ -476,10 +451,8 @@ async function initPhoneLogic() {
         showToast('Número padrão atualizado.');
     }
 
-    // Modal Events
     if(btnAdd) btnAdd.addEventListener('click', () => {
         formAdd.reset();
-        // Reset visual do select de país
         currentDDI = '+55';
         currentMask = '(00) 00000-0000';
         document.getElementById('selected-code').textContent = '+55';
@@ -491,7 +464,6 @@ async function initPhoneLogic() {
 
     if(btnCancel) btnCancel.addEventListener('click', () => modalAdd.style.display = 'none');
 
-    // Lógica Select País
     const countryWrapper = document.getElementById('country-select-wrapper');
     if(countryWrapper) {
         countryWrapper.querySelector('.country-select-trigger').addEventListener('click', () => countryWrapper.classList.toggle('open'));
@@ -509,7 +481,6 @@ async function initPhoneLogic() {
         });
     }
 
-    // Máscara Input
     if(phoneInput) {
         phoneInput.addEventListener('input', (e) => {
             let v = e.target.value.replace(/\D/g, '');
@@ -527,7 +498,6 @@ async function initPhoneLogic() {
         const rawPhone = phoneInput.value.replace(/\D/g, '');
         const finalNumber = `${currentDDI}${rawPhone}`;
 
-        // Checar primeiro cadastro
         const { count } = await supabase.from('user_phones').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id);
         const isDefault = count === 0;
 
@@ -550,41 +520,309 @@ async function initPhoneLogic() {
 }
 
 /* ==========================================================
-   5. PEDIDOS
+   5. PEDIDOS (ATUALIZADO: Fix 404/400, Imagem no Modal com JOIN)
    ========================================================== */
 async function initOrdersLogic() {
-    const listContainer = document.getElementById('orders-list');
-    
-    async function loadOrders() {
-        const { data } = await supabase.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-        if(!data || data.length === 0) {
-            listContainer.innerHTML = '<p>Você ainda não fez nenhum pedido.</p>';
-            return;
-        }
+    // ---------------- CONSTANTES ----------------
+    const ORDER_TABLE_CANDIDATES = ['order', 'orders', 'user_orders', 'orders_table', 'purchases', 'customer_orders'];
+    const ORDER_ITEMS_CANDIDATES = ['order_items', 'orderitems', 'order_items_table', 'orders_items', 'order_items'];
+    const USER_FK_COLS = ['user_id', 'profile_id', 'owner_id', 'uid', 'email'];
 
-        listContainer.innerHTML = '';
-        data.forEach(order => {
-            const el = document.createElement('div');
-            el.className = 'endereco-item';
-            const date = new Date(order.created_at).toLocaleDateString('pt-BR');
-            const total = parseFloat(order.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            
-            el.innerHTML = `
-                <div class="info">
-                    <b>Pedido #${order.id.toString().slice(0,8)}...</b>
-                    <p>Data: ${date} • Status: <strong>${order.status}</strong></p>
-                    <p>Total: ${total}</p>
-                </div>
-            `;
-            listContainer.appendChild(el);
+    // ---------------- HELPERS ----------------
+    function escapeHtml(s) {
+        if (s === undefined || s === null) return '';
+        return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+    function formatPriceBR(n) {
+        if (n == null || isNaN(Number(n))) return 'R$ 0,00';
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n));
+    }
+    function formatDateTime(v) {
+        if (!v) return '';
+        try { return new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }); }
+        catch (e) { return String(v); }
+    }
+
+    function formatPaymentInfo(info) {
+        if (!info) return 'Não informado';
+        if (typeof info === 'object') {
+            return info.method || info.label || info.type || 'Detalhes (JSON)';
+        }
+        return String(info);
+    }
+
+    // NOVO HELPER: Normaliza os itens após o JOIN para extrair a imagem
+    function normalizeItems(items) {
+        if (!Array.isArray(items)) return [];
+        return items.map(item => {
+            const normalized = { ...item };
+            // Verifica se o JOIN retornou o objeto aninhado 'product_id'
+            if (typeof item.product_id === 'object' && item.product_id !== null) {
+                // A imagem está dentro de product_id.img
+                normalized.img = item.product_id.img; 
+            }
+            delete normalized.product_id; // Remove o objeto aninhado para simplificar o uso
+            return normalized;
         });
     }
 
-    loadOrders();
+    // ---------------- BUSCAS ----------------
+    
+    async function findOrdersForUser(userId, userEmail) {
+        const selectCols = 'id, created_at, total, status, payment_info';
+        
+        for (const tbl of ORDER_TABLE_CANDIDATES) {
+            for (const col of USER_FK_COLS) {
+                try {
+                    // Usa email se a coluna for 'email' e ID para outras (Correção do 404)
+                    const valueToUse = (col === 'email' && userEmail) ? userEmail : userId;
+                    
+                    if (!valueToUse) continue; 
+
+                    const q = supabase.from(tbl).select(selectCols).eq(col, valueToUse).order('created_at', { ascending: false });
+                    const res = await q;
+                    
+                    if (res.error) {
+                        const status = res.error?.status || res.error?.code;
+                        if (status === 404 || (res.error?.message && /not found|no relation/i.test(res.error.message))) {
+                            const test = await supabase.from(tbl).select('id').limit(1);
+                            if (test.error) break; 
+                            continue; 
+                        }
+                        console.warn(`orders logic: tentativa ${tbl} .${col} -> erro:`, res.error.message || res.error);
+                        continue;
+                    }
+
+                    if (Array.isArray(res.data)) {
+                        console.log(`orders logic: encontrou pedidos na tabela "${tbl}" usando coluna "${col}"`);
+                        return { data: res.data, table: tbl, usedCol: col };
+                    }
+                } catch (e) { 
+                    console.warn('orders logic: erro inesperado ao consultar', tbl, col, e);
+                }
+            }
+        }
+        return { data: null, table: null, usedCol: null };
+    }
+
+    // Busca Itens (Agora com JOIN na tabela 'products' via 'product_id')
+    async function fetchItemsForOrder(orderId) {
+        // Colunas completas, incluindo JOIN para a imagem: item_id, nome, preco, cor, tamanho, quantidade, produto(imagem)
+        const fullSelectWithJoin = 'id, nome, price, color, size, quantity, product_id (img)';
+        // Colunas mínimas com JOIN (para contornar 400 Bad Request se as colunas 'color'/'size' não existirem)
+        const minimalSelectWithJoin = 'id, nome, price, quantity, product_id (img)'; 
+
+        for (const tbl of ORDER_ITEMS_CANDIDATES) {
+            // Tenta 1: Full select com JOIN
+            try {
+                let res = await supabase.from(tbl).select(fullSelectWithJoin).eq('order_id', orderId).order('id', { ascending: true });
+                
+                if (!res.error) return normalizeItems(res.data);
+
+                if (res.error?.status === 400) {
+                    // Tenta 2: Minimal select com JOIN
+                    console.warn(`orders logic: Tabela de itens "${tbl}" falhou com 400 (Colunas 'color' ou 'size' ausentes?). Tentando colunas mínimas com JOIN...`);
+                    res = await supabase.from(tbl).select(minimalSelectWithJoin).eq('order_id', orderId).order('id', { ascending: true });
+
+                    if (!res.error) return normalizeItems(res.data);
+                } 
+                
+                if (res.error?.status === 404 || (res.error?.message && /not found|no relation/i.test(res.error.message))) {
+                    continue; // Tabela não existe/acessível, tenta a próxima
+                } else if (res.error) {
+                    console.warn('orders logic: erro ao consultar itens em', tbl, res.error);
+                }
+
+            } catch (e) {
+                console.warn('orders logic: erro fetchItemsForOrder', e);
+            }
+        }
+        return [];
+    }
+
+    // ---------------- UI ----------------
+
+    function makeOrderCard(order) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'order-card';
+        wrapper.dataset.orderId = order.id;
+
+        const paymentText = formatPaymentInfo(order.payment_info);
+
+        const header = document.createElement('div');
+        header.className = 'order-card-header';
+        header.innerHTML = `
+            <div class="order-card-title"><strong>Pedido #${escapeHtml(order.id)}</strong></div>
+            <div class="order-card-meta">
+                <div class="meta-row">
+                    <span class="meta-date">${escapeHtml(formatDateTime(order.created_at))}</span> 
+                    <span class="meta-total">${escapeHtml(formatPriceBR(order.total))}</span>
+                </div>
+            </div>
+        `;
+
+        const infoList = document.createElement('div');
+        infoList.className = 'order-card-info';
+        const statusHTML = `<div class="order-card-info-row"><strong>Status:</strong> <span class="order-status-badge">${escapeHtml(order.status || '')}</span></div>`;
+        
+        const payHTML = `<div class="order-card-info-row"><strong>Pagamento:</strong> <span class="order-payment">${escapeHtml(paymentText)}</span></div>`;
+        
+        infoList.innerHTML = statusHTML + payHTML;
+
+        const itemsContainer = document.createElement('div');
+        itemsContainer.className = 'order-card-items';
+        itemsContainer.innerHTML = `<div class="loading">Carregando itens...</div>`;
+
+        const footer = document.createElement('div');
+        footer.className = 'order-card-footer';
+        const btnView = document.createElement('button');
+        btnView.className = 'btn-view-items';
+        btnView.type = 'button';
+        btnView.textContent = 'Ver itens';
+        footer.appendChild(btnView);
+
+        wrapper.appendChild(header);
+        wrapper.appendChild(infoList);
+        wrapper.appendChild(itemsContainer);
+        wrapper.appendChild(footer);
+
+        return { wrapper, itemsContainer, btnView, infoList };
+    }
+
+    function openOrderModalWithItems(order, items) {
+        const modal = document.getElementById('order-modal');
+        const backdrop = document.getElementById('order-modal-backdrop');
+        const itemsList = document.getElementById('order-items-list');
+        const closeBtn = document.getElementById('order-modal-close');
+
+        if (!modal || !itemsList) {
+            console.warn('orders logic: HTML do modal ausente.');
+            return;
+        }
+
+        const idEl = document.getElementById('order-summary-id');
+        const dateEl = document.getElementById('order-summary-date');
+        const totalEl = document.getElementById('order-summary-total');
+        const statusEl = document.getElementById('order-summary-status');
+        const paymentEl = document.getElementById('order-summary-payment');
+
+        if (idEl) idEl.textContent = order.id || '';
+        if (dateEl) dateEl.textContent = formatDateTime(order.created_at);
+        if (totalEl) totalEl.textContent = order.total !== undefined ? formatPriceBR(order.total) : '';
+        if (statusEl) statusEl.textContent = order.status || '';
+        if (paymentEl) paymentEl.textContent = formatPaymentInfo(order.payment_info);
+
+        itemsList.innerHTML = '';
+        if (!items || items.length === 0) {
+            itemsList.innerHTML = `<div class="empty">Nenhum item neste pedido.</div>`;
+        } else {
+            items.forEach(it => {
+                const itEl = document.createElement('div');
+                itEl.className = 'order-item';
+                
+                // Tenta pegar a imagem, priorizando o 'img' que veio do JOIN
+                const imgUrl = it.img || it.image || 'https://placehold.co/50x50?text=Sem+Foto';
+                
+                itEl.innerHTML = `
+                    <div style="display:flex; gap:10px; width:100%; align-items:center;">
+                        <img src="${escapeHtml(imgUrl)}" alt="Produto" style="width:50px; height:50px; object-fit:cover; border-radius:4px; flex-shrink:0;">
+                        <div style="flex:1;">
+                            <div class="order-item-row" style="margin-bottom:4px;">
+                                <div class="oi-name" style="font-weight:600;">${escapeHtml(it.nome || '')}</div>
+                                <div class="oi-qty" style="color:#666;">x${escapeHtml(String(it.quantity || 0))}</div>
+                            </div>
+                            <div class="order-item-row meta" style="font-size:0.85rem; color:#888;">
+                                <div class="oi-price">${formatPriceBR(it.price)}</div>
+                                <div class="oi-attrs">${escapeHtml(it.color || '')}${it.size ? ' • ' + escapeHtml(it.size) : ''}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                itemsList.appendChild(itEl);
+            });
+        }
+
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        function close() {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            if (backdrop) backdrop.removeEventListener('click', backdropHandler);
+            if (closeBtn) closeBtn.removeEventListener('click', close);
+        }
+        function backdropHandler(ev) { if (ev.target === backdrop) close(); }
+
+        if (backdrop) backdrop.addEventListener('click', backdropHandler);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+    }
+
+    // ---------------- EXECUÇÃO ----------------
+    
+    const container = document.getElementById('orders-list');
+    if (!container) return;
+
+    container.innerHTML = `<div class="loading">Buscando pedidos...</div>`;
+
+    const authUid = currentUser.id;
+    const authEmail = currentUser.email || null;
+
+    try {
+        const found = await findOrdersForUser(authUid, authEmail);
+        
+        if (!found || !found.data || found.data.length === 0) {
+            container.innerHTML = `<div class="empty">Você ainda não fez pedidos.</div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        for (const ord of found.data) {
+            const { wrapper, itemsContainer, btnView } = makeOrderCard(ord);
+            container.appendChild(wrapper);
+
+            // Busca Itens e preenche preview
+            (async () => {
+                const items = await fetchItemsForOrder(ord.id);
+                itemsContainer.innerHTML = '';
+                if (!items || items.length === 0) {
+                    itemsContainer.innerHTML = '<div class="empty">Nenhum item neste pedido.</div>';
+                } else {
+                    const preview = document.createElement('div'); 
+                    preview.className = 'order-items-preview';
+                    
+                    items.slice(0, 3).forEach(it => {
+                        const li = document.createElement('div'); 
+                        li.className = 'order-item-preview';
+                        li.innerHTML = `<span class="oi-name">${escapeHtml(it.nome || '')}</span><span class="oi-qty">x${escapeHtml(String(it.quantity || 0))}</span>`;
+                        preview.appendChild(li);
+                    });
+                    
+                    if (items.length > 3) { 
+                        const more = document.createElement('div'); 
+                        more.className = 'order-items-more'; 
+                        more.textContent = `+ ${items.length - 3} outros`; 
+                        preview.appendChild(more); 
+                    }
+                    itemsContainer.appendChild(preview);
+                }
+
+                btnView.addEventListener('click', (ev) => { 
+                    ev.preventDefault(); 
+                    openOrderModalWithItems(ord, items); 
+                });
+            })();
+        }
+
+    } catch (e) {
+        console.error('orders logic: erro geral', e);
+        container.innerHTML = `<div class="error">Erro ao carregar pedidos.</div>`;
+    }
 }
 
 /* ==========================================================
-   6. LOGOUT (ADICIONAR NO FINAL DO init OU DO ARQUIVO)
+   6. LOGOUT
    ========================================================== */
 const btnLogout = document.getElementById('logout');
 
@@ -599,15 +837,11 @@ if(btnLogout) {
 
         if (confirmar) {
             try {
-                // Tenta fazer logout no Supabase
                 const { error } = await supabase.auth.signOut();
                 if (error) throw error;
-                
-                // Limpa dados locais se necessário e redireciona
                 window.location.href = "index.html"; 
             } catch (err) {
                 console.error("Erro ao sair:", err);
-                // Força o redirecionamento mesmo com erro
                 window.location.href = "index.html";
             }
         }
