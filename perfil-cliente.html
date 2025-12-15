@@ -350,8 +350,19 @@
                 <!-- ABA PEDIDOS -->
                 <div id="pedidos" class="window-perfil-cliente">
                     <div class="window-perfil-content">
-                        <h1>Meus Pedidos</h1>
+                        <h1>Pedidos</h1>
+
                         <div id="orders-list" class="cards-list"></div>
+                    </div>
+                </div>
+
+                <!-- Modal global para mostrar items do pedido -->
+                <div id="order-modal" class="order-modal hidden">
+                    <div class="order-modal-backdrop" id="order-modal-backdrop"></div>
+                    <div class="order-modal-content" id="order-modal-content">
+                        <button id="order-modal-close" class="modal-close">Fechar</button>
+                        <h2>Itens do pedido</h2>
+                        <div id="order-items-list" class="cards-list"></div>
                     </div>
                 </div>
             </div>
@@ -522,5 +533,6 @@
     <script src="assets/js/main.js"></script>
     <script src="assets/js/header-control.js"></script>
 </body>
+
 
 </html>
