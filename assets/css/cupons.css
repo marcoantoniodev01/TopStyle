@@ -292,8 +292,9 @@
     gap: 1.5rem;
 }
 
-.style-group label {
+.style-controls > .style-group label {
     display: block;
+    position: relative;
     margin-bottom: 0.8rem;
     font-weight: 600;
     font-size: 0.9rem;
@@ -373,6 +374,7 @@
     position: relative;
     user-select: none;
     width: 100%;
+    z-index: 10000;
 }
 
 .select-trigger {
@@ -584,4 +586,182 @@
     color: white;
     border-color: #191D28;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* --- ESTILO DOS CARDS (TICKETS) --- */
+.coupons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.coupon-card-row {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Separa visual/texto dos botões */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #f0f0f0;
+}
+
+.coupon-card-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.coupon-card-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+/* O Ticket Visual Colorido */
+.coupon-visual-box {
+    width: 140px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 8px;
+    border-width: 2px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 5px;
+    text-align: center;
+    position: relative;
+}
+
+.coupon-visual-box span {
+    z-index: 2;
+}
+
+.coupon-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #191D28;
+    text-transform: uppercase;
+}
+
+.coupon-info p {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.coupon-info small {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Botões de Ação (Direita) */
+.coupon-card-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-card-action {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    color: white;
+}
+
+.btn-card-suspend {
+    background-color: #52525b; /* Cinza escuro */
+}
+.btn-card-suspend:hover { background-color: #3f3f46; }
+
+.btn-card-edit {
+    background-color: #eab308; /* Amarelo */
+}
+.btn-card-edit:hover { background-color: #ca8a04; }
+
+.btn-card-delete {
+    background-color: #ef4444; /* Vermelho */
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+.btn-card-delete:hover { background-color: #dc2626; }
+
+/* Status Suspenso */
+.coupon-card-row.suspended {
+    opacity: 0.6;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+}
+
+/* Correção Modal Overlay */
+.modal-overlay-coupon {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10050; /* Bem alto para ficar acima de tudo */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+/* assets/css/cupons.css - Adicione ao final */
+
+/* Estilo para quando um card de frete é selecionado (Borda preta + Fundo leve) */
+.shipping-card-option.selected {
+    border-color: #191D28; /* Preto */
+    background-color: #f9fafb;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Garante que o ícone de check apareça suavemente */
+.shipping-card-option .check-icon {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+    color: #191D28;
+}
+
+.shipping-card-option.selected .check-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Transição suave para esconder/mostrar as opções */
+.dynamic-options {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dynamic-options.hidden {
+    display: none;
+    opacity: 0;
+}
+
+/* Garante que o modal use Flexbox para centralizar */
+#modal-coupon {
+    display: none; /* Controlado via JS (flex/none) */
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5); /* Overlay escuro */
 }
