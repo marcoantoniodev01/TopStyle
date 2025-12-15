@@ -2898,7 +2898,7 @@ hr {
 .endereco-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     flex-direction: column;
     gap: 10px;
     padding: 1rem;
@@ -4517,6 +4517,7 @@ hr {
     border: 1px solid rgb(0, 0, 0);
     cursor: pointer;
 }
+
 
 
 
