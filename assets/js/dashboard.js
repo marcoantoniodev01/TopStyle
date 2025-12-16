@@ -334,7 +334,7 @@ function formatarAbreviado(valor, isMoeda = true) {
 
     // Calcula o valor abreviado
     let valorAbreviado = (valor / divisor).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-    
+
     // Retorna string final (Ex: "R$ 1,52 Milhões" ou apenas "1,52 Milhões")
     return (isMoeda ? "R$ " : "") + valorAbreviado + sufixo;
 }
@@ -371,16 +371,16 @@ async function atualizarMetricasFinanceiras() {
 
         // --- ATUALIZA A TELA (Valores Abreviados) ---
         // Aqui atualizamos diretamente o texto para garantir a formatação correta "Mi/Bi"
-        
+
         const elVendas = document.getElementById('valor-vendas-totais');
         const elBruto = document.getElementById('valor-lucro-bruto');
         const elCusto = document.getElementById('valor-custo-total');
         const elLiquido = document.getElementById('valor-lucro-liquido');
 
-        if(elVendas) elVendas.innerText = formatarAbreviado(qtdTotal, false); // False = não é moeda
-        if(elBruto) elBruto.innerText = formatarAbreviado(receitaBruta, true);
-        if(elCusto) elCusto.innerText = formatarAbreviado(custoTotal, true);
-        if(elLiquido) elLiquido.innerText = formatarAbreviado(lucroLiquido, true);
+        if (elVendas) elVendas.innerText = formatarAbreviado(qtdTotal, false); // False = não é moeda
+        if (elBruto) elBruto.innerText = formatarAbreviado(receitaBruta, true);
+        if (elCusto) elCusto.innerText = formatarAbreviado(custoTotal, true);
+        if (elLiquido) elLiquido.innerText = formatarAbreviado(lucroLiquido, true);
 
     } catch (err) {
         console.error("Erro financeiro:", err);
@@ -388,7 +388,7 @@ async function atualizarMetricasFinanceiras() {
 }
 
 // 3. Funções do Modal "Ver Tudo"
-window.openFinanceModal = function() {
+window.openFinanceModal = function () {
     // Preenche o modal com os valores exatos do dashboardState
     document.getElementById('modal-fin-vendas').innerText = dashboardState.vendasTotais.toLocaleString('pt-BR') + " itens";
     document.getElementById('modal-fin-bruto').innerText = dashboardState.lucroBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -400,7 +400,7 @@ window.openFinanceModal = function() {
     setTimeout(() => modal.classList.add('active'), 10);
 }
 
-window.closeFinanceModal = function() {
+window.closeFinanceModal = function () {
     const modal = document.getElementById('modal-finance-details');
     modal.classList.remove('active');
     setTimeout(() => modal.classList.add('hidden'), 300);
@@ -670,7 +670,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupBanDropdown() {
     const wrapper = document.getElementById('ban-duration-wrapper');
-    if (!wrapper) return;
+    if (!wrapper) {
+        console.warn("Dropdown de banimento não encontrado no DOM!"); // Debug
+        return;
+    }
 
     const trigger = wrapper.querySelector('.select-trigger');
     const options = wrapper.querySelectorAll('.select-option');
@@ -714,6 +717,13 @@ function setupBanDropdown() {
     // Fechar ao clicar fora
     document.addEventListener('click', (e) => {
         if (!wrapper.contains(e.target)) wrapper.classList.remove('open');
+    });
+
+    // Toggle Dropdown
+    trigger.addEventListener('click', (e) => {
+        console.log("Clicou no dropdown de banimento"); // Debug para ver se o clique chega
+        e.stopPropagation();
+        wrapper.classList.toggle('open');
     });
 }
 
@@ -3071,7 +3081,7 @@ async function dashEditProduct(id) {
 
         // Renderiza Cores
         const colorsContainer = document.getElementById('modal-colors-container');
-        colorsContainer.innerHTML = ''; 
+        colorsContainer.innerHTML = '';
 
         if (product.cores && product.cores.length > 0) {
             product.cores.forEach(cor => {
@@ -3143,7 +3153,7 @@ function dashCreateColorRow(color = {}) {
 async function dashPopulateDrops(selectElement, selectedValue) {
     selectElement.innerHTML = '<option value="">Carregando...</option>';
     const { data } = await client.from('drops').select('name_drop').order('name_drop');
-    
+
     selectElement.innerHTML = '<option value="">Nenhum Drop</option>';
     if (data) {
         data.forEach(d => {
@@ -3184,10 +3194,10 @@ async function dashSaveProduct(id) {
     const nome = document.getElementById('modal-title-input').value.trim();
     const dropName = document.getElementById('modal-drop-input').value;
     const preco = parseFloat(document.getElementById('modal-price-input').value.replace(',', '.')) || 0;
-    
+
     // CAPTURA O ESTOQUE
     let stock = parseInt(document.getElementById('modal-dash-stock-input').value) || 0;
-    
+
     // === A VALIDAÇÃO NO JAVASCRIPT ESTÁ AQUI ===
     // Garante que o valor mínimo seja 0
     if (stock < 0) {
@@ -3222,16 +3232,16 @@ async function dashSaveProduct(id) {
 
     // 3. Objeto de atualização
     const updates = {
-        nome, 
-        preco, 
+        nome,
+        preco,
         stock, // Usa o valor corrigido (>= 0)
-        category, 
-        gender, 
+        category,
+        gender,
         dropName,
-        img, 
-        tamanhos, 
-        description, 
-        additional_info, 
+        img,
+        tamanhos,
+        description,
+        additional_info,
         cores,
         updated_at: new Date()
     };
@@ -3239,7 +3249,7 @@ async function dashSaveProduct(id) {
     try {
         // 4. Envia para o Supabase
         const { error } = await client.from('products').update(updates).eq('id', id);
-        
+
         if (error) throw error;
 
         if (window.showToast) window.showToast("Produto salvo com sucesso!", "success");
@@ -3264,13 +3274,13 @@ async function dashDeleteProductInsideModal(id) {
 
     try {
         const { error } = await client.from('products').delete().eq('id', id);
-        if(error) throw error;
-        
-        if(window.showToast) window.showToast("Produto excluído com sucesso.", "success");
+        if (error) throw error;
+
+        if (window.showToast) window.showToast("Produto excluído com sucesso.", "success");
         closeDashModal();
         loadProducts();
-    } catch(err) {
-        if(window.showToast) window.showToast("Erro ao excluir: " + err.message, "error");
+    } catch (err) {
+        if (window.showToast) window.showToast("Erro ao excluir: " + err.message, "error");
     }
 }
 
@@ -3621,9 +3631,9 @@ async function loadSystemLogs() {
         if (error) throw error;
 
         // 2. Atualizar Cards de Estatísticas
-        if(logs) {
+        if (logs) {
             totalCountEl.innerText = logs.length;
-            
+
             // Filtra logs de hoje
             const today = new Date().toISOString().split('T')[0];
             const todayLogs = logs.filter(l => l.created_at.startsWith(today));
@@ -3645,7 +3655,7 @@ async function loadSystemLogs() {
         logs.forEach(log => {
             const dateObj = new Date(log.created_at);
             const dateStr = dateObj.toLocaleDateString('pt-BR') + ' ' + dateObj.toLocaleTimeString('pt-BR');
-            
+
             // Badge Tipo
             const isRejection = log.error_type === 'PROMISE_REJECTION';
             const badgeClass = isRejection ? 'rejection' : 'error';
@@ -3654,7 +3664,7 @@ async function loadSystemLogs() {
 
             // Limpa URL
             let cleanUrl = log.source_url ? log.source_url.replace(window.location.origin, '') : 'Script Interno';
-            if(cleanUrl.length > 30) cleanUrl = '...' + cleanUrl.slice(-25);
+            if (cleanUrl.length > 30) cleanUrl = '...' + cleanUrl.slice(-25);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
