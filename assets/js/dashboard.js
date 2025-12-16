@@ -3586,3 +3586,110 @@ window.colorDelete = async function (id, name) {
     }
 }
 
+/* =========================================================
+   GESTÃO DE LOGS DE ERRO (SYSTEM LOGS)
+   ========================================================= */
+
+// Inicializador chamado pelo menu
+document.querySelectorAll('.submenu li[data-content="system-logs"]').forEach(li => {
+    li.addEventListener('click', () => {
+        loadSystemLogs();
+    });
+});
+
+async function loadSystemLogs() {
+    const listBody = document.getElementById('logs-list-body');
+    const emptyState = document.getElementById('logs-empty-state');
+    const tableWrapper = document.getElementById('system-logs').querySelector('.cat-table-wrapper');
+    const totalCountEl = document.getElementById('log-count-total');
+    const todayCountEl = document.getElementById('log-count-today');
+
+    if (!listBody) return;
+
+    // Loading visual
+    listBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Carregando logs...</td></tr>';
+
+    try {
+        // 1. Buscar Logs do Supabase
+        const { data: logs, error } = await supabaseAdmin // Usa a instância admin para garantir leitura
+            .from('error_logs')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(100); // Limita aos últimos 100 para não travar
+
+        if (error) throw error;
+
+        // 2. Atualizar Cards de Estatísticas
+        if(logs) {
+            totalCountEl.innerText = logs.length;
+            
+            // Filtra logs de hoje
+            const today = new Date().toISOString().split('T')[0];
+            const todayLogs = logs.filter(l => l.created_at.startsWith(today));
+            todayCountEl.innerText = todayLogs.length;
+        }
+
+        // 3. Renderizar Tabela
+        listBody.innerHTML = '';
+
+        if (!logs || logs.length === 0) {
+            emptyState.classList.remove('hidden');
+            tableWrapper.classList.add('hidden');
+            return;
+        }
+
+        emptyState.classList.add('hidden');
+        tableWrapper.classList.remove('hidden');
+
+        logs.forEach(log => {
+            const dateObj = new Date(log.created_at);
+            const dateStr = dateObj.toLocaleDateString('pt-BR') + ' ' + dateObj.toLocaleTimeString('pt-BR');
+            
+            // Badge Tipo
+            const isRejection = log.error_type === 'PROMISE_REJECTION';
+            const badgeClass = isRejection ? 'rejection' : 'error';
+            const badgeText = isRejection ? 'Async Fail' : 'Error';
+            const icon = isRejection ? '<i class="bi bi-lightning-fill"></i>' : '<i class="bi bi-x-octagon-fill"></i>';
+
+            // Limpa URL
+            let cleanUrl = log.source_url ? log.source_url.replace(window.location.origin, '') : 'Script Interno';
+            if(cleanUrl.length > 30) cleanUrl = '...' + cleanUrl.slice(-25);
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-size:0.85rem; color:#64748b;">${dateStr}</td>
+                <td><span class="badge-log ${badgeClass}">${icon} ${badgeText}</span></td>
+                <td class="log-message-cell" title="${log.message}">${log.message}</td>
+                <td class="log-url-cell" title="${log.source_url}">${cleanUrl}:${log.line_no || '?'}</td>
+                <td style="text-align: right;">
+                    <button class="cat-action-btn" onclick='openLogDetails(${JSON.stringify(log).replace(/'/g, "&#39;")})'>
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                </td>
+            `;
+            listBody.appendChild(tr);
+        });
+
+    } catch (err) {
+        console.error("Erro ao carregar logs:", err);
+        listBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">Erro ao buscar logs: ${err.message}</td></tr>`;
+    }
+}
+
+// Abrir Modal de Detalhes
+function openLogDetails(log) {
+    document.getElementById('modal-log-message').innerText = log.message;
+    document.getElementById('modal-log-agent').innerText = log.user_agent;
+    document.getElementById('modal-log-source').innerText = `${log.source_url} (Linha: ${log.line_no}, Col: ${log.col_no})`;
+    document.getElementById('modal-log-stack').innerText = log.stack_trace || "Sem Stack Trace disponível.";
+
+    const modal = document.getElementById('modal-log-details');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeLogModal() {
+    const modal = document.getElementById('modal-log-details');
+    modal.classList.remove('active');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}

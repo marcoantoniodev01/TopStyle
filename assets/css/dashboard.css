@@ -6205,3 +6205,58 @@ a.profile-link.admin-mode:hover i {
     margin: 0;
     font-style: italic;
 }
+
+/* =========================================================
+   ESTILOS DE LOGS DE SISTEMA
+   ========================================================= */
+
+.badge-log {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-log.error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.badge-log.rejection {
+    background-color: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+}
+
+.log-message-cell {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Inter', sans-serif;
+    color: #334155;
+}
+
+.log-url-cell {
+    font-size: 0.8rem;
+    color: #64748b;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsividade Tabela Logs */
+@media (max-width: 768px) {
+    .log-url-cell, 
+    .cat-table th:nth-child(4) { /* Coluna URL */
+        display: none;
+    }
+    
+    .log-message-cell {
+        max-width: 150px;
+    }
+}

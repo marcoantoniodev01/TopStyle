@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <script src="assets/js/error-logger.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Admin - TopStyle</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -266,7 +267,7 @@
               <ul class="submenu">
                 <li data-content="notificacao-geral">Toda as Notificações</li>
                 <li data-content="dashboard-tab">Mensagens de usuários</li>
-                <li>Logs de erro ou atividades (se tiver como)</li>
+                <li data-content="system-logs">Logs de Erros (Console)</li>
               </ul>
 
               <li class="menu-item" onclick="limparNotificacaoSuporte()">
@@ -498,6 +499,65 @@
             </section>
 
           </section>
+        </div>
+
+        <div class="page" id="system-logs">
+          <div class="admin-container">
+            <div class="page-header"
+              style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:15px;">
+              <div>
+                <h1>Monitoramento de Erros</h1>
+                <p class="cat-subtitle">Histórico de erros ocorridos recentemente.</p>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button onclick="loadSystemLogs()" class="cat-btn cat-btn-secondary">
+                  <i class="bi bi-arrow-clockwise"></i> Atualizar
+                </button>
+              </div>
+            </div>
+
+            <div class="cat-stats-grid" style="margin-bottom: 25px;">
+              <div class="cat-stat-card">
+                <div class="cat-stat-icon" style="background:#fee2e2; color:#dc2626;">
+                  <i class="bi bi-bug-fill"></i>
+                </div>
+                <div class="cat-stat-info">
+                  <h3 id="log-count-total">0</h3>
+                  <p>Total de Erros</p>
+                </div>
+              </div>
+              <div class="cat-stat-card">
+                <div class="cat-stat-icon" style="background:#fef3c7; color:#d97706;">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="cat-stat-info">
+                  <h3 id="log-count-today">0</h3>
+                  <p>Nas últimas 24h</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="cat-table-wrapper">
+              <table class="cat-table" id="logs-table">
+                <thead>
+                  <tr>
+                    <th>Data/Hora</th>
+                    <th>Tipo</th>
+                    <th>Mensagem de Erro</th>
+                    <th>Página (URL)</th>
+                    <th style="text-align: right;">Detalhes</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-list-body">
+                </tbody>
+              </table>
+            </div>
+
+            <div id="logs-empty-state" class="hidden" style="text-align: center; padding: 40px; color: #64748b;">
+              <i class="bi bi-shield-check" style="font-size: 3rem; color: #10b981;"></i>
+              <p style="margin-top: 15px;">Sistema estável. Nenhum erro registrado.</p>
+            </div>
+          </div>
         </div>
 
         <div class="page" id="indicadores">
@@ -1618,6 +1678,46 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <div id="modal-log-details" class="custom-modal-overlay hidden" style="z-index: 10050;">
+    <div class="custom-modal-content details-modal-pro" style="max-width: 700px;">
+      <div class="details-header-pro">
+        <h3>Detalhes do Erro</h3>
+        <button class="close-modal-btn-pro" onclick="closeLogModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <div class="details-body-pro" style="padding: 20px;">
+        <div class="log-detail-group">
+          <label>Mensagem:</label>
+          <div id="modal-log-message"
+            style="color: #dc2626; font-weight: 700; background: #fef2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca;">
+          </div>
+        </div>
+
+        <div class="log-detail-grid"
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+          <div>
+            <label style="font-size: 0.85rem; color: #64748b; font-weight: bold;">Navegador:</label>
+            <div id="modal-log-agent" style="font-size: 0.9rem; word-break: break-all;"></div>
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; color: #64748b; font-weight: bold;">Local:</label>
+            <div id="modal-log-source" style="font-size: 0.9rem; word-break: break-all;"></div>
+          </div>
+        </div>
+
+        <div class="log-detail-group" style="margin-top: 20px;">
+          <label style="font-size: 0.85rem; color: #64748b; font-weight: bold;">Stack Trace (Técnico):</label>
+          <pre id="modal-log-stack"
+            style="background: #1e293b; color: #a5f3fc; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.8rem; margin-top: 5px; max-height: 200px;"></pre>
+        </div>
+      </div>
+      <div class="details-footer-pro">
+        <button class="btn-pro-secondary" onclick="closeLogModal()">Fechar</button>
+      </div>
     </div>
   </div>
 
