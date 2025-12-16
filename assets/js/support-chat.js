@@ -1,6 +1,5 @@
-/* assets/js/support-chat.js - VERSÃO DEFINITIVA (Admin-to-Admin Fix) */
+/* assets/js/support-chat.js - VERSÃO CORRIGIDA E ROBUSTA */
 
-// Credenciais
 const CHAT_URL = "https://xhzdyatnfaxnvvrllhvs.supabase.co";
 const CHAT_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhoemR5YXRuZmF4bnZ2cmxsaHZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMzc1MjQsImV4cCI6MjA3NDkxMzUyNH0.uQtOn1ywQPogKxvCOOCLYngvgWCbMyU9bXV1hUUJ_Xo";
 
@@ -11,55 +10,121 @@ let activeProfileData = null;
 let realtimeSub = null;
 let dashboardListener = null;
 
-// Inicialização segura com Retry
-function initSupabaseSafe() {
+// --- FUNÇÕES EXPORTADAS PARA O DASHBOARD ---
+
+window.initAdminChat = async function() {
+    console.log("Iniciando Chat Admin...");
+    
+    // Garante que o Supabase esteja carregado
+    await initSupabaseSafe();
+
+    // Se ainda não tiver usuário, tenta pegar a sessão explicitamente
+    if (!currentUser && sb) {
+        const { data } = await sb.auth.getSession();
+        if (data && data.session) {
+            currentUser = data.session.user;
+        }
+    }
+    
+    if (!currentUser) {
+        console.error("ERRO CHAT: Não foi possível autenticar o usuário admin.");
+        const container = document.getElementById('admin-contacts-list');
+        if(container) container.innerHTML = '<div style="padding:20px; color:red">Erro de autenticação. Recarregue a página.</div>';
+        return;
+    }
+
+    await initAdminDashboardInternal();
+};
+
+window.limparNotificacaoSuporte = function() {
+    const badge = document.getElementById('suporte-notif-badge');
+    if (badge) badge.style.display = 'none';
+};
+
+// -----------------------------------------------------------------------
+
+async function initSupabaseSafe() {
+    // 1. Tenta reutilizar o cliente global do Dashboard (JÁ AUTENTICADO)
+    if (window.client) {
+        sb = window.client;
+        await startApp();
+        return;
+    }
+
+    // 2. Fallback: Cria novo cliente se não existir
     if (window.supabase && window.supabase.createClient) {
-        sb = window.supabase.createClient(CHAT_URL, CHAT_KEY);
-        startApp();
+        if (!sb) {
+            sb = window.supabase.createClient(CHAT_URL, CHAT_KEY);
+        }
+        await startApp();
     } else {
+        // Tenta novamente em 500ms se a lib ainda não carregou
         setTimeout(initSupabaseSafe, 500);
     }
 }
 
 document.addEventListener('DOMContentLoaded', initSupabaseSafe);
 
+// Substitua a função startApp existente por esta versão corrigida:
+
 async function startApp() {
-    const { data: { session } } = await sb.auth.getSession();
+    if (!sb) return;
+
+    // Tenta pegar a sessão atual
+    let { data: { session } } = await sb.auth.getSession();
+    
+    // --- CORREÇÃO PRINCIPAL: LOGIN ANÔNIMO ---
+    // Se estiver na tela do Cliente (suporte.html) e NÃO tiver sessão, cria uma anônima
+    if (!session && document.getElementById('client-chat-container')) {
+        console.log("Visitante detectado. Iniciando sessão anônima...");
+        
+        const { data, error } = await sb.auth.signInAnonymously();
+        
+        if (error) {
+            console.error("Erro no login anônimo:", error);
+            // Fallback: Tenta continuar mesmo sem sessão (pode falhar se tiver RLS restrito)
+        } else {
+            session = data.session;
+        }
+    }
+    // ----------------------------------------
+    
     if (!session) {
-        if (document.getElementById('client-chat-container')) console.warn("Usuário não logado.");
+        // Se for Admin e não tiver sessão, aí sim paramos
+        if (document.getElementById('admin-contacts-list')) {
+            console.warn("Chat Admin: Aguardando login do painel...");
+        }
         return;
     }
+    
     currentUser = session.user;
 
-    // Expõe função para o Dashboard
-    window.initAdminChat = initAdminDashboard;
-
-    // Roteamento
+    // Roteamento: Cliente ou Admin
     if (document.getElementById('client-chat-container')) {
         await initClientChat();
     }
     
-    // Se estiver no Dashboard, inicia o listener global imediatamente
+    // Se estiver no Dashboard, inicia o listener global de notificações
     if (document.getElementById('admin-contacts-list')) {
         startGlobalMessageListener();
     }
 }
 
-/* ==================================================================
-   LÓGICA DO CLIENTE (SUPORTE.HTML)
-   ================================================================== */
+/* ================= LÓGICA DO CLIENTE (SUPORTE.HTML) ================= */
 async function initClientChat() {
     const msgArea = document.getElementById('messages-area');
     const form = document.getElementById('chat-form');
 
+    // Busca conversa existente
     let { data: convo, error } = await sb
         .from('support_conversations')
         .select('*')
         .eq('user_id', currentUser.id)
         .maybeSingle();
 
-    if (error) { console.error("Erro busca:", error); return; }
+    if (error) { console.error("Erro busca conversa:", error); return; }
 
+    // Se não existe, cria nova
     if (!convo) {
         const { data: newConvo, error: createError } = await sb
             .from('support_conversations')
@@ -80,7 +145,11 @@ async function initClientChat() {
     await loadMessages(convo.id, msgArea, false);
 
     if (form) {
-        form.addEventListener('submit', async (e) => {
+        // Remove listeners antigos para evitar duplicação
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+
+        newForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const input = document.getElementById('message-input');
             const text = input.value.trim();
@@ -100,6 +169,8 @@ function updateSuggestionsVisibility(convo) {
     if (!suggestions) return;
     if (convo.status === 'closed') {
         suggestions.style.display = 'flex';
+    } else {
+        suggestions.style.display = 'none';
     }
 }
 
@@ -113,10 +184,12 @@ async function handleClientSendMessage(text) {
     if (!activeConvoId) return;
     const msgArea = document.getElementById('messages-area');
 
+    // Renderiza otimista (antes de enviar)
     const tempMsg = {
         message: text,
         created_at: new Date().toISOString(),
-        is_admin_sender: false
+        is_admin_sender: false,
+        sender_id: currentUser.id
     };
     renderBubble(tempMsg, msgArea, false);
     scrollToBottom(msgArea);
@@ -124,20 +197,15 @@ async function handleClientSendMessage(text) {
     await sendMessageToDb(text, false);
 }
 
-/* ==================================================================
-   LÓGICA DO ADMIN (DASHBOARD) - AGORA COM CHAT ENTRE ADMS
-   ================================================================== */
+/* ================= LÓGICA DO ADMIN (DASHBOARD) ================= */
 
-async function initAdminDashboard() {
+async function initAdminDashboardInternal() {
     const listEl = document.getElementById('admin-contacts-list');
     if (!listEl) return;
     
-    // Salva scroll atual ou estado se necessário, mas aqui vamos recriar
-    // Para evitar "flicker", poderíamos limpar só depois, mas vamos simplificar
     listEl.innerHTML = ''; 
 
     try {
-        // 1. Busca Conversas
         const { data: convos, error: errConvos } = await sb
             .from('support_conversations')
             .select(`*, profiles:user_id ( id, full_name, username, avatar_url, is_admin )`)
@@ -145,7 +213,7 @@ async function initAdminDashboard() {
 
         if(errConvos) throw errConvos;
 
-        // 2. Busca Equipe (Outros Admins)
+        // Separa admins (Equipe)
         const { data: admins } = await sb
             .from('profiles')
             .select('*')
@@ -155,81 +223,40 @@ async function initAdminDashboard() {
         const conversationMap = {};
         if (convos) convos.forEach(c => conversationMap[c.user_id] = c);
 
-        // --- SEÇÃO EQUIPE (LÓGICA UNIFICADA) ---
+        // --- 1. RENDERIZA EQUIPE ---
         if (admins && admins.length > 0) {
-            addSectionTitle(listEl, 'Equipe');
+            addSectionTitle(listEl, 'Equipe Interna');
             
             admins.forEach(admin => {
-                // Tenta encontrar DUAS conversas possíveis:
-                // 1. Onde EU estou falando com ELE (user_id = admin.id)
                 const convoWithThem = conversationMap[admin.id];
                 
-                // 2. Onde ELE está falando COMIGO (user_id = currentUser.id)
-                // Para saber isso, precisamos verificar quem mandou a última mensagem na MINHA conversa
-                // Mas como simplificação, vamos checar se "Minha Conversa" existe
-                const myConvo = conversationMap[currentUser.id];
-                
-                // Decide qual conversa abrir/exibir
-                let targetConvo = null;
                 let lastMsg = 'Iniciar chat privado';
-                let status = 'offline'; // "offline" aqui é só visual para equipe
+                let status = 'offline';
                 let isActive = false;
+                let convoObj = convoWithThem || null;
 
-                // Lógica de Prioridade: Mostra a que teve atualização mais recente
-                const timeThem = convoWithThem ? new Date(convoWithThem.updated_at).getTime() : 0;
-                // Só consideramos a "minha" conversa se a última mensagem NÃO fui eu quem mandou (ou seja, foi ele)
-                // Como não temos sender no conversation, assumimos pelo timestamp por enquanto
-                const timeMe = myConvo ? new Date(myConvo.updated_at).getTime() : 0;
-
-                // Escolhe a conversa mais recente para interagir
-                if (convoWithThem && timeThem >= timeMe) {
-                    targetConvo = convoWithThem;
-                    lastMsg = targetConvo.last_message;
+                if (convoWithThem) {
+                    lastMsg = convoWithThem.last_message;
                     status = 'online';
-                } else if (myConvo && timeMe > timeThem) {
-                    // Aqui tem um truque: se a minha conversa é a mais recente, 
-                    // precisamos garantir que foi ESSE admin que falou comigo.
-                    // Sem uma query complexa de mensagens, vamos assumir que se eu clico nele,
-                    // eu prefiro abrir a conversa onde ELE é o dono (padrão) OU a minha se for resposta.
-                    
-                    // Para simplificar e resolver o bug: Vamos abrir a conversa DELE se existir.
-                    // Se não, abrimos a minha.
-                    if(convoWithThem) {
-                         targetConvo = convoWithThem;
-                         lastMsg = targetConvo.last_message; 
-                         status = 'online';
-                    } else {
-                        // Se só existe a minha conversa (ele falou comigo, eu nunca falei com ele no canal dele)
-                        // Precisamos saber se foi ele. Como não sabemos sem fetch extra,
-                        // vamos forçar a criação do canal DELE ao clicar, para padronizar.
-                        lastMsg = "Nova mensagem (Verificar)"; 
-                        status = 'online';
-                        // targetConvo será null, forçando create/fetch no click
-                    }
+                    if (activeConvoId === convoWithThem.id) isActive = true;
                 }
 
-                // Verifica se está ativo visualmente
-                if (targetConvo && activeConvoId === targetConvo.id) isActive = true;
-
                 const item = createContactItem(admin, lastMsg, status, isActive);
-                
-                // Ao clicar: Sempre tentamos abrir a conversa onde user_id = AMIGO.
-                // Isso centraliza o histórico num lugar só (O canal do amigo).
+                // Ao clicar, inicia ou abre chat
                 item.onclick = () => startChatWithAdmin(admin);
-                
                 listEl.appendChild(item);
             });
         }
 
-        // --- SEÇÃO CLIENTES ---
-        addSectionTitle(listEl, 'Clientes');
+        // --- 2. RENDERIZA CLIENTES ---
+        addSectionTitle(listEl, 'Atendimentos');
         
         const adminIds = new Set(admins ? admins.map(a => a.id) : []);
         let hasClients = false;
 
         if (convos) {
             convos.forEach(c => {
-                // Filtra: Eu mesmo E outros Admins (já listados acima)
+                // Ignora se for o próprio usuário ou outro admin (já listado acima)
                 if (c.user_id === currentUser.id || adminIds.has(c.user_id)) return;
 
                 hasClients = true;
@@ -249,7 +276,7 @@ async function initAdminDashboard() {
         }
 
         if (!hasClients) {
-            listEl.innerHTML += '<div style="padding:20px; color:#64748b; font-size:0.9rem;">Nenhum chamado de cliente.</div>';
+            listEl.innerHTML += '<div style="padding:20px; color:#64748b; font-size:0.9rem; text-align:center;">Nenhum chamado de cliente.</div>';
         }
 
     } catch (err) {
@@ -264,6 +291,7 @@ function addSectionTitle(container, title) {
     div.style.fontWeight = '700';
     div.style.color = '#94a3b8';
     div.style.textTransform = 'uppercase';
+    div.style.letterSpacing = '0.5px';
     div.innerText = title;
     container.appendChild(div);
 }
@@ -274,7 +302,6 @@ function createContactItem(profile, lastMsg, status, isActive) {
     
     const name = profile.full_name || profile.username || 'Sem Nome';
     const avatar = profile.avatar_url || 'https://i.ibb.co/5Y2755P/user-default.png';
-    // Status visual: Se for admin (status online/offline fake), se cliente (open/closed)
     const statusDot = status === 'closed' ? 'closed' : 'online';
 
     div.innerHTML = `
@@ -290,9 +317,13 @@ function createContactItem(profile, lastMsg, status, isActive) {
     return div;
 }
 
-// LÓGICA CORRIGIDA: Chat entre Admins sempre busca unificar no ID do Target
+// Cria ou abre conversa com outro Admin
 async function startChatWithAdmin(targetAdmin) {
-    // Tenta encontrar conversa onde user_id = targetAdmin
+    // Verifica se eu já tenho uma conversa onde EU sou o criador (não aplicável aqui pois user_id é único por conversa no design atual)
+    // O design atual usa user_id na tabela conversations como o "Dono" do ticket.
+    // Para chat entre admins, o ideal seria uma tabela separada, mas vamos adaptar:
+    // Procuramos se já existe uma conversa onde o user_id é o targetAdmin
+    
     let { data: existing, error } = await sb
         .from('support_conversations')
         .select('*')
@@ -306,7 +337,7 @@ async function startChatWithAdmin(targetAdmin) {
         const { data: newConvo, error: createErr } = await sb
             .from('support_conversations')
             .insert([{
-                user_id: targetAdmin.id, // O chat pertence ao "Destinatário" para centralizar
+                user_id: targetAdmin.id,
                 status: 'open',
                 last_message: 'Chat de equipe iniciado'
             }])
@@ -326,11 +357,11 @@ async function openAdminChat(convo, profile) {
     activeConvoId = convo.id;
     activeProfileData = profile;
 
-    // UI Mobile
+    // Mobile UX
     const layout = document.querySelector('.admin-chat-layout');
     if (layout) layout.classList.add('mobile-chat-active');
 
-    // UI Reset
+    // UI Updates
     document.getElementById('chat-empty-state').style.display = 'none';
     document.getElementById('chat-main-header').style.display = 'flex';
     document.getElementById('admin-messages-area').style.display = 'flex';
@@ -339,7 +370,7 @@ async function openAdminChat(convo, profile) {
     // Header Info
     document.getElementById('chat-header-name').innerText = profile.full_name || profile.username;
     const statusEl = document.getElementById('chat-header-status');
-    // Para equipe, sempre mostra online, para clientes mostra status real
+    
     if(profile.is_admin) {
         statusEl.innerText = 'Equipe Online';
         statusEl.style.color = '#3b82f6';
@@ -347,16 +378,20 @@ async function openAdminChat(convo, profile) {
         statusEl.innerText = convo.status === 'open' ? 'Em Aberto' : 'Finalizado';
         statusEl.style.color = convo.status === 'open' ? '#10b981' : '#64748b';
     }
-    document.getElementById('chat-header-img').src = profile.avatar_url || 'https://i.ibb.co/5Y2755P/user-default.png';
+    
+    const imgHeader = document.getElementById('chat-header-img');
+    if(imgHeader) {
+        imgHeader.src = profile.avatar_url || 'https://i.ibb.co/5Y2755P/user-default.png';
+    }
 
-    // Carregar e Subscrever
+    // Carrega msgs
     const msgArea = document.getElementById('admin-messages-area');
     await loadMessages(convo.id, msgArea, true);
     
-    // Configura Form de Envio
+    // Setup Input
     const form = document.getElementById('admin-chat-form');
     const newForm = form.cloneNode(true);
-    form.parentNode.replaceChild(newForm, form);
+    if(form.parentNode) form.parentNode.replaceChild(newForm, form);
     
     newForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -365,8 +400,8 @@ async function openAdminChat(convo, profile) {
         if (!txt) return;
         inp.value = '';
         
-        // Renderiza Otimista
-        const tempMsg = { message: txt, created_at: new Date().toISOString(), is_admin_sender: true };
+        // Render Otimista
+        const tempMsg = { message: txt, created_at: new Date().toISOString(), is_admin_sender: true, sender_id: currentUser.id };
         renderBubble(tempMsg, msgArea, true);
         scrollToBottom(msgArea);
         
@@ -376,14 +411,28 @@ async function openAdminChat(convo, profile) {
     subscribeToChat(convo.id, msgArea, true);
 }
 
-/* ==================================================================
-   FUNÇÕES GERAIS DE CHAT (DB & UI)
-   ================================================================== */
+/* ================= CORE: ENVIAR MENSAGENS (CORRIGIDO) ================= */
 
 async function sendMessageToDb(text, isAdmin) {
-    if (!activeConvoId || !currentUser) return;
+    // 1. Validação Robusta
+    if (!activeConvoId) {
+        console.error("Erro Chat: Nenhuma conversa ativa.");
+        return;
+    }
 
-    // Insert msg
+    // 2. Recuperação de Sessão se necessário
+    if (!currentUser) {
+        console.warn("Chat: Usuário perdido. Tentando recuperar sessão...");
+        const { data } = await sb.auth.getSession();
+        if (data && data.session) {
+            currentUser = data.session.user;
+        } else {
+            alert("Sua sessão expirou. Por favor, recarregue a página.");
+            return;
+        }
+    }
+
+    // 3. Envio
     const { error } = await sb.from('support_messages').insert([{
         conversation_id: activeConvoId,
         sender_id: currentUser.id,
@@ -391,40 +440,38 @@ async function sendMessageToDb(text, isAdmin) {
         is_admin_sender: isAdmin
     }]);
 
-    if (error) console.error("Erro envio:", error);
+    if (error) {
+        console.error("Erro ao enviar mensagem:", error);
+        // Opcional: Mostrar erro visual no chat
+    }
 
-    // Update conversation status/last_message
+    // 4. Atualiza conversa (Última msg)
     await sb.from('support_conversations')
         .update({
             last_message: text,
             updated_at: new Date(),
-            status: 'open' // Sempre reabre ao mandar mensagem
+            status: 'open' // Reabre se estava fechado
         })
         .eq('id', activeConvoId);
 }
 
 function renderBubble(msg, container, isAdminView) {
     const div = document.createElement('div');
-    
-    // LÓGICA DE LADO (ESQUERDA/DIREITA)
-    // Se sou Admin na View Admin: Minhas msgs (is_admin_sender=true) vao p/ direita.
-    // Se sou Cliente: Minhas msgs (is_admin_sender=false) vao p/ direita.
-    
-    // POREM, no chat entre ADMINS, ambos sao is_admin_sender=true.
-    // Então precisamos checar o sender_id real se disponível, senão fallback.
-    
     let type = 'received';
     
-    if (msg.sender_id === currentUser.id) {
+    // Lógica para determinar lado do balão
+    // Se fui eu que enviei (ID bate) -> SENT
+    if (currentUser && msg.sender_id === currentUser.id) {
         type = 'sent';
-    } else if (isAdminView && msg.is_admin_sender && !msg.sender_id) {
-        // Fallback antigo caso nao tenha sender_id no objeto local
+    } 
+    // Fallback para mensagens antigas ou sistema
+    else if (isAdminView && msg.is_admin_sender && !msg.sender_id) {
         type = 'sent'; 
     } else if (!isAdminView && !msg.is_admin_sender) {
         type = 'sent';
     }
 
-    // Sistema
+    // Mensagem de Sistema
     if (msg.message.includes('🔒') || msg.message.includes('Iniciando atendimento')) {
         div.className = 'msg-system';
         div.innerText = msg.message;
@@ -462,25 +509,11 @@ function subscribeToChat(convoId, container, isAdminView) {
             filter: `conversation_id=eq.${convoId}`
         }, (payload) => {
             const newMsg = payload.new;
-            if (newMsg.sender_id === currentUser.id) return; // Ignora minha própria msg (já renderizada)
+            // Se fui eu que mandei, ignora (já renderizei otimista)
+            if (currentUser && newMsg.sender_id === currentUser.id) return; 
 
             renderBubble(newMsg, container, isAdminView);
             scrollToBottom(container);
-            
-            // Toca som se quiser
-            // const audio = new Audio('assets/sounds/notification.mp3'); audio.play().catch(()=>{});
-        })
-        .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'support_conversations',
-            filter: `id=eq.${convoId}`
-        }, (payload) => {
-            const newStatus = payload.new.status;
-            if(!isAdminView && newStatus === 'closed') {
-                const sugg = document.getElementById('chat-suggestions');
-                if(sugg) sugg.style.display = 'flex';
-            }
         })
         .subscribe();
 }
@@ -489,22 +522,21 @@ function scrollToBottom(el) {
     setTimeout(() => { el.scrollTop = el.scrollHeight; }, 100);
 }
 
+// Funções de UI Admin
 window.endCurrentChat = async function () {
     if (!activeConvoId) return;
     if(!confirm("Finalizar este atendimento?")) return;
 
+    // Atualiza status
     await sb.from('support_conversations').update({ status: 'closed' }).eq('id', activeConvoId);
     
-    await sb.from('support_messages').insert([{
-        conversation_id: activeConvoId,
-        sender_id: currentUser.id,
-        message: "🔒 Atendimento encerrado.",
-        is_admin_sender: true
-    }]);
+    // Manda msg de sistema
+    await sendMessageToDb("🔒 Atendimento encerrado.", true);
     
-    initAdminDashboard(); 
+    // Recarrega lista
+    initAdminDashboardInternal(); 
     
-    // Mobile back
+    // Fecha visualização mobile
     const layout = document.querySelector('.admin-chat-layout');
     if(layout) layout.classList.remove('mobile-chat-active');
 };
@@ -514,19 +546,17 @@ window.backToContacts = function () {
     if (layout) layout.classList.remove('mobile-chat-active');
 };
 
-// LISTENER GLOBAL PODEROSO (ADMIN DASHBOARD)
-// Escuta TUDO na tabela support_messages para garantir que o Admin veja atualizações
-// mesmo que seja uma conversa "dele" ou "de outro".
 function startGlobalMessageListener() {
     if(dashboardListener) return;
 
+    // Escuta QUALQUER nova mensagem na tabela
     dashboardListener = sb.channel('global-dashboard-updates')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'support_messages' }, (payload) => {
-            // Se a mensagem não é minha, atualiza a lista lateral para mostrar a novidade
-            if(payload.new.sender_id !== currentUser.id) {
-                // Pequeno delay para garantir que o DB processou triggers se houver
+            // Se a mensagem não é minha, atualiza a lista e mostra notificação
+            if(currentUser && payload.new.sender_id !== currentUser.id) {
+                // Delay para garantir que o banco processou
                 setTimeout(() => {
-                    initAdminDashboard();
+                    initAdminDashboardInternal(); 
                     const badge = document.getElementById('suporte-notif-badge');
                     if(badge) badge.style.display = 'block';
                 }, 500);
@@ -534,8 +564,3 @@ function startGlobalMessageListener() {
         })
         .subscribe();
 }
-
-window.limparNotificacaoSuporte = function() {
-    const badge = document.getElementById('suporte-notif-badge');
-    if (badge) badge.style.display = 'none';
-};
